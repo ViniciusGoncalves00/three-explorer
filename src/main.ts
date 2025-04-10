@@ -1,4 +1,10 @@
 import './styles.css';
-import { initScene } from "./three/scene";
 
-initScene();
+import { ThreeEngine } from './core/graphics/three/three-engine';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('viewport-container');
+  if (container) {
+    new ThreeEngine(container);
+  }
+});

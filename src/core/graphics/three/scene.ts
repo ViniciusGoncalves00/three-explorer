@@ -1,5 +1,3 @@
-// @ts-ignore
-// import * as THREE from "https://unpkg.com/three@0.160.1/build/three.module.js";
 import * as THREE from 'three';
 
 export function initScene() {
@@ -9,11 +7,14 @@ export function initScene() {
   );
   const renderer1 = new THREE.WebGLRenderer();
   const renderer2 = new THREE.WebGLRenderer();
-  renderer1.setSize(window.innerWidth / 2, window.innerHeight);
-  renderer2.setSize(window.innerWidth / 2, window.innerHeight);
   const viewportContainer = document.getElementById("viewport-container");
-  viewportContainer?.appendChild(renderer1.domElement);
-  viewportContainer?.appendChild(renderer2.domElement);
+
+  if(viewportContainer) {
+    renderer1.setSize(viewportContainer.clientWidth / 2, viewportContainer.clientHeight);
+    renderer2.setSize(viewportContainer.clientWidth / 2, viewportContainer.clientHeight);
+    viewportContainer.appendChild(renderer1.domElement);
+    viewportContainer.appendChild(renderer2.domElement);
+  }
 
   const geometry = new THREE.BoxGeometry();
   const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });

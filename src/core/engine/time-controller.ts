@@ -1,4 +1,4 @@
-import { BaseSubject } from "./base-subject";
+import { BaseSubject } from "../base-subject";
 
 export class TimeController extends BaseSubject implements ISubject
 {
