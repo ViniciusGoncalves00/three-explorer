@@ -9,9 +9,11 @@ export class ThreeEngine {
   private camera: THREE.PerspectiveCamera;
   private lastTime: number;
 
-  constructor(container: HTMLElement) {
+  private miliseconds = 16.666; // frame time delta (~60fps = 16.6ms)
+
+  constructor(container_editor: HTMLElement, containerRun: HTMLElement) {
     this.scene = new ThreeScene();
-    this.renderer = new DualRenderer(container);
+    this.renderer = new DualRenderer(container_editor, containerRun);
     this.camera = createDefaultCamera();
     this.lastTime = performance.now();
 
@@ -22,7 +24,7 @@ export class ThreeEngine {
     requestAnimationFrame(this.animate);
 
     const now = performance.now();
-    const delta = (now - this.lastTime) / 16.666; // frame time delta (~60fps = 16.6ms)
+    const delta = (now - this.lastTime) / this.miliseconds;
     this.lastTime = now;
 
     this.scene.update(delta);

@@ -3,10 +3,12 @@ import * as THREE from 'three';
 export class DualRenderer {
   private renderer1: THREE.WebGLRenderer;
   private renderer2: THREE.WebGLRenderer;
-  private container: HTMLElement;
+  private containerEditor: HTMLElement;
+  private containerRun: HTMLElement;
 
-  constructor(container: HTMLElement) {
-    this.container = container;
+  constructor(container_editor: HTMLElement, containerRun: HTMLElement) {
+    this.containerEditor = container_editor;
+    this.containerRun = containerRun;
     this.renderer1 = new THREE.WebGLRenderer();
     this.renderer2 = new THREE.WebGLRenderer();
 
@@ -14,14 +16,11 @@ export class DualRenderer {
   }
 
   private setup() {
-    const width = this.container.clientWidth / 2;
-    const height = this.container.clientHeight;
+    this.renderer1.setSize(this.containerEditor.clientWidth, this.containerEditor.clientHeight);
+    this.renderer2.setSize(this.containerRun.clientWidth, this.containerRun.clientHeight);
 
-    this.renderer1.setSize(width, height);
-    this.renderer2.setSize(width, height);
-
-    this.container.appendChild(this.renderer1.domElement);
-    this.container.appendChild(this.renderer2.domElement);
+    this.containerEditor.appendChild(this.renderer1.domElement);
+    this.containerRun.appendChild(this.renderer2.domElement);
   }
 
   render(scene: THREE.Scene, camera: THREE.Camera) {
