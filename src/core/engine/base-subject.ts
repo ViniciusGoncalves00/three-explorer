@@ -1,8 +1,8 @@
 import { Base } from './base';
-import { IObserver } from './patterns/observer/observer';
-import { ISubject } from './patterns/observer/subject';
-import { ILogger } from './patterns/logger/logger';
-import { ConsoleLogger } from './patterns/logger/console-logger';
+import { IObserver } from '../patterns/observer/observer';
+import { ISubject } from '../patterns/observer/subject';
+import { ILogger } from '../patterns/logger/logger';
+import { ConsoleLogger } from '../patterns/logger/console-logger';
 
 export abstract class BaseSubject extends Base implements ISubject {
     private observers: IObserver[] = [];
@@ -33,7 +33,7 @@ export abstract class BaseSubject extends Base implements ISubject {
 
     public notify(args?: string[]): void {
         for (const observer of this.observers) {
-            observer.Update(this, args);
+            observer.update(this, args);
         }
     }
 }
