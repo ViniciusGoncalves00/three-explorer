@@ -1,33 +1,66 @@
 import * as THREE from 'three';
 import { ThreeScene } from './three-scene';
-import { DualRenderer } from './three-renderer';
-import { createDefaultCamera } from './three-camera';
+import { RendererManager } from './three-renderer';
+import { CameraController } from './three-camera';
+import { IUpdatable } from '../../api/iupdatable';
+import { Engine } from '../../engine/engine';
+import { IObserver } from '../../patterns/observer/observer';
+import { ISubject } from '../../patterns/observer/subject';
+import { TimeController } from '../../engine/time-controller';
 
-export class ThreeEngine {
+export class ThreeEngine implements IUpdatable, IObserver {
+  private readonly _engine: Engine;
+
   private scene: ThreeScene;
-  private renderer: DualRenderer;
-  private camera: THREE.PerspectiveCamera;
-  private lastTime: number;
+  private rendererEditor: RendererManager;
+  private rendererRun: RendererManager;
+  private cameraEditor: CameraController;
+  private cameraRun: CameraController;
 
-  private miliseconds = 16.666; // frame time delta (~60fps = 16.6ms)
+  constructor(engine: Engine, containerEditor: HTMLElement, containerRun: HTMLElement) {
+    this._engine = engine;
 
-  constructor(container_editor: HTMLElement, containerRun: HTMLElement) {
     this.scene = new ThreeScene();
-    this.renderer = new DualRenderer(container_editor, containerRun);
-    this.camera = createDefaultCamera();
-    this.lastTime = performance.now();
+    this.rendererEditor = new RendererManager(containerEditor);
+    this.rendererRun = new RendererManager(containerRun);
 
-    this.animate();
+    this.cameraEditor = new CameraController(containerEditor);
+    this.cameraRun = new CameraController(containerRun);
+
+    this.rendererEditor.setActive(true);
+    this.rendererRun.setActive(true);
+    this.cameraEditor.setActive(true);
+    this.cameraRun.setActive(false);
+
+    this._engine.timeController.attach(this);
+    this._engine.timeController.attach(this.rendererEditor);
+    this._engine.timeController.attach(this.rendererRun);
+
+    this._engine.addUpdatable(this);
+    this._engine.addUpdatable(this.scene);
   }
 
-  private animate = () => {
-    requestAnimationFrame(this.animate);
+  public onNotify(subject: ISubject, args?: string[]) {
+    if(subject instanceof TimeController) {
+      if (args?.includes('Start')) {
+        this.setEditorMode(false);
+      } else if (args?.includes('Stop')) {
+        this.setEditorMode(true);
+      }
+    }
+  }
 
-    const now = performance.now();
-    const delta = (now - this.lastTime) / this.miliseconds;
-    this.lastTime = now;
+  private setEditorMode(isEditor: boolean) {
+    this.rendererEditor.setActive(isEditor);
+    this.rendererRun.setActive(!isEditor);
+  }
 
-    this.scene.update(delta);
-    this.renderer.render(this.scene.scene, this.camera);
-  };
+  public update(deltaTime: number): void {
+    if (this.rendererEditor.isActive) {
+      this.rendererEditor.render(this.scene.scene, this.cameraEditor.GetCamera());
+    }
+    if (this.rendererRun.isActive) {
+      this.rendererRun.render(this.scene.scene, this.cameraRun.GetCamera());
+    }
+  }
 }

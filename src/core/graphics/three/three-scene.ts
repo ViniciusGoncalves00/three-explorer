@@ -1,6 +1,7 @@
 import * as THREE from 'three';
+import { IUpdatable } from '../../api/iupdatable';
 
-export class ThreeScene {
+export class ThreeScene implements IUpdatable {
   public scene: THREE.Scene;
   public cube: THREE.Mesh;
 
@@ -14,8 +15,8 @@ export class ThreeScene {
     this.scene.add(this.cube);
   }
 
-  update(delta: number) {
-    this.cube.rotation.x += 0.01 * delta;
-    this.cube.rotation.y += 0.01 * delta;
+  update(deltaTime: number) {
+    this.cube.rotation.x += 0.01 * deltaTime;
+    this.cube.rotation.y += 0.01 * deltaTime;
   }
 }

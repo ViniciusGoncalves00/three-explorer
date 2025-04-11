@@ -1,30 +1,40 @@
 import * as THREE from 'three';
+import { IObserver } from '../../patterns/observer/observer';
+import { ISubject } from '../../patterns/observer/subject';
+import { IUpdatable } from '../../api/iupdatable';
 
-export class DualRenderer {
-  private renderer1: THREE.WebGLRenderer;
-  private renderer2: THREE.WebGLRenderer;
-  private containerEditor: HTMLElement;
-  private containerRun: HTMLElement;
+export class RendererManager implements IUpdatable, IObserver {
+  private renderer: THREE.WebGLRenderer;
+  private container: HTMLElement;
+  private _active: boolean = false;
+  public get isActive(): boolean { return this._active};
 
-  constructor(container_editor: HTMLElement, containerRun: HTMLElement) {
-    this.containerEditor = container_editor;
-    this.containerRun = containerRun;
-    this.renderer1 = new THREE.WebGLRenderer();
-    this.renderer2 = new THREE.WebGLRenderer();
-
+  constructor(container: HTMLElement) {
+    this.container = container;
+    this.renderer = new THREE.WebGLRenderer();
     this.setup();
   }
 
   private setup() {
-    this.renderer1.setSize(this.containerEditor.clientWidth, this.containerEditor.clientHeight);
-    this.renderer2.setSize(this.containerRun.clientWidth, this.containerRun.clientHeight);
-
-    this.containerEditor.appendChild(this.renderer1.domElement);
-    this.containerRun.appendChild(this.renderer2.domElement);
+    this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+    this.container.appendChild(this.renderer.domElement);
   }
 
-  render(scene: THREE.Scene, camera: THREE.Camera) {
-    this.renderer1.render(scene, camera);
-    this.renderer2.render(scene, camera);
+  public render(scene: THREE.Scene, camera: THREE.Camera) {
+    if (!this._active) return;
+    this.renderer.render(scene, camera);
+  }
+
+  public setActive(value: boolean) {
+    this._active = value;
+    this.renderer.domElement.style.display = value ? 'block' : 'none';
+  }
+
+  public onNotify(subject: ISubject, args?: string[]) {
+    // Placeholder: pode ser usado para reagir a notificações futuras
+  }
+
+  public update(deltaTime: number): void {
+    // Placeholder: aqui você pode atualizar lógica se necessário
   }
 }

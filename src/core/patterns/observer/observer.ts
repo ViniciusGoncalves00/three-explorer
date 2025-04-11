@@ -1,5 +1,5 @@
 import { ISubject } from "./subject";
 
 export interface IObserver {
-    update(subject: ISubject, args?: string[]): any;
+    onNotify(subject: ISubject, args?: string[]): any;
 }

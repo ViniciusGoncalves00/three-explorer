@@ -33,7 +33,7 @@ export abstract class BaseSubject extends Base implements ISubject {
 
     public notify(args?: string[]): void {
         for (const observer of this.observers) {
-            observer.update(this, args);
+            observer.onNotify(this, args);
         }
     }
 }
