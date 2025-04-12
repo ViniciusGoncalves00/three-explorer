@@ -27,6 +27,7 @@ export class CameraController {
     // private _inputManager: InputManager;
     private _speed: number = 1;
     private _orbitControls: OrbitControls;
+    public get orbitControls(): OrbitControls { return this._orbitControls };
 
     private _wasMoving: boolean = false;
 
@@ -39,8 +40,6 @@ export class CameraController {
         const aspect_ratio = this._canvas.clientWidth / this._canvas.clientHeight;
         const perspective_camera = new THREE.PerspectiveCamera(50, aspect_ratio, 0.01, 100000);
         this._camera = perspective_camera;
-        this._camera.position.set(10, 10, 10);
-        this._camera.lookAt(new THREE.Vector3(0, 0, 0));
 
         // this._inputManager = InputManager.GetInstance();
 

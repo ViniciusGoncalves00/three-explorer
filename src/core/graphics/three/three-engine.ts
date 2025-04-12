@@ -33,12 +33,15 @@ export class ThreeEngine implements IUpdatable, IObserver {
     this.cameraEditor = new CameraController(containerEditor);
     this.cameraRun = new CameraController(containerRun);
 
+    this.cameraEditor.GetCamera().position.set(10, 10, 10);
+    this.cameraEditor.GetCamera().lookAt(0, 0, 0);
+    this.cameraRun.GetCamera().position.set(0, 1, -10);
+    this.cameraRun.GetCamera().lookAt(0, 1, 0);
+
     this.rendererEditor.setActive(true);
     this.rendererRun.setActive(true);
     this.cameraEditor.setActive(true);
     this.cameraRun.setActive(false);
-
-    (window.timeController as any) = this._engine.timeController;
 
     this._engine.timeController.attach(this);
     // this._engine.timeController.attach(this.rendererEditor);
@@ -51,21 +54,17 @@ export class ThreeEngine implements IUpdatable, IObserver {
   public onNotify(subject: ISubject, args?: string[]) {
     if(subject instanceof TimeController) {
       if (args?.includes('Start')) {
-        this.rendererEditor.setActive(false);
-        this.rendererRun.setActive(true);
+        this.cameraEditor.orbitControls.enabled = false;
+        this.cameraRun.orbitControls.enabled = true;
       } else if (args?.includes('Stop')) {
-        this.rendererEditor.setActive(true);
-        this.rendererRun.setActive(false);
+        this.cameraEditor.orbitControls.enabled = true;
+        this.cameraRun.orbitControls.enabled = false;
       }
     }
   }
 
   public update(deltaTime: number): void {
-    if (this.rendererEditor.isActive) {
-      this.rendererEditor.render(this.scene.scene, this.cameraEditor.GetCamera());
-    }
-    if (this.rendererRun.isActive) {
-      this.rendererRun.render(this.scene.scene, this.cameraRun.GetCamera());
-    }
+    this.rendererEditor.render(this.scene.scene, this.cameraEditor.GetCamera());
+    this.rendererRun.render(this.scene.scene, this.cameraRun.GetCamera());
   }
 }

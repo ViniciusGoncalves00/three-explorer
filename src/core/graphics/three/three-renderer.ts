@@ -27,7 +27,6 @@ export class RendererManager implements IUpdatable, IObserver {
 
   public setActive(value: boolean) {
     this._active = value;
-    this.renderer.domElement.style.display = value ? 'block' : 'none';
   }
 
   public onNotify(subject: ISubject, args?: string[]) {

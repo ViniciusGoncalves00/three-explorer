@@ -12,9 +12,9 @@ export class TimeControllerHandler implements IObserver {
     this.pause = document.getElementById('pause');
     this.stop = document.getElementById('stop');
 
-    if (!this.play) console.warn('[UI] Element with ID "play" not founded.');
-    if (!this.pause) console.warn('[UI] Element with ID "pause" not founded.');
-    if (!this.stop) console.warn('[UI] Element with ID "stop" not founded.');
+    if (!this.play) console.warn('[UI] Element with ID "play" not found.');
+    if (!this.pause) console.warn('[UI] Element with ID "pause" not found.');
+    if (!this.stop) console.warn('[UI] Element with ID "stop" not found.');
 
     this.play?.addEventListener('click', () => timeController.start());
     this.pause?.addEventListener('click', () => timeController.pause());
@@ -26,20 +26,16 @@ export class TimeControllerHandler implements IObserver {
       if (!args) return;
 
       if (args.includes('Start')) {
-          this.play?.style && (this.play.style.display = 'none');
-          this.pause?.style && (this.pause.style.display = 'flex');
+        this.play?.classList.add('btn--actived');
       }
       if (args.includes('Pause')) {
-          this.play?.style && (this.play.style.display = 'flex');
-          this.pause?.style && (this.pause.style.display = 'none');
+        this.play?.classList.remove('btn--actived');
       }
       if (args.includes('Unpause')) {
-          this.play?.style && (this.play.style.display = 'none');
-          this.pause?.style && (this.pause.style.display = 'flex');
+        this.play?.classList.add('btn--actived');
       }
       if (args.includes('Stop')) {
-          this.play?.style && (this.play.style.display = 'flex');
-          this.pause?.style && (this.pause.style.display = 'none');
+        this.play?.classList.remove('btn--actived');
       }
   }
 }

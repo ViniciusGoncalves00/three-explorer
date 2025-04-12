@@ -1,4 +1,5 @@
 import './styles.css';
+import './ui/styles/time-controller.css';
 
 import { ThreeEngine } from './core/graphics/three/three-engine';
 import { Engine } from './core/engine/engine';
