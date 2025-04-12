@@ -8,6 +8,12 @@ import { IObserver } from '../../patterns/observer/observer';
 import { ISubject } from '../../patterns/observer/subject';
 import { TimeController } from '../../engine/time-controller';
 
+declare global {
+  interface Window {
+    timeController: typeof TimeController;
+  }
+}
+
 export class ThreeEngine implements IUpdatable, IObserver {
   private readonly _engine: Engine;
 
@@ -32,9 +38,11 @@ export class ThreeEngine implements IUpdatable, IObserver {
     this.cameraEditor.setActive(true);
     this.cameraRun.setActive(false);
 
+    (window.timeController as any) = this._engine.timeController;
+
     this._engine.timeController.attach(this);
-    this._engine.timeController.attach(this.rendererEditor);
-    this._engine.timeController.attach(this.rendererRun);
+    // this._engine.timeController.attach(this.rendererEditor);
+    // this._engine.timeController.attach(this.rendererRun);
 
     this._engine.addUpdatable(this);
     this._engine.addUpdatable(this.scene);
@@ -43,16 +51,13 @@ export class ThreeEngine implements IUpdatable, IObserver {
   public onNotify(subject: ISubject, args?: string[]) {
     if(subject instanceof TimeController) {
       if (args?.includes('Start')) {
-        this.setEditorMode(false);
+        this.rendererEditor.setActive(false);
+        this.rendererRun.setActive(true);
       } else if (args?.includes('Stop')) {
-        this.setEditorMode(true);
+        this.rendererEditor.setActive(true);
+        this.rendererRun.setActive(false);
       }
     }
-  }
-
-  private setEditorMode(isEditor: boolean) {
-    this.rendererEditor.setActive(isEditor);
-    this.rendererRun.setActive(!isEditor);
   }
 
   public update(deltaTime: number): void {

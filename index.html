@@ -36,25 +36,24 @@
           </svg>
       </button>
       <button id="play" 
-          @click="if (isPaused) { UISimulationHandler.unpause(); isRunning = true; isPaused = false } else { UISimulationHandler.Start(); isRunning = true; isPaused = false }" 
-          x-show="!isRunning || isPaused" 
+          @click="if (isPaused) { UISimulationHandler.unpause(); isRunning = true; isPaused = false } else { UISimulationHandler.Start(); isRunning = true; isPaused = false }"
           class="h-full aspect-square bg-gray-200 border border-gray-400 flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-play" viewBox="0 0 16 16">
               <path d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
           </svg>
       </button>
     </div>
-    <div id="tabs" x-data="viewportTabs" class="w-full h-8 flex items-center justify-center">
-      <button @click="switchTo('editor')" class="w-16 h-full aspect-square bg-gray-200 border border-gray-400 flex items-center justify-center">
+    <div id="tabs" class="w-full h-8 flex items-center justify-center">
+      <button id="editor-tab" class="w-16 h-full bg-gray-200 border border-gray-400 flex items-center justify-center">
         editor
       </button>
-      <button @click="switchTo('run')" class="w-16 h-full aspect-square bg-gray-200 border border-gray-400 flex items-center justify-center">
+      <button id="run-tab" class="w-16 h-full bg-gray-200 border border-gray-400 flex items-center justify-center">
         run
       </button>
     </div>
-    <div id="viewport-container" class="w-full h-full flex">
-      <div id="viewport-editor" x-show="mode === 'editor' || mode === 'split'" @click="switchTo('editor')" class="w-full h-full"></div>
-      <div id="viewport-run" x-show="mode === 'run' || mode === 'split'" @click="lockMouseAndSwitchTo('run')" class="w-full h-full"></div>
+    <div id="viewport-container" class="w-full h-full flex space-x-1">
+      <div id="viewport-editor" class="w-full h-full"></div>
+      <div id="viewport-run" class="w-full h-full"></div>
     </div>
   </div>
 </body>
@@ -63,30 +62,47 @@
 
 
 <script type="module">
-  import { ViewModeController } from '../../core/engine/view-mode-controller';
+  // Exemplo básico de controlador de modo
+class ViewModeController {
+  constructor() {
+    this.mode = 'editor';
+    this.listeners = [];
+  }
 
-  const controller = new ViewModeController();
+  getMode() {
+    return this.mode;
+  }
 
-  window.viewportTabs = () => ({
-    mode: controller.getMode(),
+  setMode(newMode) {
+    this.mode = newMode;
+    this.listeners.forEach(cb => cb(this.mode));
+  }
 
-    init() {
-      controller.onChange((newMode) => {
-        this.mode = newMode;
-      });
-    },
+  onChange(cb) {
+    this.listeners.push(cb);
+  }
+}
 
-    switchTo(mode) {
-      controller.setMode(mode);
-    },
+const controller = new ViewModeController();
 
-    lockMouseAndSwitchTo(mode) {
-      // simulação de bloqueio de mouse
-      if (mode === "run") {
-        document.body.requestPointerLock?.();
-      }
-      controller.setMode(mode);
-    }
-  });
+function updateViewports(mode) {
+  const editor = document.getElementById("viewport-editor");
+  const run = document.getElementById("viewport-run");
+}
+
+// Inicializa visualização
+controller.onChange(updateViewports);
+updateViewports(controller.getMode());
+
+// Eventos dos botões
+document.getElementById("editor-tab").addEventListener("click", () => {
+  controller.setMode("editor");
+});
+
+document.getElementById("run-tab").addEventListener("click", () => {
+  console.log("click");
+  controller.setMode("run");
+});
+
 </script>
 

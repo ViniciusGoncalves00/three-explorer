@@ -64,5 +64,6 @@ export class CameraController {
 
     public setActive(value: boolean) {
       this._active = value;
+      this._orbitControls.enabled = value;
     }
 }
