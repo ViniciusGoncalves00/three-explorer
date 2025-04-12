@@ -1,7 +1,6 @@
-import { ISubject } from "../patterns/observer/subject";
 import { BaseSubject } from "./base-subject";
 
-export class TimeController extends BaseSubject implements ISubject
+export class TimeController extends BaseSubject
 {
     private _isRunning : boolean = false;
     public get isRunning(): boolean { return this._isRunning; }
