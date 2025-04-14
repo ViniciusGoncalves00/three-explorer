@@ -42,10 +42,21 @@
     <!-- LEFT -->
     <div id="left" class="bg-zinc-800 w-2/12 h-full flex flex-col relative">
       <div class="dropzone">drop</div>
-      <div class="bg-zinc-800 w-full h-full draggable cursor-grab" id="drag-red">
-        
+      <div id="Hierarchy" class="bg-zinc-800 w-full h-full">
+        <div class="title-bar bg-zinc-700 text-white px-2 py-1 draggable cursor-grab">
+          Hierarchy
+        </div>
+        <div class="content p-2">
+        </div>
       </div>
-      <div class="bg-yellow-500 w-full h-full draggable cursor-grab" id="drag-yellow"></div>
+      <div id="Assets" class="bg-zinc-800 w-full h-full">
+        <div class="title-bar bg-zinc-700 text-white px-2 py-1 draggable cursor-grab">
+          Assets
+        </div>
+        <div class="content p-2">
+        </div>
+      </div>
+      
     </div>
 
     <!-- CENTER -->
@@ -83,11 +94,27 @@
         <div id="viewport-editor" class="w-full h-full"></div>
         <div id="viewport-run" class="w-full h-full"></div>
       </div>
+
+      <div id="Console" class="bg-zinc-800 w-full h-full">
+        <div class="title-bar bg-zinc-700 text-white px-2 py-1 draggable cursor-grab">
+          Console
+        </div>
+        <div class="content p-2">
+        </div>
+      </div>
     </div>
 
     <!-- RIGHT -->
     <div id="right" class="bg-zinc-800 w-2/12 h-full flex flex-col relative">
       <div class="dropzone">drop</div>
+
+      <div id="Inspector" class="bg-zinc-800 w-full h-full">
+        <div class="title-bar bg-zinc-700 text-white px-2 py-1 draggable cursor-grab">
+          Inspector
+        </div>
+        <div class="content p-2">
+        </div>
+      </div>
     </div>
   </div>
 
@@ -101,18 +128,21 @@
     let draggedElement = null;
   
     const makeDraggable = (element) => {
-      element.addEventListener("mousedown", (e) => {
+      const titleBar = element.querySelector(".title-bar");
+      if (!titleBar) return;
+    
+      titleBar.addEventListener("mousedown", (e) => {
         isDragging = true;
         draggedElement = element;
         offsetX = e.offsetX;
         offsetY = e.offsetY;
-  
+    
         // Impede scroll
         document.body.classList.add("no-scroll");
         document.documentElement.classList.add("no-scroll");
-  
+    
         // Cria uma cópia visual da div
-        ghost = draggedElement.cloneNode(true);
+        ghost = element.cloneNode(true);
         ghost.id = "ghost";
         ghost.style.position = "absolute";
         ghost.style.width = "128px";
@@ -120,19 +150,22 @@
         ghost.style.pointerEvents = "none";
         ghost.style.opacity = 0.7;
         ghost.style.zIndex = 1000;
-  
-        // Ajusta o tamanho e o texto conforme necessário
-        ghost.innerText = "Drag-me!"; 
+    
+        // Exemplo de personalização visual:
+        ghost.innerText = "Arrastando..."; 
         document.body.appendChild(ghost);
-  
-        // Ajusta a posição inicial para centralizar o ghost no clique do mouse
+    
         const ghostWidth = ghost.offsetWidth;
         const ghostHeight = ghost.offsetHeight;
-  
+    
         ghost.style.left = `${e.clientX - ghostWidth / 2}px`;
         ghost.style.top = `${e.clientY - ghostHeight / 2}px`;
+    
+        // Evita que o clique vá para outros elementos
+        e.stopPropagation();
       });
     };
+    
   
     document.addEventListener("mousemove", (e) => {
       if (!isDragging || !ghost) return;
@@ -216,8 +249,10 @@
     });
   
     // Torna as divs arrastáveis
-    makeDraggable(document.getElementById("drag-red"));
-    makeDraggable(document.getElementById("drag-yellow"));
+    makeDraggable(document.getElementById("Hierarchy"));
+    makeDraggable(document.getElementById("Assets"));
+    makeDraggable(document.getElementById("Inspector"));
+    makeDraggable(document.getElementById("Console"));
   </script>
   
 </body>

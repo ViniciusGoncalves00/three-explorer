@@ -65,4 +65,15 @@ export class CameraController {
       this._active = value;
       this._orbitControls.enabled = value;
     }
+
+    public updateProjection() {
+        const aspect = this._canvas.clientWidth / this._canvas.clientHeight;
+        if (this._camera instanceof THREE.PerspectiveCamera) {
+          this._camera.aspect = aspect;
+        } else if (this._camera instanceof THREE.OrthographicCamera) {
+          // Atualize os parâmetros conforme necessário
+        }
+        this._camera.updateProjectionMatrix();
+      }
+      
 }

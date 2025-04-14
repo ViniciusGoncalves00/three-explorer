@@ -49,6 +49,13 @@ export class ThreeEngine implements IUpdatable, IObserver {
 
     this._engine.addUpdatable(this);
     this._engine.addUpdatable(this.scene);
+
+    window.addEventListener('resize', () => {
+      this.cameraEditor.updateProjection();
+      this.cameraRun.updateProjection();
+      this.rendererEditor.resize();
+      this.rendererRun.resize();
+    });
   }
 
   public onNotify(subject: ISubject, args?: string[]) {

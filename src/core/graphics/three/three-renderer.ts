@@ -9,15 +9,28 @@ export class RendererManager implements IUpdatable, IObserver {
   private _active: boolean = false;
   public get isActive(): boolean { return this._active};
 
+  private resizeObserver: ResizeObserver;
+
   constructor(container: HTMLElement) {
     this.container = container;
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.setup();
+
+    this.resizeObserver = new ResizeObserver(() => this.resize());
+    this.resizeObserver.observe(this.container);
   }
 
   private setup() {
     this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+    this.container.innerHTML = ''; // Remove canvas anterior, se houver
     this.container.appendChild(this.renderer.domElement);
+  }
+
+  public resize() {
+    const width = this.container.clientWidth;
+    const height = this.container.clientHeight;
+  
+    this.renderer.setSize(width, height, false);
   }
 
   public render(scene: THREE.Scene, camera: THREE.Camera) {
@@ -34,6 +47,6 @@ export class RendererManager implements IUpdatable, IObserver {
   }
 
   public update(deltaTime: number): void {
-    // Placeholder: aqui você pode atualizar lógica se necessário
+    // Placeholder
   }
 }
