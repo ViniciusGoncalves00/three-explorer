@@ -23,12 +23,15 @@ export class ThreeEngine implements IUpdatable, IObserver {
   private cameraEditor: CameraController;
   private cameraRun: CameraController;
 
-  constructor(engine: Engine, containerEditor: HTMLElement, containerRun: HTMLElement) {
+  private editorObserver: ResizeObserver;
+  private runObserver: ResizeObserver;
+
+  constructor(engine: Engine, containerEditor: HTMLElement, canvasEditor: HTMLElement, containerRun: HTMLElement, canvasRun: HTMLElement) {
     this._engine = engine;
 
     this.scene = new ThreeScene();
-    this.rendererEditor = new RendererManager(containerEditor);
-    this.rendererRun = new RendererManager(containerRun);
+    this.rendererEditor = new RendererManager(containerEditor, canvasEditor);
+    this.rendererRun = new RendererManager(containerRun, canvasRun);
 
     this.cameraEditor = new CameraController(containerEditor);
     this.cameraRun = new CameraController(containerRun);
@@ -49,6 +52,12 @@ export class ThreeEngine implements IUpdatable, IObserver {
 
     this._engine.addUpdatable(this);
     this._engine.addUpdatable(this.scene);
+
+    this.editorObserver = new ResizeObserver(() => {this.rendererEditor.resize(), this.cameraEditor.updateProjection()});
+    this.editorObserver.observe(containerEditor);
+
+    this.runObserver = new ResizeObserver(() => {this.rendererRun.resize(), this.cameraRun.updateProjection()});
+    this.runObserver.observe(containerEditor);
 
     window.addEventListener('resize', () => {
       this.cameraEditor.updateProjection();

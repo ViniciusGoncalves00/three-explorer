@@ -11,19 +11,13 @@ export class RendererManager implements IUpdatable, IObserver {
 
   private resizeObserver: ResizeObserver;
 
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, canvas: HTMLElement) {
     this.container = container;
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.setup();
-
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+    this.renderer.setSize(container.clientWidth, container.clientHeight, false);
+  
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(this.container);
-  }
-
-  private setup() {
-    this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
-    this.container.innerHTML = ''; // Remove canvas anterior, se houver
-    this.container.appendChild(this.renderer.domElement);
   }
 
   public resize() {

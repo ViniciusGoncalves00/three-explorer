@@ -90,10 +90,15 @@
         </button>
       </div>
 
-      <div id="viewport-container" class="w-full h-full flex space-x-[1px]">
-        <div id="viewport-editor" class="w-full h-full"></div>
-        <div id="viewport-run" class="w-full h-full"></div>
+      <div id="viewport-container" class="w-full h-full flex items-start justify-center space-x-[1px]">
+        <div id="viewport-editor-container" class="w-full h-full relative">
+          <canvas id="viewport-editor" class="absolute top-0 left-0 w-full h-full"></canvas>
+        </div>
+        <div id="viewport-run-container" class="w-full h-full relative">
+          <canvas id="viewport-run" class="absolute top-0 left-0 w-full h-full"></canvas>
+        </div>
       </div>
+      
 
       <div id="Console" class="bg-zinc-800 w-full h-full">
         <div class="title-bar bg-zinc-700 text-white px-2 py-1 draggable cursor-grab">
@@ -152,7 +157,7 @@
         ghost.style.zIndex = 1000;
     
         // Exemplo de personalização visual:
-        ghost.innerText = "Arrastando..."; 
+        ghost.innerText = "Dragging..."; 
         document.body.appendChild(ghost);
     
         const ghostWidth = ghost.offsetWidth;
