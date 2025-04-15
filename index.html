@@ -10,17 +10,17 @@
     <div id="drag-n-drop-overlay" class="z-50 absolute w-full h-full bg-black/50"></div>
 
     <!-- LEFT -->
-    <div id="left" class="bg-zinc-800 w-2/12 h-full flex flex-col relative">
+    <div id="left" class="bg-zinc-800 w-fit h-full flex flex-col relative">
       <div class="dropzone">drop</div>
-      <div id="Hierarchy" class="bg-zinc-800 w-full h-full">
-        <div class="title-bar bg-zinc-700 text-white px-2 py-1 draggable cursor-grab">
+      <div id="Hierarchy" class="bg-zinc-800 min-w-64 w-full h-full">
+        <div class="title-bar bg-zinc-700 text-white w-full h-6 flex items-center px-1 text-sm draggable cursor-grab">
           Hierarchy
         </div>
         <div class="content p-2">
         </div>
       </div>
-      <div id="Assets" class="bg-zinc-800 w-full h-full">
-        <div class="title-bar bg-zinc-700 text-white px-2 py-1 draggable cursor-grab">
+      <div id="Assets" class="bg-zinc-800 min-w-64 w-full h-full">
+        <div class="title-bar bg-zinc-700 text-white w-full h-6 flex items-center px-1 text-sm draggable cursor-grab">
           Assets
         </div>
         <div class="content p-2">
@@ -30,7 +30,7 @@
     </div>
 
     <!-- CENTER -->
-    <div id="center" class="bg-zinc-800 w-8/12 h-full flex flex-col relative">
+    <div id="center" class="bg-zinc-800 min-w-64 w-full h-full flex flex-col relative">
       <div class="dropzone">drop</div>
 
       <div id="time-controls" class="w-full h-8 flex items-center justify-center">
@@ -52,10 +52,10 @@
       </div>
 
       <div id="tabs" class="w-full h-8 flex items-center justify-center">
-        <button id="editor-tab" class="w-16 h-full bg-gray-200 border border-gray-400 flex items-center justify-center">
+        <button id="editor-tab" class="w-full bg-gray-200 border border-gray-400 flex items-center justify-center">
           editor
         </button>
-        <button id="run-tab" class="w-16 h-full bg-gray-200 border border-gray-400 flex items-center justify-center">
+        <button id="run-tab" class="w-full bg-gray-200 border border-gray-400 flex items-center justify-center">
           run
         </button>
       </div>
@@ -70,8 +70,8 @@
       </div>
       
 
-      <div id="Console" class="bg-zinc-800 w-full h-full">
-        <div class="title-bar bg-zinc-700 text-white px-2 py-1 draggable cursor-grab">
+      <div id="Console" class="bg-zinc-800 min-w-64 w-full h-full">
+        <div class="title-bar bg-zinc-700 text-white w-full h-6 flex items-center px-1 text-sm draggable cursor-grab">
           Console
         </div>
         <div class="content p-2">
@@ -80,11 +80,11 @@
     </div>
 
     <!-- RIGHT -->
-    <div id="right" class="bg-zinc-800 w-2/12 h-full flex flex-col relative">
+    <div id="right" class="bg-zinc-800 w-fit h-full flex flex-col relative">
       <div class="dropzone">drop</div>
 
-      <div id="Inspector" class="bg-zinc-800 w-full h-full">
-        <div class="title-bar bg-zinc-700 text-white px-2 py-1 draggable cursor-grab">
+      <div id="Inspector" class="bg-zinc-800 min-w-64 w-full h-full">
+        <div class="title-bar bg-zinc-700 text-white w-full h-6 flex items-center px-1 text-sm draggable cursor-grab">
           Inspector
         </div>
         <div class="content p-2">
