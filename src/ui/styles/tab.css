@@ -5,7 +5,7 @@
 }
 
 .tab-title {
-    @apply bg-zinc-700 text-white w-full h-6 flex items-center px-2 space-x-2 text-sm cursor-grab;
+    @apply bg-zinc-700 text-white w-full h-6 flex items-center px-2 space-x-2 text-sm;
 }
 
 .dropzone-body {
