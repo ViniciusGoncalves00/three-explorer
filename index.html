@@ -4,90 +4,135 @@
   <meta charset="UTF-8" />
   <title>Three.js + TypeScript</title>
   <script type="module" src="./dist/bundle.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
-  <div id="explorer-window" class="bg-zinc-900 w-full h-full flex space-x-[1px]">
-    <div id="drag-n-drop-overlay" class="z-50 absolute w-full h-full bg-black/50"></div>
-
-    <!-- LEFT -->
-    <div id="left" class="bg-zinc-800 w-fit h-full flex flex-col relative">
-      <div class="dropzone">drop</div>
-      <div id="Hierarchy" class="bg-zinc-800 min-w-64 w-full h-full">
-        <div class="title-bar bg-zinc-700 text-white w-full h-6 flex items-center px-1 text-sm draggable cursor-grab">
-          Hierarchy
-        </div>
-        <div class="content p-2">
-        </div>
-      </div>
-      <div id="Assets" class="bg-zinc-800 min-w-64 w-full h-full">
-        <div class="title-bar bg-zinc-700 text-white w-full h-6 flex items-center px-1 text-sm draggable cursor-grab">
-          Assets
-        </div>
-        <div class="content p-2">
-        </div>
-      </div>
-      
-    </div>
-
-    <!-- CENTER -->
-    <div id="center" class="bg-zinc-800 min-w-64 w-full h-full flex flex-col relative">
-      <div class="dropzone">drop</div>
-
-      <div id="time-controls" class="w-full h-8 flex items-center justify-center">
-        <button id="stop" class="btn btn--time-controller">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-stop" viewBox="0 0 16 16">
-            <path d="M3.5 5A1.5 1.5 0 0 1 5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11zM5 4.5a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5z"/>
-          </svg>
+  <div id="explorer-window" class="bg-zinc-900 w-full h-full flex flex-col">
+    <!-- TOP -->
+    <div id="top" class="w-full h-8 flex items-center justify-between px-2">
+      <div class="w-full h-8 flex items-center justify-start space-x-[2px]">
+        <button class="btn btn--time-controller  space-x-2">
+          <i class="bi bi-person-circle"></i>
+          <p>username</p>
         </button>
-        <button id="pause" class="btn btn--time-controller">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pause" viewBox="0 0 16 16">
-            <path d="M6 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5m4 0a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5"/>
-          </svg>
+        <button class="btn btn--time-controller">
+          <i class="bi bi-cloud"></i>
         </button>
+      </div>
+
+      <div id="time-controls" class="w-full h-8 flex items-center justify-center space-x-[2px]">
         <button id="play" class="btn btn--time-controller">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-play" viewBox="0 0 16 16">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="18" fill="currentColor" class="bi bi-play" viewBox="0 0 16 16">
             <path d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
           </svg>
         </button>
-      </div>
-
-      <div id="tabs" class="w-full h-8 flex items-center justify-center">
-        <button id="editor-tab" class="w-full bg-gray-200 border border-gray-400 flex items-center justify-center">
-          editor
+        <button id="pause" class="btn btn--time-controller">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="18" fill="currentColor" class="bi bi-pause" viewBox="0 0 16 16">
+            <path d="M6 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5m4 0a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5"/>
+          </svg>
         </button>
-        <button id="run-tab" class="w-full bg-gray-200 border border-gray-400 flex items-center justify-center">
-          run
+        <button id="stop" class="btn btn--time-controller">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="18" fill="currentColor" class="bi bi-stop" viewBox="0 0 16 16">
+            <path d="M3.5 5A1.5 1.5 0 0 1 5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11zM5 4.5a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5z"/>
+          </svg>
         </button>
       </div>
 
-      <div id="viewport-container" class="w-full h-full flex items-start justify-center space-x-[1px]">
-        <div id="viewport-editor-container" class="w-full h-full relative">
-          <canvas id="viewport-editor" class="absolute top-0 left-0 w-full h-full"></canvas>
-        </div>
-        <div id="viewport-run-container" class="w-full h-full relative">
-          <canvas id="viewport-run" class="absolute top-0 left-0 w-full h-full"></canvas>
-        </div>
-      </div>
-      
-
-      <div id="Console" class="bg-zinc-800 min-w-64 w-full h-full">
-        <div class="title-bar bg-zinc-700 text-white w-full h-6 flex items-center px-1 text-sm draggable cursor-grab">
-          Console
-        </div>
-        <div class="content p-2">
-        </div>
+      <div class="w-full h-8 flex items-center justify-end space-x-[2px]">
+        <button class="btn btn--time-controller">
+          <i class="bi bi-linkedin"></i>
+        </button>
+        <button class="btn btn--time-controller">
+          <i class="bi bi-github"></i>
+        </button>
+        <button class="btn btn--time-controller">
+          <i class="bi bi-youtube"></i>
+        </button>
+        <button class="btn btn--time-controller">
+          <p>three-explorer</p>
+        </button>
       </div>
     </div>
-
-    <!-- RIGHT -->
-    <div id="right" class="bg-zinc-800 w-fit h-full flex flex-col relative">
-      <div class="dropzone">drop</div>
-
-      <div id="Inspector" class="bg-zinc-800 min-w-64 w-full h-full">
-        <div class="title-bar bg-zinc-700 text-white w-full h-6 flex items-center px-1 text-sm draggable cursor-grab">
-          Inspector
+    <div id="drag-n-drop-overlay" class="z-50 absolute w-full h-full bg-black/50"></div>
+    <!-- BOTTOM -->
+    <div id="bottom" class="w-full h-full flex items-start justify-start space-x-[2px]">
+      <!-- LEFT -->
+      <div id="left" class="dropzone-body">
+        <div class="dropzone">drop</div>
+        <div id="Hierarchy" class="tab-body">
+          <div class="title-bar tab-title">
+            <i class="bi bi-list-nested"></i>
+            <p>Hierarchy</p>
+          </div>
+          <div class="content p-2">
+          </div>
         </div>
-        <div class="content p-2">
+        <div id="Assets" class="tab-body">
+          <div class="title-bar tab-title">
+            <i class="bi bi-box"></i>
+            <p>Assets</p>
+          </div>
+          <div class="content p-2">
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER -->
+      <div id="center" class="flex-grow h-full flex flex-col items-start justify-start relative">
+        <div class="dropzone">drop</div>
+
+        <div id="viewport-container" class="tab-body flex items-start justify-start space-x-[2px]">
+          <div class="w-1/2 h-full flex flex-col">
+            <div class="title-bar tab-title">
+              <i class="bi bi-info-circle"></i>
+              <p>Editor</p>
+            </div>
+            <div id="viewport-editor-container" class="w-full h-full relative">
+              <canvas id="viewport-editor" class="absolute w-full h-full"></canvas>
+            </div>
+          </div>
+          <div class="w-1/2 h-full flex flex-col">
+            <div class="title-bar tab-title">
+              <i class="bi bi-info-circle"></i>
+              <p>Run</p>
+            </div>
+            <div id="viewport-run-container" class="w-full h-full relative">
+              <canvas id="viewport-run" class="absolute w-full h-full"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div id="viewport-container" class="tab-body flex items-start justify-center space-x-[1px]">
+          <div id="viewport-editor-container" class="w-full h-full relative">
+            <canvas id="viewport-editor" class="absolute w-full h-full"></canvas>
+          </div>
+          <div id="viewport-run-container" class="w-full h-full relative">
+            <canvas id="viewport-run" class="absolute w-full h-full"></canvas>
+          </div>
+        </div> -->
+
+
+        <div id="Console" class="tab-body">
+          <div class="title-bar tab-title">
+            <i class="bi bi-file-text"></i>
+            <p>Console</p>
+          </div>
+          <div class="content p-2">
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div id="right" class="dropzone-body">
+        <div class="dropzone">drop</div>
+
+        <div id="Inspector" class="tab-body">
+          <div class="title-bar tab-title">
+            <i class="bi bi-info-circle"></i>
+            <p>Inspector</p>
+          </div>
+          <div class="content p-2">
+          </div>
         </div>
       </div>
     </div>

@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import './ui/styles/tab.css';
+@import './ui/styles/time-controller.css';
 
 html, body {
   margin: 0;
@@ -9,22 +11,22 @@ html, body {
     overflow: hidden;
   }
 
-  .dropzone {
-    @apply absolute w-full h-full border-2 border-dashed border-white text-white text-sm transition-all flex items-center justify-center;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 100;
-  }
-  
-  .dropzone.active {
-    opacity: 1;
-    pointer-events: auto;
-    @apply border-white text-white;
-  }
-  
-  .dropzone.hovered {
-    @apply border-lime-400 text-white;
-  }
+.dropzone {
+  @apply absolute w-full h-full border-2 border-dashed border-white text-white text-sm transition-all flex items-center justify-center;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.dropzone.active {
+  opacity: 1;
+  pointer-events: auto;
+  @apply border-white text-white;
+}
+
+.dropzone.hovered {
+  @apply border-lime-400 text-white;
+}
   
 
 #drag-n-drop-overlay {

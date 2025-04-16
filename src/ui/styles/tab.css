@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+
+.tab-body {
+    @apply bg-zinc-800 min-w-80 w-full h-full;
+}
+
+.tab-title {
+    @apply bg-zinc-700 text-white w-full h-6 flex items-center px-2 space-x-2 text-sm cursor-grab;
+}
+
+.dropzone-body {
+    @apply bg-zinc-800 w-fit min-w-1 h-full flex flex-col relative
+}
