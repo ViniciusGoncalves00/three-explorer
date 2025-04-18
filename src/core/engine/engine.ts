@@ -2,11 +2,12 @@ import { IAwake } from "../api/systems/interfaces/awake";
 import { IFixedUpdate } from "../api/systems/interfaces/fixedUpdate";
 import { ILateUpdate } from "../api/systems/interfaces/lateUpdate";
 import { IStart } from "../api/systems/interfaces/start";
+import { ISystem } from "../api/systems/interfaces/system";
 import { IUpdate } from "../api/systems/interfaces/update";
 import { TransformSystem } from "../api/systems/transformSystem";
 import { Time } from "./time";
 import { TimeController } from "./time-controller";
-import { isAwake, isFixedUpdate, isLateUpdate, isStart, isUpdate } from "./typeguard";
+import { isIAwake, isIFixedUpdate, isILateUpdate, isIStart, isIUpdate } from "./typeguard";
 
 export class Engine {
     private _time: Time;
@@ -24,22 +25,24 @@ export class Engine {
         this._time = new Time();
         this._timeController = new TimeController();
 
-        this.systems.push(new TransformSystem())
+        this.registerSystem(new TransformSystem())
 
-        this.systems.forEach((system) => {
-            if (isAwake(system)) this.awakeSystems.push(system);
-            if (isStart(system)) this.startSystems.push(system);
-            if (isFixedUpdate(system)) this.fixedUpdateSystems.push(system);
-            if (isUpdate(system)) this.updateSystems.push(system);
-            if (isLateUpdate(system)) this.lateUpdateSystems.push(system);
-        })
-
-        this.initialize();
+        this.initializeSystems();
 
         this.loop();
     }
 
-    private initialize(): void {
+    private registerSystem(system: ISystem) {
+        this.systems.push(system);
+      
+        if (isIAwake(system)) this.awakeSystems.push(system);
+        if (isIStart(system)) this.startSystems.push(system);
+        if (isIFixedUpdate(system)) this.fixedUpdateSystems.push(system);
+        if (isIUpdate(system)) this.updateSystems.push(system);
+        if (isILateUpdate(system)) this.lateUpdateSystems.push(system);
+      }
+      
+    private initializeSystems(): void {
         this.awakeSystems.forEach((system) => system.awake());
         this.startSystems.forEach((system) => system.start());
     }

@@ -1,22 +1,19 @@
-import { Base } from './base';
-import { IObserver } from '../patterns/observer/observer';
-import { ISubject } from '../patterns/observer/subject';
-import { ILogger } from '../patterns/logger/logger';
-import { ConsoleLogger } from '../patterns/logger/console-logger';
+import { ISubject } from './subject';
+import { IObserver } from './observer';
+import { ILogger } from '../logger/logger';
+import { ConsoleLogger } from '../logger/console-logger';
 
-export abstract class BaseSubject extends Base implements ISubject {
+export class ObserverManager implements ISubject {
     private observers: IObserver[] = [];
-    protected logger: ILogger;
+    private logger: ILogger;
 
     constructor(logger: ILogger = new ConsoleLogger()) {
-        super();
-
         this.logger = logger;
     }
 
     public attach(observer: IObserver): void {
         if (this.observers.includes(observer)) {
-            this.logger.warn(`${this.constructor.name}: Observer already attached.`);
+            this.logger.warn(`Observer already attached.`);
             return;
         }
         this.observers.push(observer);
@@ -25,7 +22,7 @@ export abstract class BaseSubject extends Base implements ISubject {
     public dettach(observer: IObserver): void {
         const index = this.observers.indexOf(observer);
         if (index === -1) {
-            this.logger.warn(`${this.constructor.name}: Observer not found.`);
+            this.logger.warn(`Observer not found.`);
             return;
         }
         this.observers.splice(index, 1);
