@@ -1,0 +1,1 @@
+export interface IStart { start(): void }

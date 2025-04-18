@@ -10,13 +10,13 @@ let threeEngine: any;
 window.addEventListener('DOMContentLoaded', () => {
   const containerEditor = document.getElementById('viewport-editor-container');
   const canvasEditor = document.getElementById('viewport-editor');
-  const containerRun = document.getElementById('viewport-run-container');
-  const canvasRun = document.getElementById('viewport-run');
+  const containerSimulator = document.getElementById('viewport-simulator-container');
+  const canvasSimulator = document.getElementById('viewport-simulator');
 
-  if (!containerEditor || !canvasEditor || !containerRun || !canvasRun) return;
+  if (!containerEditor || !canvasEditor || !containerSimulator || !canvasSimulator) return;
 
   const engine = new Engine()
-  threeEngine = new ThreeEngine(engine, containerEditor, canvasEditor, containerRun, canvasRun);
+  threeEngine = new ThreeEngine(engine, containerEditor, canvasEditor, containerSimulator, canvasSimulator);
 
   new TimeControllerHandler(document, engine.timeController);
 });

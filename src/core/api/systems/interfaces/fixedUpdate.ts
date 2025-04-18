@@ -1,0 +1,1 @@
+export interface IFixedUpdate { fixedUpdate(fixedDeltaTime:number): void }

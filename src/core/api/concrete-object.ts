@@ -1,10 +1,11 @@
 import { Transform } from "./components/transform";
 import { Entity } from "./entity";
+import { IUpdatable } from "./iupdatable";
 
-export class ConcreteObject extends Entity {
+export class ConcreteObject extends Entity implements IUpdatable {
   private id: string;
   private name: string;
-  private transform: Transform;
+  public transform: Transform;
 
   private _enabled: boolean = false;
   public get enabled(): boolean { return this._enabled };

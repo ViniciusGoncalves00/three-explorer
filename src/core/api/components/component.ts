@@ -1,1 +1,1 @@
-export class Component {};
+interface IComponent {}
