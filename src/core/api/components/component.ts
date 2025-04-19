@@ -1,1 +1,3 @@
-interface IComponent {}
+export abstract class Component {
+    public enabled: boolean = true;
+}

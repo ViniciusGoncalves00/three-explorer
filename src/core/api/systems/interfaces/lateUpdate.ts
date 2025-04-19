@@ -1,1 +1,3 @@
-export interface ILateUpdate { lateUpdate(deltaTime:number): void }
+import { Entity } from "../../entity";
+
+export interface ILateUpdate { lateUpdate(entities: Entity[], deltaTime:number): void }

@@ -1,5 +1,12 @@
-export type Transform = IComponent & {
-  position: Vector3;
-  rotation: Vector3;
-  scale: Vector3;
-};
+import { Component } from "./component";
+import { Vector3 } from "./vector3";
+
+export class Transform extends Component {
+  public constructor(
+    public position: Vector3 = Vector3.zero(),
+    public rotation: Vector3 = Vector3.zero(),
+    public scale: Vector3 = Vector3.one()
+  ) {
+    super();
+  }
+}

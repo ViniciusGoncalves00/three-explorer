@@ -1,1 +1,3 @@
-export interface IUpdate { update(deltaTime:number): void }
+import { Entity } from "../../entity";
+
+export interface IUpdate { update(entities: Entity[], deltaTime:number): void }
