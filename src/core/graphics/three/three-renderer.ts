@@ -1,9 +1,8 @@
 import * as THREE from 'three';
 import { IObserver } from '../../patterns/observer/observer';
 import { ISubject } from '../../patterns/observer/subject';
-import { IUpdatable } from '../../api/iupdatable';
 
-export class RendererManager implements IUpdatable, IObserver {
+export class RendererManager implements IObserver {
   private renderer: THREE.WebGLRenderer;
   private container: HTMLElement;
   private _active: boolean = false;

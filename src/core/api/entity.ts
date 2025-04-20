@@ -1,4 +1,5 @@
 import { Component } from "./components/component";
+import { isComponent } from "../engine/typeguard";
 
 export class Entity {
   private _id: `${string}-${string}-${string}-${string}-${string}`;
@@ -8,14 +9,31 @@ export class Entity {
   public get enabled(): boolean { return this._enabled; }
   public set enabled(value: boolean) { this._enabled = value; }
 
-  private _components = new Map<Function, any>();
+  private _isAwaked: boolean = false;
+  public get isAwaked(): boolean { return this._isAwaked; }
+  public set isAwaked(value: boolean) { this._isAwaked = value; }
 
-  public constructor(id: `${string}-${string}-${string}-${string}-${string}`) {
+  private _isStarted: boolean = false;
+  public get isStarted(): boolean { return this._isStarted; }
+  public set isStarted(value: boolean) { this._isStarted = value; }
+
+  private _isRuntime: boolean = false;
+  public get isRuntime(): boolean { return this._isRuntime; }
+  public set isRuntime(value: boolean) { this._isRuntime = value; }
+
+  private _originalState?: Record<string, any>;
+  public get originalState(): Record<string, any> | undefined { return this._originalState; }
+  public set originalState(value: Record<string, any> | undefined) { this._originalState = value; }
+
+  private _components = new Map<new (...args: any[]) => Component, Component>()
+
+  public constructor(id: `${string}-${string}-${string}-${string}-${string}`, isRuntime: boolean = false) {
     this._id = id;
+    this._isRuntime = isRuntime;
   }
 
   public addComponent<T extends Component>(type: new (...args: any[]) => T, component: T): void {
-    if (!this.isComponent(component)) {
+    if (!isComponent(component)) {
       throw new Error(`Invalid component: must implement IComponent`);
     }
     this._components.set(type, component);
@@ -45,30 +63,43 @@ export class Entity {
     this._components.clear();
   }
 
+  public saveState(): void {
+    this._originalState = this.serialize();
+  }
+
+  public restoreState(): void {
+    if (!this._originalState) return;
+
+    const restored = Entity.deserialize(this._originalState);
+    this.enabled = restored.enabled;
+
+    for (const [type, component] of this._components.entries()) {
+      const restoredComponent = restored.getComponent(type);
+      Object.assign(component, restoredComponent);
+    }
+  }
 
   public serialize(): Record<string, any> {
     return {
       id: this.id,
       enabled: this.enabled,
+      isAwaked: this.isAwaked,
+      isStarted: this.isStarted,
     };
   }
 
   public static deserialize(data: Record<string, any>): Entity {
-    const { id, enabled } = data;
+    const { id, enabled, isAwaked, isStarted } = data;
 
     if (typeof id !== 'string') {
       throw new Error("Invalid data: Entity must have a valid ID.");
     }
 
     const entity = new Entity(id as `${string}-${string}-${string}-${string}-${string}`);
-    if (typeof enabled === 'boolean') {
-      entity.enabled = enabled;
-    }
+    if (typeof enabled === 'boolean') entity.enabled = enabled;
+    if (typeof isAwaked === 'boolean') entity.isAwaked = isAwaked;
+    if (typeof isStarted === 'boolean') entity.isStarted = isStarted;
 
     return entity;
-  }
-
-  private isComponent(obj: any): obj is Component {
-    return obj && typeof obj === 'object' && 'entity' in obj;
   }
 }

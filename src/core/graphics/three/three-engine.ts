@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { ThreeScene } from './three-scene';
 import { RendererManager } from './three-renderer';
 import { CameraController } from './three-camera';
-import { IUpdatable } from '../../api/iupdatable';
 import { Engine } from '../../engine/engine';
 import { IObserver } from '../../patterns/observer/observer';
 import { ISubject } from '../../patterns/observer/subject';
@@ -15,7 +14,7 @@ declare global {
   }
 }
 
-export class ThreeEngine implements IUpdatable, IObserver {
+export class ThreeEngine implements IObserver {
   private readonly _engine: Engine;
 
   private scene: ThreeScene;
@@ -51,8 +50,8 @@ export class ThreeEngine implements IUpdatable, IObserver {
     // this._engine.timeController.attach(this.rendererEditor);
     // this._engine.timeController.attach(this.rendererRun);
 
-    this._engine.addUpdatable(this);
-    this._engine.addUpdatable(this.scene);
+    // this._engine.addUpdatable(this);
+    // this._engine.addUpdatable(this.scene);
 
     // const geometry = new THREE.BoxGeometry();
     // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -66,7 +65,7 @@ export class ThreeEngine implements IUpdatable, IObserver {
 
     const gridHelper = new THREE.GridHelper(100, 100, new THREE.Color(0.1, 0.1, 0.1), new THREE.Color(0.1, 0.1, 0.1));
     this.scene.scene.add(gridHelper);
-    this._engine.addUpdatable(cube);
+    // this._engine.addUpdatable(cube);
 
     this.editorObserver = new ResizeObserver(() => {this.rendererEditor.resize(), this.cameraEditor.updateProjection()});
     this.editorObserver.observe(containerEditor);

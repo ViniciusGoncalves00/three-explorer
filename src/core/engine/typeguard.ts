@@ -1,3 +1,4 @@
+import { Component } from "../api/components/component";
 import { IAwake } from "../api/systems/interfaces/awake";
 import { IFixedUpdate } from "../api/systems/interfaces/fixedUpdate";
 import { ILateUpdate } from "../api/systems/interfaces/lateUpdate";
@@ -19,4 +20,7 @@ export function isIUpdate(system: ISystem): system is IUpdate {
 }
 export function isILateUpdate(system: ISystem): system is ILateUpdate {
   return 'lateUpdate' in system;
+}
+export function isComponent(obj: any): obj is Component {
+  return obj && typeof obj === 'object' && 'entity' in obj;
 }
