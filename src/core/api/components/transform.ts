@@ -9,4 +9,13 @@ export class Transform extends Component {
   ) {
     super();
   }
+
+  public clone(): Component {
+    const clonedPosition = new Vector3(this.position.x, this.position.y, this.position.z);
+    const clonedRotation = new Vector3(this.rotation.x, this.rotation.y, this.rotation.z);
+    const clonedScale = new Vector3(this.scale.x, this.scale.y, this.scale.z);
+    const clone = new Transform(clonedPosition, clonedRotation, clonedScale);
+    clone.enabled = this.enabled;
+    return clone;
+  }
 }
