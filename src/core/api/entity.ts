@@ -4,17 +4,21 @@ export class Entity {
   private _id: `${string}-${string}-${string}-${string}-${string}`;
   public get id(): string { return this._id; }
 
-  private _enabled = true;
-  public get enabled(): boolean { return this._enabled; }
+  private _isEnabled = true;
+  public get isEnabled(): boolean { return this._isEnabled; }
+  public set isEnabled(isEnabled: boolean) { this._isEnabled = isEnabled; }
   
   private _isAwaked = false;
   public get isAwaked(): boolean { return this._isAwaked; }
+  public set isAwaked(isAwaked: boolean) { this._isAwaked = isAwaked; }
 
   private _isStarted = false;
   public get isStarted(): boolean { return this._isStarted; }
+  public set isStarted(isStarted: boolean) { this._isStarted = isStarted; }
 
   private _isRuntime = false;
   public get isRuntime(): boolean { return this._isRuntime; }
+  public set isRuntime(isRuntime: boolean) { this._isRuntime = isRuntime; }
   
   private _components = new Map<new (...args: any[]) => Component, Component>();
   
@@ -22,8 +26,8 @@ export class Entity {
     this._id = id;
   }
 
-  public addComponent<T extends Component>(type: new (...args: any[]) => T, component: T): void {
-    this._components.set(type, component);
+  public addComponent<T extends Component>(component: T): void {
+    this._components.set(component.constructor as new (...args: any[]) => T, component);
   }
 
   public getComponent<T extends Component>(type: new (...args: any[]) => T): T | undefined {
@@ -44,20 +48,20 @@ export class Entity {
 
   public clone(): Entity {
     const clone = new Entity(this._id);
-    clone._enabled = this._enabled;
+    clone._isEnabled = this._isEnabled;
     clone._isAwaked = this._isAwaked;
     clone._isStarted = this._isStarted;
     clone._isRuntime = this._isRuntime;
   
     for (const [type, component] of this._components.entries()) {
-      clone.addComponent(type, component.clone());
+      clone.addComponent(component.clone());
     }
   
     return clone;
   }
 
   public restoreFrom(other: Entity): void {
-    this._enabled = other.enabled;
+    this._isEnabled = other.isEnabled;
     this._isAwaked = other.isAwaked;
     this._isStarted = other.isStarted;
     this._isRuntime = other.isRuntime;

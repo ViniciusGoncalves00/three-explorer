@@ -16,24 +16,36 @@ export class TimeController implements ISubject
     public notify = this.observerManager.notify.bind(this.observerManager);
 
     public start(): void {
+        if(this._isRunning === true) return;
+        if(this._isPaused === true) return;
+        
         this._isRunning = true;
         this._isPaused = false;
         this.notify(['Start']);
     }
 
     public stop(): void {
+        if(this._isRunning === false && this._isPaused === false) return;
+        if(this._isRunning === true && this._isPaused === true) return;
+
         this._isRunning = false;
         this._isPaused = false;
         this.notify(['Stop']);
     }
 
     public pause(): void {
+        if(this._isRunning === false) return;
+        if(this._isPaused === true) return;
+
         this._isRunning = false;
         this._isPaused = true;
         this.notify(['Pause']);
     }
 
     public unpause(): void {
+        if(this._isRunning === true) return;
+        if(this._isPaused === false) return;
+
         this._isRunning = true;
         this._isPaused = false;
         this.notify(['Unpause']);

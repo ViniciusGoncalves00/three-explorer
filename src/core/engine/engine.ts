@@ -22,7 +22,7 @@ export class Engine implements IObserver {
 
   private animationFrameId: number | null = null;
 
-  private entityManager: EntityManager = new EntityManager();
+  public entityManager: EntityManager = new EntityManager();
 
   private systems: ISystem[] = [];
   private awakeSystems: IAwake[] = [];
@@ -40,12 +40,31 @@ export class Engine implements IObserver {
   }
 
   public onNotify(subject: ISubject, args?: string[]) {
-    if (subject instanceof TimeController && args) {
+    console.log("[Engine] Notify received:", args);
+    if (args) {
       switch (args[0]) {
         case "Start":
-          this.entityManager.saveState();
+          if (this.animationFrameId === null) {
+            this.entityManager.saveState();
+            this.animationFrameId = requestAnimationFrame(this.loop);
+          }
+          break;
+        case "Pause":
+          if (this.animationFrameId !== null) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+          }
+          break;
+        case "Unpause":
+          if (this.animationFrameId === null) {
+              this.animationFrameId = requestAnimationFrame(this.loop);
+          }
           break;
         case "Stop":
+          if (this.animationFrameId !== null) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+          }
           this.entityManager.restoreState();
           break;
         default:
@@ -56,10 +75,6 @@ export class Engine implements IObserver {
 
   public registerEntity(entity: Entity): void {
     this.entityManager.addEntity(entity);
-  }
-
-  public getEntities(): Entity[] {
-    return this.entityManager.getEntities();
   }
 
   public registerSystem(system: ISystem) {
@@ -74,17 +89,22 @@ export class Engine implements IObserver {
 
   private loop = () => {
     this.animationFrameId = requestAnimationFrame(this.loop);
-
+  
     this._time.update();
-
-    if (!this._timeController.isRunning || this._timeController.isPaused) return;
-
-    const entities = this.getEntities();
-
-    this.awakeSystems.forEach(system => system.awake(entities.filter(entity => !entity.isAwaked)));
-    this.startSystems.forEach(system => system.start(entities.filter(entity => !entity.isStarted)));
+    // if (!this._timeController.isRunning || this._timeController.isPaused) return;
+  
+    const entities = this.entityManager.getEntities();
+  
+    const notAwakedEntities = entities.filter(entity => !entity.isAwaked);
+    this.awakeSystems.forEach(system => system.awake(notAwakedEntities));
+    notAwakedEntities.forEach(entity => entity.isAwaked = true);
+  
+    const notStartedEntities = entities.filter(entity => !entity.isStarted);
+    this.startSystems.forEach(system => system.start(notStartedEntities));
+    notStartedEntities.forEach(entity => entity.isStarted = true);
+  
     this.fixedUpdateSystems.forEach(system => system.fixedUpdate(entities, this._time.deltaTime));
     this.updateSystems.forEach(system => system.update(entities, this._time.deltaTime));
     this.lateUpdateSystems.forEach(system => system.lateUpdate(entities, this._time.deltaTime));
-  }
+  };  
 }

@@ -10,17 +10,15 @@ export class RotateSystem implements ISystem, IUpdate {
             (entity) => entity.hasComponent(Transform) && entity.hasComponent(Rotate)
         );
 
-        this.rotate(rotatingEntities, deltaTime);
-    }
-
-    private rotate(entities: Entity[], deltaTime: number): void {
-        for (const entity of entities) {
+        for (const entity of rotatingEntities) {
             const transform = entity.getComponent(Transform);
             const rotate = entity.getComponent(Rotate);
-    
-            transform.rotation.x += rotate.speed * rotate.axis.x * deltaTime;
-            transform.rotation.y += rotate.speed * rotate.axis.y * deltaTime;
-            transform.rotation.z += rotate.speed * rotate.axis.z * deltaTime;
+
+            if(transform && rotate) {
+                transform.rotation.x += rotate.speed * rotate.axis.x * deltaTime;
+                transform.rotation.y += rotate.speed * rotate.axis.y * deltaTime;
+                transform.rotation.z += rotate.speed * rotate.axis.z * deltaTime;
+            }
         }
     }
 }

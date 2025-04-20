@@ -6,7 +6,10 @@ import { Engine } from '../../engine/engine';
 import { IObserver } from '../../patterns/observer/observer';
 import { ISubject } from '../../patterns/observer/subject';
 import { TimeController } from '../../engine/time-controller';
-import { Cube } from '../../example/cube';
+import { Transform } from '../../api/components/transform';
+import { ObjectBinder } from './object-binder';
+import { Entity } from '../../api/entity';
+import { Rotate } from '../../api/components/rotate';
 
 declare global {
   interface Window {
@@ -17,11 +20,13 @@ declare global {
 export class ThreeEngine implements IObserver {
   private readonly _engine: Engine;
 
-  private scene: ThreeScene;
+  public scene: ThreeScene;
   private rendererEditor: RendererManager;
   private rendererSimulator: RendererManager;
   private cameraEditor: CameraController;
   private cameraSimulator: CameraController;
+
+  private binder: ObjectBinder;
 
   private editorObserver: ResizeObserver;
   private simulatorObserver: ResizeObserver;
@@ -47,21 +52,29 @@ export class ThreeEngine implements IObserver {
     this.cameraSimulator.setActive(false);
 
     this._engine.timeController.attach(this);
-    // this._engine.timeController.attach(this.rendererEditor);
-    // this._engine.timeController.attach(this.rendererRun);
+    this._engine.timeController.attach(this.rendererEditor);
+    this._engine.timeController.attach(this.rendererSimulator);
 
-    // this._engine.addUpdatable(this);
-    // this._engine.addUpdatable(this.scene);
+    this.binder = new ObjectBinder();
 
-    // const geometry = new THREE.BoxGeometry();
-    // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    // const cube = new THREE.Mesh(geometry, material);
-    const cube = new Cube()
+    const cubeEntity = new Entity(crypto.randomUUID());
+    cubeEntity.addComponent(new Transform());
+    cubeEntity.addComponent(new Rotate());
+  
+    const mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(),
+      new THREE.MeshStandardMaterial({ color: 0x00ff00 })
+    );
+  
+    this.binder.bind(cubeEntity, mesh);
+    engine.entityManager.addEntity(cubeEntity);
+  
+    this.scene.scene.add(mesh)
 
     this.scene.scene.background = new THREE.Color(0.02, 0.02, 0.02);
     this.scene.scene.fog = new THREE.Fog(new THREE.Color(0.02, 0.02, 0.02), 0, 100);
 
-    this.scene.scene.add(cube.mesh)
+    // this.scene.scene.add(cube.mesh)
 
     const gridHelper = new THREE.GridHelper(100, 100, new THREE.Color(0.1, 0.1, 0.1), new THREE.Color(0.1, 0.1, 0.1));
     this.scene.scene.add(gridHelper);
@@ -73,6 +86,8 @@ export class ThreeEngine implements IObserver {
     this.simulatorObserver = new ResizeObserver(() => {this.rendererSimulator.resize(), this.cameraSimulator.updateProjection()});
     this.simulatorObserver.observe(containerEditor);
 
+    requestAnimationFrame(this.update)
+
     window.addEventListener('resize', () => {
       this.cameraEditor.updateProjection();
       this.cameraSimulator.updateProjection();
@@ -80,7 +95,6 @@ export class ThreeEngine implements IObserver {
       this.rendererSimulator.resize();
     });
   }
-  enabled: boolean = false;
 
   public onNotify(subject: ISubject, args?: string[]) {
     if(subject instanceof TimeController) {
@@ -94,7 +108,10 @@ export class ThreeEngine implements IObserver {
     }
   }
 
-  public update(deltaTime: number): void {
+  public update = () => {
+    requestAnimationFrame(this.update)
+
+    this.binder.updateFromLogic();
     this.rendererEditor.render(this.scene.scene, this.cameraEditor.GetCamera());
     this.rendererSimulator.render(this.scene.scene, this.cameraSimulator.GetCamera());
   }

@@ -1,11 +1,17 @@
 import './styles.css';
 import './ui/styles/time-controller.css';
+import * as THREE from 'three';
 
 import { ThreeEngine } from './core/graphics/three/three-engine';
 import { Engine } from './core/engine/engine';
 import { TimeControllerHandler } from './ui/handlers/time-controller-handler';
 
-let threeEngine: any;
+import { Transform } from './core/api/components/transform';
+import { Entity } from './core/api/entity';
+import { ObjectBinder } from './core/graphics/three/object-binder';
+import { Rotate } from './core/api/components/rotate';
+
+let threeEngine: ThreeEngine;
 
 window.addEventListener('DOMContentLoaded', () => {
   const containerEditor = document.getElementById('viewport-editor-container');
