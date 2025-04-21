@@ -10,6 +10,10 @@ import { Transform } from '../../api/components/transform';
 import { ObjectBinder } from './object-binder';
 import { Entity } from '../../api/entity';
 import { Rotate } from '../../api/components/rotate';
+import { Orbit } from '../../api/components/orbit';
+import { RotateSystem } from '../../api/systems/rotateSystem';
+import { OrbitSystem } from '../../api/systems/orbitSystem';
+import { Vector3 } from '../../api/components/vector3';
 
 declare global {
   interface Window {
@@ -57,9 +61,14 @@ export class ThreeEngine implements IObserver {
 
     this.binder = new ObjectBinder();
 
+    this._engine.registerSystem(new RotateSystem());
+    this._engine.registerSystem(new OrbitSystem());
+
+
     const cubeEntity = new Entity(crypto.randomUUID());
     cubeEntity.addComponent(new Transform());
     cubeEntity.addComponent(new Rotate());
+    cubeEntity.addComponent(new Orbit(Vector3.zero(), 5));
   
     const mesh = new THREE.Mesh(
       new THREE.BoxGeometry(),
