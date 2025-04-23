@@ -21,7 +21,7 @@ export class TimeController implements ISubject {
         this._isRunning = true;
         this._isPaused = false;
         this.notify(['Start']);
-        ConsoleLogger.getInstance().log(TimeController.name, "Start")
+        ConsoleLogger.getInstance().log(TimeController.name, "Started.")
     }
 
     public stop(): void {
@@ -30,7 +30,7 @@ export class TimeController implements ISubject {
         this._isRunning = false;
         this._isPaused = false;
         this.notify(['Stop']);
-        ConsoleLogger.getInstance().log(TimeController.name, "Stop")
+        ConsoleLogger.getInstance().log(TimeController.name, "Stoped.")
     }
 
     public pause(): void {
@@ -39,7 +39,7 @@ export class TimeController implements ISubject {
         this._isRunning = false;
         this._isPaused = true;
         this.notify(['Pause']);
-        ConsoleLogger.getInstance().log(TimeController.name, "Pause")
+        ConsoleLogger.getInstance().log(TimeController.name, "Paused.")
     }
 
     public unpause(): void {
@@ -48,6 +48,6 @@ export class TimeController implements ISubject {
         this._isRunning = true;
         this._isPaused = false;
         this.notify(['Unpause']);
-        ConsoleLogger.getInstance().log(TimeController.name, "Unpause")
+        ConsoleLogger.getInstance().log(TimeController.name, "Unpaused.")
     }
 }
