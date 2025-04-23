@@ -1,5 +1,5 @@
 import { Entity } from "../api/entity";
-import { EntityManager } from "./entity-manager"; // ajuste o caminho conforme necessário
+import { EntityManager } from "../api/entity-manager";
 
 import { IAwake } from "../api/systems/interfaces/awake";
 import { IFixedUpdate } from "../api/systems/interfaces/fixedUpdate";
@@ -8,7 +8,6 @@ import { IStart } from "../api/systems/interfaces/start";
 import { ISystem } from "../api/systems/interfaces/system";
 import { IUpdate } from "../api/systems/interfaces/update";
 
-import { RotateSystem } from "../api/systems/rotateSystem";
 import { IObserver } from "../patterns/observer/observer";
 import { ISubject } from "../patterns/observer/subject";
 import { Time } from "./time";

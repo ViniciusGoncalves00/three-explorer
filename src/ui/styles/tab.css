@@ -8,6 +8,10 @@
     @apply bg-zinc-700 text-white text-sm w-full h-6 flex items-center px-2 space-x-2;
 }
 
+.entity {
+    @apply bg-zinc-600 text-white text-sm;
+}
+
 .dropzone-body {
     @apply bg-zinc-800 w-fit min-w-1 h-full flex flex-col relative
 }

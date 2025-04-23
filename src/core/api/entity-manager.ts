@@ -1,4 +1,4 @@
-import { Entity } from "../api/entity";
+import { Entity } from "./entity";
 
 export class EntityManager {
     private entities: Map<string, Entity> = new Map();

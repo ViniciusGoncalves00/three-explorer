@@ -6,14 +6,7 @@ import { Engine } from '../../engine/engine';
 import { IObserver } from '../../patterns/observer/observer';
 import { ISubject } from '../../patterns/observer/subject';
 import { TimeController } from '../../engine/time-controller';
-import { Transform } from '../../api/components/transform';
 import { ObjectBinder } from './object-binder';
-import { Entity } from '../../api/entity';
-import { Rotate } from '../../api/components/rotate';
-import { Orbit } from '../../api/components/orbit';
-import { RotateSystem } from '../../api/systems/rotateSystem';
-import { OrbitSystem } from '../../api/systems/orbitSystem';
-import { Vector3 } from '../../api/components/vector3';
 
 declare global {
   interface Window {
@@ -30,13 +23,14 @@ export class ThreeEngine implements IObserver {
   private cameraEditor: CameraController;
   private cameraSimulator: CameraController;
 
-  private binder: ObjectBinder;
+  private _binder: ObjectBinder;
 
   private editorObserver: ResizeObserver;
   private simulatorObserver: ResizeObserver;
 
-  constructor(engine: Engine, containerEditor: HTMLElement, canvasEditor: HTMLElement, containerSimulator: HTMLElement, canvasSimulator: HTMLElement) {
+  constructor(engine: Engine, binder: ObjectBinder, containerEditor: HTMLElement, canvasEditor: HTMLElement, containerSimulator: HTMLElement, canvasSimulator: HTMLElement) {
     this._engine = engine;
+    this._binder = binder;
 
     this.scene = new ThreeScene();
     this.rendererEditor = new RendererManager(containerEditor, canvasEditor);
@@ -59,35 +53,11 @@ export class ThreeEngine implements IObserver {
     this._engine.timeController.attach(this.rendererEditor);
     this._engine.timeController.attach(this.rendererSimulator);
 
-    this.binder = new ObjectBinder();
-
-    this._engine.registerSystem(new RotateSystem());
-    this._engine.registerSystem(new OrbitSystem());
-
-
-    const cubeEntity = new Entity(crypto.randomUUID());
-    cubeEntity.addComponent(new Transform());
-    cubeEntity.addComponent(new Rotate());
-    cubeEntity.addComponent(new Orbit(Vector3.zero(), 5));
-  
-    const mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(),
-      new THREE.MeshStandardMaterial({ color: 0x00ff00 })
-    );
-  
-    this.binder.bind(cubeEntity, mesh);
-    engine.entityManager.addEntity(cubeEntity);
-  
-    this.scene.scene.add(mesh)
-
     this.scene.scene.background = new THREE.Color(0.02, 0.02, 0.02);
     this.scene.scene.fog = new THREE.Fog(new THREE.Color(0.02, 0.02, 0.02), 0, 100);
 
-    // this.scene.scene.add(cube.mesh)
-
     const gridHelper = new THREE.GridHelper(100, 100, new THREE.Color(0.1, 0.1, 0.1), new THREE.Color(0.1, 0.1, 0.1));
     this.scene.scene.add(gridHelper);
-    // this._engine.addUpdatable(cube);
 
     this.editorObserver = new ResizeObserver(() => {this.rendererEditor.resize(), this.cameraEditor.updateProjection()});
     this.editorObserver.observe(containerEditor);
@@ -120,7 +90,7 @@ export class ThreeEngine implements IObserver {
   public update = () => {
     requestAnimationFrame(this.update)
 
-    this.binder.updateFromLogic();
+    this._binder.updateFromLogic();
     this.rendererEditor.render(this.scene.scene, this.cameraEditor.GetCamera());
     this.rendererSimulator.render(this.scene.scene, this.cameraSimulator.GetCamera());
   }
