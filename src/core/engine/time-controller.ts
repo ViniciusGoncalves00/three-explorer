@@ -1,3 +1,4 @@
+import { ConsoleLogger } from "../api/console-logger";
 import { ObserverManager } from "../patterns/observer/observer-manager";
 import { ISubject } from "../patterns/observer/subject";
 
@@ -20,6 +21,7 @@ export class TimeController implements ISubject {
         this._isRunning = true;
         this._isPaused = false;
         this.notify(['Start']);
+        ConsoleLogger.getInstance().log(TimeController.name, "Start")
     }
 
     public stop(): void {
@@ -28,6 +30,7 @@ export class TimeController implements ISubject {
         this._isRunning = false;
         this._isPaused = false;
         this.notify(['Stop']);
+        ConsoleLogger.getInstance().log(TimeController.name, "Stop")
     }
 
     public pause(): void {
@@ -36,6 +39,7 @@ export class TimeController implements ISubject {
         this._isRunning = false;
         this._isPaused = true;
         this.notify(['Pause']);
+        ConsoleLogger.getInstance().log(TimeController.name, "Pause")
     }
 
     public unpause(): void {
@@ -44,5 +48,6 @@ export class TimeController implements ISubject {
         this._isRunning = true;
         this._isPaused = false;
         this.notify(['Unpause']);
+        ConsoleLogger.getInstance().log(TimeController.name, "Unpause")
     }
 }

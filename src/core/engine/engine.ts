@@ -35,12 +35,9 @@ export class Engine implements IObserver {
     this._time = new Time();
     this._timeController = new TimeController();
     this._timeController.attach(this);
-
-    this.registerSystem(new RotateSystem());
   }
 
   public onNotify(subject: ISubject, args?: string[]) {
-    console.log("[Engine] Notify received:", args);
     if (args) {
       switch (args[0]) {
         case "Start":
