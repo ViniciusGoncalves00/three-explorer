@@ -10,6 +10,7 @@ import { RotateSystem } from './core/api/systems/rotateSystem';
 import { OrbitSystem } from './core/api/systems/orbitSystem';
 import { ObjectBinder } from './core/graphics/three/object-binder';
 import { EntityHandler } from './ui/handlers/entity-handler';
+import { HierarchyHandler } from './ui/handlers/hierarchy-handler';
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -18,6 +19,8 @@ window.addEventListener('DOMContentLoaded', () => {
   const containerSimulator = document.getElementById('viewport-simulator-container');
   const canvasSimulator = document.getElementById('viewport-simulator');
   const consoleContainer = document.getElementById('console-content');
+  const entitiesContainer = document.getElementById('entities-container');
+  const inspectorContainer = document.getElementById("inspector-container");
 
   if (!containerEditor || !canvasEditor || !containerSimulator || !canvasSimulator) return;
 
@@ -35,10 +38,20 @@ window.addEventListener('DOMContentLoaded', () => {
   const consoleClass = new Console(consoleContainer);
   ConsoleLogger.getInstance().attach(consoleClass);
 
-  const entityHandler = new EntityHandler(engine, threeEngine, binder);
-  // entityHandler.AddTestEntity();
+  if (!entitiesContainer) return;
+  if (!inspectorContainer) return;
 
-  (window as any).AddTestEntity = () => {
-    entityHandler.AddTestEntity();
+  const entityHandler = new EntityHandler(engine, threeEngine, binder);
+  const hierarchyHandler = new HierarchyHandler(engine, entitiesContainer!, (entity) => {
+  inspectorContainer!.innerHTML = `
+    <h2>${entity.name ?? entity.id}</h2>
+    <p>Components: ${entity.getComponents().length}</p>
+    <p>ID: ${entity.id}</p>
+  `;
+});
+  engine.entityManager.attach(hierarchyHandler);
+
+  (window as any).addEntity = (isRuntime: boolean) => {
+    entityHandler.addEntity(isRuntime);
   };  
 });

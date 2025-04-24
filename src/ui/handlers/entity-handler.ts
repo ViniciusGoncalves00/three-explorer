@@ -9,6 +9,7 @@ import { IObserver } from "../../core/patterns/observer/observer";
 import { ISubject } from "../../core/patterns/observer/subject";
 import { Engine } from '../../core/engine/engine';
 import { ThreeEngine } from '../../core/graphics/three/three-engine';
+import { EntityManager } from '../../core/api/entity-manager';
 
 export class EntityHandler implements IObserver {
     private _engine: Engine;
@@ -22,16 +23,17 @@ export class EntityHandler implements IObserver {
     }
 
     public onNotify(subject: ISubject, args?: string[]) {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     
-    public AddTestEntity(): void {
+    public addEntity(isRuntime: boolean): void {
         const mesh = new THREE.Mesh(
             new THREE.BoxGeometry(),
             new THREE.MeshStandardMaterial({ color: 0x00ff00 })
           );
 
         const cubeEntity = new Entity(crypto.randomUUID());
+        cubeEntity.isRuntime = isRuntime;
         cubeEntity.addComponent(new Transform());
         cubeEntity.addComponent(new Rotate());
         cubeEntity.addComponent(new Orbit(Vector3.zero(), 5));
