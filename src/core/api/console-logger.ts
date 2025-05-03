@@ -1,10 +1,10 @@
-import { ObserverManager } from "../patterns/observer/observer-manager";
+import { SubjectManager } from "../patterns/observer/subject-manager";
 import { ISubject } from "../patterns/observer/subject";
 
 export class ConsoleLogger implements ISubject {
     private static _instance: ConsoleLogger;
 
-    private observerManager = new ObserverManager();
+    private observerManager = new SubjectManager();
 
     public attach = this.observerManager.attach.bind(this.observerManager);
     public dettach = this.observerManager.dettach.bind(this.observerManager);

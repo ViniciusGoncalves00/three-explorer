@@ -19,13 +19,10 @@ export class OrbitSystem implements ISystem, IUpdate {
           orbit.angle += orbit.speed * deltaTime;
           orbit.angle %= Math.PI * 2;
   
-          // Vetor da direção inicial (posição relativa à órbita)
           const initial = new Vector3(orbit.distance, 0, 0);
   
-          // Rotaciona esse vetor ao redor do eixo da órbita
           const rotated = initial.rotateAround(orbit.axis.normalize(), orbit.angle);
   
-          // Define nova posição
           transform.position = orbit.center.add(rotated);
         }
       }

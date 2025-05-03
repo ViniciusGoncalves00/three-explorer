@@ -11,6 +11,7 @@ import { OrbitSystem } from './core/api/systems/orbitSystem';
 import { ObjectBinder } from './core/graphics/three/object-binder';
 import { EntityHandler } from './ui/handlers/entity-handler';
 import { HierarchyHandler } from './ui/handlers/hierarchy-handler';
+import { InspectorManager } from './ui/handlers/inspector-manager';
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -42,13 +43,15 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!inspectorContainer) return;
 
   const entityHandler = new EntityHandler(engine, threeEngine, binder);
-  const hierarchyHandler = new HierarchyHandler(engine, entitiesContainer!, (entity) => {
-  inspectorContainer!.innerHTML = `
-    <h2>${entity.name ?? entity.id}</h2>
-    <p>Components: ${entity.getComponents().length}</p>
-    <p>ID: ${entity.id}</p>
-  `;
-});
+//   const hierarchyHandler = new HierarchyHandler(engine, entitiesContainer!, (entity) => {
+//   inspectorContainer!.innerHTML = `
+//     <h2>${entity.name ?? entity.id}</h2>
+//     <p>Components: ${entity.getComponents().length}</p>
+//     <p>ID: ${entity.id}</p>
+//   `;
+// });
+  const inspectorManager = new InspectorManager(inspectorContainer);
+  const hierarchyHandler = new HierarchyHandler(engine, entitiesContainer!, entity => inspectorManager.setEntity(entity));
   engine.entityManager.attach(hierarchyHandler);
 
   (window as any).addEntity = (isRuntime: boolean) => {

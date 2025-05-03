@@ -1,10 +1,9 @@
-import { IObserver } from "../patterns/observer/observer";
-import { ObserverManager } from "../patterns/observer/observer-manager";
+import { SubjectManager } from "../patterns/observer/subject-manager";
 import { ISubject } from "../patterns/observer/subject";
 import { Entity } from "./entity";
 
 export class EntityManager implements ISubject {
-    private observerManager = new ObserverManager();
+    private observerManager = new SubjectManager();
 
     public attach = this.observerManager.attach.bind(this.observerManager);
     public dettach = this.observerManager.dettach.bind(this.observerManager);

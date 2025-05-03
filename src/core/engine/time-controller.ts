@@ -1,9 +1,9 @@
 import { ConsoleLogger } from "../api/console-logger";
-import { ObserverManager } from "../patterns/observer/observer-manager";
+import { SubjectManager } from "../patterns/observer/subject-manager";
 import { ISubject } from "../patterns/observer/subject";
 
 export class TimeController implements ISubject {
-    private observerManager = new ObserverManager();
+    private observerManager = new SubjectManager();
 
     private _isRunning: boolean = false;
     private _isPaused: boolean = false;
