@@ -21,22 +21,22 @@ export class ConsoleLogger implements ISubject {
         return this._instance;
     }
 
-    public log(font: string, message: string): void {
-        this._message = this.format("LOG", font, message);
+    public log(className: string, message: string): void {
+        this._message = this.format("LOG", className, message);
         this.notify(["LOG", this._message]);
     }
 
-    public warn(font: string, message: string): void {
-        this._message = this.format("WARNING", font, message);
+    public warn(className: string, message: string): void {
+        this._message = this.format("WARNING", className, message);
         this.notify(["WARNING", this._message]);
     }
 
-    public error(font: string, message: string): void {
-        this._message = this.format("ERROR", font, message);
+    public error(className: string, message: string): void {
+        this._message = this.format("ERROR", className, message);
         this.notify(["ERROR", this._message]);
     }
 
-    private format(type: string, font: string, message: string): string {
-        return `[${new Date().toLocaleTimeString()}] [${type}] [${font}]: ${message}`;
+    private format(type: string, className: string, message: string): string {
+        return `[${new Date().toLocaleTimeString()}] [${type}] [${className}]: ${message}`;
     }
 }
