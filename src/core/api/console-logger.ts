@@ -36,7 +36,7 @@ export class ConsoleLogger implements ISubject {
         this.notify(["ERROR", this._message]);
     }
 
-    private format(type: string, className: string, message: string): string {
-        return `[${new Date().toLocaleTimeString()}] [${type}] [${className}]: ${message}`;
+    private format(logType: string, className: string, message: string): string {
+        return `[${new Date().toLocaleTimeString()}] [${logType}] [${className}]: ${message}`;
     }
 }
