@@ -69,16 +69,16 @@ export class InspectorManager implements IObserver {
 
     const body = document.createElement('div');
     componentWrapper.appendChild(body);
-    body.className = 'w-full flex flex-col p-2';
+    body.className = 'w-full flex flex-col p-2 space-y-1';
   
     const fieldsMap = new Map<string, HTMLInputElement[]>();
     this.bindings.set(component, fieldsMap);
   
     const propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(component));
-    for (const key of propertyNames) {
+    for (const property of propertyNames) {
       // if (key === 'enabled' || key.startsWith('_')) continue;
   
-      const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(component), key);
+      const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(component), property);
       if (!descriptor?.get || typeof descriptor.get !== 'function') continue;
   
       // Row
@@ -88,22 +88,32 @@ export class InspectorManager implements IObserver {
       // Left
       const labelCol = document.createElement('div');
       labelCol.className = 'w-1/4 font-medium text-sm';
-      labelCol.textContent = key;
+      labelCol.textContent = property;
       row.appendChild(labelCol);
 
       // Right
-      const inputCol = document.createElement('div');
-      inputCol.className = 'w-3/4 flex';
+      const inputColumn = document.createElement('div');
+      inputColumn.className = 'w-3/4 flex';
 
-      const field = (component as any)[key];
+      const field = (component as any)[property];
       if (field instanceof Vector3) {
-        inputCol.className = inputCol.className.concat(' gap-1');
+        inputColumn.className = inputColumn.className.concat(' gap-1');
 
         const inputs: HTMLInputElement[] = [];
   
         for (const axis of ['x', 'y', 'z'] as const) {
+          const axisWrapper = document.createElement('div');
+          axisWrapper.className = "w-1/3 flex"
+
+          const axisName = document.createElement('div');
+          axisWrapper.appendChild(axisName);
+          axisName.textContent = axis;
+          axisName.className = 'w-6 flex-none text-center';
+          
           const input = document.createElement('input');
+          axisWrapper.appendChild(input);
           input.type = 'number';
+          input.step = '0.01';
           input.className = 'w-full text-xs px-1 py-0.5 border border-gray-300 rounded';
           input.value = field[axis].toString();
   
@@ -111,17 +121,37 @@ export class InspectorManager implements IObserver {
             const x = parseFloat(inputs[0].value);
             const y = parseFloat(inputs[1].value);
             const z = parseFloat(inputs[2].value);
-            (component as any)[key] = new Vector3(x, y, z);
+            (component as any)[property] = new Vector3(x, y, z);
           });
   
           inputs.push(input);
-          inputCol.appendChild(input);
+          inputColumn.appendChild(axisWrapper);
         }
   
-        fieldsMap.set(key, inputs);
-        row.appendChild(inputCol);
+        fieldsMap.set(property, inputs);
+        row.appendChild(inputColumn);
         body.appendChild(row);
       }
+      else if (typeof field === 'number') {
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.step = '0.01';
+        input.className = 'w-full text-xs px-1 py-0.5 border border-gray-300 rounded';
+        input.value = field.toString();
+      
+        input.addEventListener('input', () => {
+          const newValue = parseFloat(input.value);
+          if (!isNaN(newValue)) {
+            (component as any)[property] = newValue;
+          }
+        });
+      
+        inputColumn.appendChild(input);
+        fieldsMap.set(property, [input]);
+        row.appendChild(inputColumn);
+        body.appendChild(row);
+      }
+      
     }
   
     return componentWrapper;
