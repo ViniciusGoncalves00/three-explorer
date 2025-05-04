@@ -43,13 +43,20 @@ export class InspectorManager implements IObserver {
     componentWrapper.appendChild(titleRow);
     titleRow.className = "w-full h-6 flex items-center border-y border-zinc-600"
 
-    const upArrow = document.createElement('i');
-    titleRow.appendChild(upArrow)
-    upArrow.className = "w-6 flex-none text-center fa fa-chevron-up"
+    const visibilityToggle = document.createElement('button');
+    titleRow.appendChild(visibilityToggle);
+    visibilityToggle.className = "w-6 flex-none text-center";
 
-    const downArrow = document.createElement('i');
-    titleRow.appendChild(downArrow)
-    downArrow.className = "w-6 flex-none text-center fa fa-chevron-down"
+    const visibilityToggleIcon = document.createElement('i');
+    visibilityToggleIcon.className = "fa fa-chevron-up transition-transform duration-200";
+    visibilityToggle.appendChild(visibilityToggleIcon);
+
+    visibilityToggle.addEventListener('click', () => {
+      const isHidden = body.classList.toggle('hidden');
+    
+      visibilityToggleIcon.classList.toggle('fa-chevron-up', !isHidden);
+      visibilityToggleIcon.classList.toggle('fa-chevron-down', isHidden);
+    });
 
     const title = document.createElement('p');
     titleRow.appendChild(title)
