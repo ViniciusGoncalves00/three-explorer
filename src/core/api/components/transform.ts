@@ -16,13 +16,14 @@ export class Transform extends Component {
 
   constructor(position?: Vector3, rotation?: Vector3, scale?: Vector3) {
     super();
+    
     this._position = position ?? Vector3.zero();
     this._rotation = rotation ?? Vector3.zero();
     this._scale = scale ?? Vector3.one();
 
-    this._position.setOwner(() => this.notify(['position']));
-    this._rotation.setOwner(() => this.notify(['rotation']));
-    this._scale.setOwner(() => this.notify(['scale']));
+    this._position.onChange(() => this.notify(['position']));
+    this._rotation.onChange(() => this.notify(['rotation']));
+    this._scale.onChange(() => this.notify(['scale']));
   }
 
   public clone(): Component {

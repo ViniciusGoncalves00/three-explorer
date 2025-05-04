@@ -36,47 +36,69 @@ export class InspectorManager implements IObserver {
   }
 
   private buildComponentUI(component: Component): HTMLElement {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'w-full flex flex-col';
+    const componentWrapper = document.createElement('div');
+    componentWrapper.className = 'w-full flex flex-col';
   
-    const title = document.createElement('div');
+    const titleRow = document.createElement('div');
+    componentWrapper.appendChild(titleRow);
+    titleRow.className = "w-full h-6 flex items-center border-y border-zinc-600"
+
+    const upArrow = document.createElement('i');
+    titleRow.appendChild(upArrow)
+    upArrow.className = "w-6 flex-none text-center fa fa-chevron-up"
+
+    const downArrow = document.createElement('i');
+    titleRow.appendChild(downArrow)
+    downArrow.className = "w-6 flex-none text-center fa fa-chevron-down"
+
+    const title = document.createElement('p');
+    titleRow.appendChild(title)
     title.textContent = component.constructor.name;
-    title.className = 'font-bold mb-2';
-    wrapper.appendChild(title);
+    title.className = 'w-full font-bold';
+
+    const options = document.createElement('i');
+    titleRow.appendChild(options)
+    options.className = "w-6 flex-none text-center fa fa-ellipsis-vertical"
+
+    const body = document.createElement('div');
+    componentWrapper.appendChild(body);
+    body.className = 'w-full flex flex-col p-2';
   
     const fieldsMap = new Map<string, HTMLInputElement[]>();
     this.bindings.set(component, fieldsMap);
   
     const propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(component));
     for (const key of propertyNames) {
-      if (key === 'enabled' || key.startsWith('_')) continue;
+      // if (key === 'enabled' || key.startsWith('_')) continue;
   
       const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(component), key);
       if (!descriptor?.get || typeof descriptor.get !== 'function') continue;
   
-      const value = (component as any)[key];
-      if (value instanceof Vector3) {
-        // Cria a row principal
-        const row = document.createElement('div');
-        row.className = 'w-full flex items-center mb-1';
-  
-        // Coluna da esquerda com o nome da propriedade
-        const labelCol = document.createElement('div');
-        labelCol.className = 'w-1/4 font-medium text-sm';
-        labelCol.textContent = key;
-        row.appendChild(labelCol);
-  
-        // Coluna da direita com os inputs x, y, z
-        const inputCol = document.createElement('div');
-        inputCol.className = 'w-3/4 flex gap-1';
-  
+      // Row
+      const row = document.createElement('div');
+      row.className = 'w-full flex items-center';
+
+      // Left
+      const labelCol = document.createElement('div');
+      labelCol.className = 'w-1/4 font-medium text-sm';
+      labelCol.textContent = key;
+      row.appendChild(labelCol);
+
+      // Right
+      const inputCol = document.createElement('div');
+      inputCol.className = 'w-3/4 flex';
+
+      const field = (component as any)[key];
+      if (field instanceof Vector3) {
+        inputCol.className = inputCol.className.concat(' gap-1');
+
         const inputs: HTMLInputElement[] = [];
   
         for (const axis of ['x', 'y', 'z'] as const) {
           const input = document.createElement('input');
           input.type = 'number';
           input.className = 'w-full text-xs px-1 py-0.5 border border-gray-300 rounded';
-          input.value = value[axis].toString();
+          input.value = field[axis].toString();
   
           input.addEventListener('input', () => {
             const x = parseFloat(inputs[0].value);
@@ -91,12 +113,16 @@ export class InspectorManager implements IObserver {
   
         fieldsMap.set(key, inputs);
         row.appendChild(inputCol);
-        wrapper.appendChild(row);
+        body.appendChild(row);
       }
     }
   
-    return wrapper;
-  }  
+    return componentWrapper;
+  }
+
+  private input_number(value: any): string {
+    return ``
+  }
 
   private vector3ToInput(component: any, key: string, vector: Vector3, fieldMap: Map<string, HTMLInputElement[]>): HTMLElement {
     const container = document.createElement('div');

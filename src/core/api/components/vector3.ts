@@ -3,30 +3,30 @@ export class Vector3 {
   public get x(): number { return this._x; }
   public set x(value: number) {
     this._x = value;
-    this._owner?.();
+    this._onChange?.();
   }
 
   private _y: number;
   public get y(): number { return this._y; }
   public set y(value: number) {
     this._y = value;
-    this._owner?.();
+    this._onChange?.();
   }
 
   private _z: number;
   public get z(): number { return this._z; }
   public set z(value: number) {
     this._z = value;
-    this._owner?.();
+    this._onChange?.();
   }
 
-  private _owner?: () => void;
+  private _onChange?: () => void;
 
-  public constructor(x: number, y: number, z: number, owner?: () => void) {
+  public constructor(x: number, y: number, z: number, onChange?: () => void) {
     this._x = x;
     this._y = y;
     this._z = z;
-    this._owner = owner;
+    this._onChange = onChange;
   }
 
   public static zero(): Vector3 {
@@ -41,15 +41,15 @@ export class Vector3 {
     this._x = x;
     this._y = y;
     this._z = z;
-    this._owner?.();
+    this._onChange?.();
   }
 
   public setAxis(axis: 'x' | 'y' | 'z', value: number): void {
     this[axis] = value;
   }
 
-  public setOwner(callback: () => void): void {
-    this._owner = callback;
+  public onChange(onChange: () => void): void {
+    this._onChange = onChange;
   }
 
   public add(v: Vector3): Vector3 {
@@ -86,7 +86,7 @@ export class Vector3 {
   }
 
   public clone(): Vector3 {
-    return new Vector3(this._x, this._y, this._z, this._owner);
+    return new Vector3(this._x, this._y, this._z, this._onChange);
   }
 
   public rotateAround(axis: Vector3, angle: number): Vector3 {

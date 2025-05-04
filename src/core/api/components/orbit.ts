@@ -8,7 +8,7 @@ export class Orbit extends Component {
     public center: Vector3 = new Vector3(0, 0, 0),
     public distance: number = 1,
     public speed: number = 1,
-    public axis: Vector3 = new Vector3(0, 1, 0) // default: eixo Y (rotação no plano XZ)
+    public axis: Vector3 = new Vector3(0, 1, 0)
   ) {
     super();
   }
