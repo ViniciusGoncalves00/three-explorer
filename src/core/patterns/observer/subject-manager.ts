@@ -1,28 +1,32 @@
-import { ISubject } from './subject';
 import { IObserver } from './observer';
 import { ConsoleLogger } from '../../api/console-logger';
+import { ISubject } from './subject';
 
-export class SubjectManager implements ISubject {
+export class SubjectManager {
     private observers: IObserver[] = [];
 
-    public attach(observer: IObserver): void {
+    public attach(subject: ISubject, observer: IObserver): void {
         if (this.observers.includes(observer)) {
-            ConsoleLogger.getInstance().warn(SubjectManager.name, `Observer already attached.`);
+            const subjectName: string = subject.constructor.name.toUpperCase();
+            const observerName: string = observer.constructor.name.toUpperCase();
+            ConsoleLogger.getInstance().warn(`Observer [${observerName}] already attached in subject [${subjectName}].`);
             return;
         }
         this.observers.push(observer);
     }
 
-    public dettach(observer: IObserver): void {
+    public dettach(subject: ISubject, observer: IObserver): void {
         const index = this.observers.indexOf(observer);
         if (index === -1) {
-            ConsoleLogger.getInstance().warn(SubjectManager.name, `Observer not found.`);
+            const subjectName: string = subject.constructor.name.toUpperCase();
+            const observerName: string = observer.constructor.name.toUpperCase();
+            ConsoleLogger.getInstance().warn(`Observer [${observerName}] not found in subject [${subjectName}].`);
             return;
         }
         this.observers.splice(index, 1);
     }
 
-    public notify(args?: string[]): void {
-        this.observers.forEach(observer => observer.onNotify(this, args));
+    public notify(subject: ISubject, args?: string[]): void {
+        this.observers.forEach(observer => observer.onNotify(subject, args));
     }
 }

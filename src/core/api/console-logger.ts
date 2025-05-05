@@ -1,15 +1,12 @@
 import { SubjectManager } from "../patterns/observer/subject-manager";
 import { ISubject } from "../patterns/observer/subject";
+import { IObserver } from "../patterns/observer/observer";
 
-export class ConsoleLogger implements ISubject {
+export class ConsoleLogger implements ISubject, IObserver {
     private static _instance: ConsoleLogger;
 
-    private observerManager = new SubjectManager();
+    private _subjectManager = new SubjectManager();
 
-    public attach = this.observerManager.attach.bind(this.observerManager);
-    public dettach = this.observerManager.dettach.bind(this.observerManager);
-    public notify = this.observerManager.notify.bind(this.observerManager);
-    
     private _message: string = "";
 
     private constructor() {};
@@ -21,22 +18,56 @@ export class ConsoleLogger implements ISubject {
         return this._instance;
     }
 
-    public log(className: string, message: string): void {
-        this._message = this.format("LOG", className, message);
+    public log(message: string): void {
+        this._message = this.format("LOG", message);
         this.notify(["LOG", this._message]);
     }
 
-    public warn(className: string, message: string): void {
-        this._message = this.format("WARNING", className, message);
+    public warn(message: string): void {
+        this._message = this.format("WARNING", message);
         this.notify(["WARNING", this._message]);
     }
 
-    public error(className: string, message: string): void {
-        this._message = this.format("ERROR", className, message);
+    public error(message: string): void {
+        this._message = this.format("ERROR", message);
         this.notify(["ERROR", this._message]);
     }
 
-    private format(logType: string, className: string, message: string): string {
-        return `[${new Date().toLocaleTimeString()}] [${logType}] [${className}]: ${message}`;
+    private format(logType: string, message: string): string {
+        return `[${new Date().toLocaleTimeString()}] [${logType}] ${message}`;
     }
+
+    public attach(observer: IObserver): void {
+        this._subjectManager.attach(this, observer);
+    }
+
+    public dettach(observer: IObserver): void {
+        this._subjectManager.dettach(this, observer);
+    }
+
+    public notify(args?: string[]): void {
+        this._subjectManager.notify(this, args);
+    }
+
+    public onNotify(subject: ISubject, args?: string[]) {
+        if(!args) return;
+
+        switch (args[0]) {
+            case "Start":
+                this.log("Started.")
+                break;
+            case "Stop":
+                this.log("Stoped.")
+                break;
+            case "Pause":
+                this.log("Paused.")
+                break;
+            case "Unpause":
+                this.log("Unpaused.")
+                break;
+            default:
+                break;
+        }
+    }
+    
 }

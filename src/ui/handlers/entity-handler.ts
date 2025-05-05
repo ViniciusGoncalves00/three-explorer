@@ -9,17 +9,36 @@ import { IObserver } from "../../core/patterns/observer/observer";
 import { ISubject } from "../../core/patterns/observer/subject";
 import { Engine } from '../../core/engine/engine';
 import { ThreeEngine } from '../../core/graphics/three/three-engine';
-import { EntityManager } from '../../core/api/entity-manager';
+import { SubjectManager } from '../../core/patterns/observer/subject-manager';
 
-export class EntityHandler implements IObserver {
+export class EntityHandler implements IObserver, ISubject {
+    private _subjectManager = new SubjectManager();
+
     private _engine: Engine;
     private _binder: ObjectBinder;
     private _graphicEngine: ThreeEngine;
+
+    private _selectedEntity: Entity | null = null;
+    public get selectedEntity() : Entity | null { return this._selectedEntity; }
+    public set selectedEntity(entity: Entity | null) { this._selectedEntity = entity; }
+    
 
     public constructor(engine: Engine, graphicEngine: ThreeEngine, binder: ObjectBinder) {
         this._engine = engine;
         this._graphicEngine = graphicEngine;
         this._binder = binder;
+    }
+
+    public attach(observer: IObserver): void {
+        this._subjectManager.attach(this, observer);
+    }
+
+    public dettach(observer: IObserver): void {
+        this._subjectManager.dettach(this, observer);
+    }
+
+    public notify(args?: string[]): void {
+        this._subjectManager.notify(this, args);
     }
 
     public onNotify(subject: ISubject, args?: string[]) {

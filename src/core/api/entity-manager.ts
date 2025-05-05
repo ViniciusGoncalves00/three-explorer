@@ -1,13 +1,10 @@
 import { SubjectManager } from "../patterns/observer/subject-manager";
 import { ISubject } from "../patterns/observer/subject";
 import { Entity } from "./entity";
+import { IObserver } from "../patterns/observer/observer";
 
 export class EntityManager implements ISubject {
-    private observerManager = new SubjectManager();
-
-    public attach = this.observerManager.attach.bind(this.observerManager);
-    public dettach = this.observerManager.dettach.bind(this.observerManager);
-    public notify = this.observerManager.notify.bind(this.observerManager);
+    private _subjectManager = new SubjectManager();
 
     private entities: Map<string, Entity> = new Map();
     private backup: Map<string, Entity> = new Map();
@@ -40,5 +37,17 @@ export class EntityManager implements ISubject {
   
         entity.restoreFrom(clone);
       }
+    }
+
+    public attach(observer: IObserver): void {
+        this._subjectManager.attach(this, observer);
+    }
+
+    public dettach(observer: IObserver): void {
+        this._subjectManager.dettach(this, observer);
+    }
+
+    public notify(args?: string[]): void {
+        this._subjectManager.notify(this, args);
     }
   }  

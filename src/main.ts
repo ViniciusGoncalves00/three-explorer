@@ -37,7 +37,9 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!consoleContainer) return;
   
   const consoleClass = new Console(consoleContainer);
-  ConsoleLogger.getInstance().attach(consoleClass);
+  const consoleLogger = ConsoleLogger.getInstance();
+  consoleLogger.attach(consoleClass);
+  engine.timeController.attach(consoleLogger)
 
   if (!entitiesContainer) return;
   if (!inspectorContainer) return;
