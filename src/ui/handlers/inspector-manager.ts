@@ -174,7 +174,7 @@ export class InspectorManager implements IObserver {
 
     const body = document.createElement('div');
     componentWrapper.appendChild(body);
-    body.className = 'w-full flex flex-col p-2 space-y-1';
+    body.className = 'w-full flex-none flex flex-col p-2 space-y-1';
   
     const fieldsMap = new Map<string, HTMLInputElement[]>();
     this.bindings.set(component, fieldsMap);
