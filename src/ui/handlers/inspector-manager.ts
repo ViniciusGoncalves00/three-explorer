@@ -1,38 +1,143 @@
 import { Component } from "../../core/api/components/component";
 import { Vector3 } from "../../core/api/components/vector3";
-import { Entity } from "../../core/api/entity";
 import { IObserver } from "../../core/patterns/observer/observer";
 import { ISubject } from "../../core/patterns/observer/subject";
+import { EntityHandler } from "./entity-handler";
 
 export class InspectorManager implements IObserver {
-  private currentEntity: Entity | null = null;
-  private container: HTMLElement;
+  private _entityHandler: EntityHandler;
+  private _container: HTMLElement;
 
   private bindings = new Map<Component, Map<string, HTMLInputElement[]>>();
 
-  constructor(container: HTMLElement) {
-    this.container = container;
+  constructor(container: HTMLElement, entityHandler: EntityHandler) {
+    this._container = container;
+    this._entityHandler = entityHandler;
   }
 
-  public setEntity(entity: Entity | null) {
-    if (this.currentEntity)
-        this.currentEntity.getComponents().forEach(component => component.dettach(this))
+  public onNotify(subject: ISubject, args?: string[]): void {
+    if(!args) return;
+    
+    if(args[0] === "changed entity") {
+      this.updateInspector();
+      return;
+    }
 
-    this.currentEntity = entity;
-    this.updateInspector();
+    const component = subject as Component;
+    const fieldMap = this.bindings.get(component);
+    if (!fieldMap) return;
+
+    for (const key of args) {
+      const inputs = fieldMap.get(key);
+      const value = (component as any)[key];
+
+      if (inputs && value instanceof Vector3) {
+        inputs[0].value = value.x.toString();
+        inputs[1].value = value.y.toString();
+        inputs[2].value = value.z.toString();
+      }
+    }
   }
 
   private updateInspector() {
-    this.container.replaceChildren();
+    this._container.replaceChildren();
     this.bindings.clear();
 
-    if (!this.currentEntity) return;
+    if (!this._entityHandler.selectedEntity) return;
 
-    this.currentEntity.getComponents().forEach(component => {
+    // const entityWrapper = document.createElement('div');
+    // entityWrapper.className = 'w-full flex flex-col';
+    // this._container.appendChild(entityWrapper);
+
+    // const entityName = document.createElement('div');
+    // entityName.textContent = this._entityHandler.selectedEntity.name;
+    // entityName.className = 'w-full font-bold';
+    // entityWrapper.appendChild(entityName);
+
+    const componentWrapper = document.createElement('div');
+    componentWrapper.className = 'w-full flex flex-col';
+    this._container.appendChild(componentWrapper)
+  
+    const titleRow = document.createElement('div');
+    componentWrapper.appendChild(titleRow);
+    titleRow.className = "w-full h-6 flex items-center border-y border-zinc-600"
+
+    const collapseToggle = document.createElement('button');
+    titleRow.appendChild(collapseToggle);
+    collapseToggle.className = "w-6 flex-none text-center";
+
+    const visibilityToggleIcon = document.createElement('i');
+    visibilityToggleIcon.className = "fa fa-chevron-up transition-transform duration-200";
+    collapseToggle.appendChild(visibilityToggleIcon);
+
+    collapseToggle.addEventListener('click', () => {
+      const isHidden = body.classList.toggle('hidden');
+    
+      visibilityToggleIcon.classList.toggle('fa-chevron-up', !isHidden);
+      visibilityToggleIcon.classList.toggle('fa-chevron-down', isHidden);
+    });
+
+    const title = document.createElement('p');
+    titleRow.appendChild(title)
+    title.textContent = this._entityHandler.selectedEntity.name;
+    title.className = 'w-full font-bold';
+
+    const options = document.createElement('i');
+    titleRow.appendChild(options)
+    options.className = "w-6 flex-none text-center fa fa-ellipsis-vertical"
+
+    const body = document.createElement('div');
+    componentWrapper.appendChild(body);
+    body.className = 'w-full flex flex-col p-2 space-y-1';
+
+    const row_id = document.createElement('div');
+    row_id.className = 'w-full flex items-center';
+    body.appendChild(row_id)
+
+    const labelColumn = document.createElement('div');
+    labelColumn.className = 'w-1/4 font-medium text-sm';
+    labelColumn.textContent = "id";
+    row_id.appendChild(labelColumn);
+    
+    const inputColumn = document.createElement('div');
+    inputColumn.className = 'w-3/4 flex';
+    inputColumn.textContent = this._entityHandler.selectedEntity.id;
+    row_id.appendChild(inputColumn);
+
+    const readonlyFields = ["isEnabled", "isAwaked", "isStarted", "isRuntime"]
+
+    readonlyFields.forEach(field => {
+      const row = document.createElement('div');
+      row.className = 'w-full flex items-center';
+      body.appendChild(row)
+
+      const labelColumn = document.createElement('div');
+      labelColumn.className = 'w-1/4 font-medium text-sm';
+      labelColumn.textContent = field;
+      row.appendChild(labelColumn);
+      
+      const inputColumn = document.createElement('input');
+      inputColumn.className = 'w-3/4 flex';
+      inputColumn.type = "checkbox"
+      inputColumn.disabled = true;
+      inputColumn.checked = (this._entityHandler.selectedEntity as any)[field];
+      row.appendChild(inputColumn);
+    });
+
+    this._entityHandler.selectedEntity.getComponents().forEach(component => {
       component.attach(this);
       const componentUI = this.buildComponentUI(component);
-      this.container.appendChild(componentUI);
-    })
+      this._container.appendChild(componentUI);
+    });
+
+    const row = document.createElement('div');
+    row.className = 'w-full flex items-center justify-center';
+    this._container.appendChild(row);
+
+    const addComponent = document.createElement('button');
+    addComponent.className = 'bg-zinc-500';
+    addComponent.textContent = "Add Component";
+    row.appendChild(addComponent);
   }
 
   private buildComponentUI(component: Component): HTMLElement {
@@ -43,15 +148,15 @@ export class InspectorManager implements IObserver {
     componentWrapper.appendChild(titleRow);
     titleRow.className = "w-full h-6 flex items-center border-y border-zinc-600"
 
-    const visibilityToggle = document.createElement('button');
-    titleRow.appendChild(visibilityToggle);
-    visibilityToggle.className = "w-6 flex-none text-center";
+    const collapseToggle = document.createElement('button');
+    titleRow.appendChild(collapseToggle);
+    collapseToggle.className = "w-6 flex-none text-center";
 
     const visibilityToggleIcon = document.createElement('i');
     visibilityToggleIcon.className = "fa fa-chevron-up transition-transform duration-200";
-    visibilityToggle.appendChild(visibilityToggleIcon);
+    collapseToggle.appendChild(visibilityToggleIcon);
 
-    visibilityToggle.addEventListener('click', () => {
+    collapseToggle.addEventListener('click', () => {
       const isHidden = body.classList.toggle('hidden');
     
       visibilityToggleIcon.classList.toggle('fa-chevron-up', !isHidden);
@@ -186,21 +291,4 @@ export class InspectorManager implements IObserver {
     fieldMap.set(key, inputs);
     return container;
   }  
-
-  public onNotify(subject: ISubject, args?: string[]): void {
-    const component = subject as Component;
-    const fieldMap = this.bindings.get(component);
-    if (!fieldMap || !args) return;
-
-    for (const key of args) {
-      const inputs = fieldMap.get(key);
-      const value = (component as any)[key];
-
-      if (inputs && value instanceof Vector3) {
-        inputs[0].value = value.x.toString();
-        inputs[1].value = value.y.toString();
-        inputs[2].value = value.z.toString();
-      }
-    }
-  }
 }

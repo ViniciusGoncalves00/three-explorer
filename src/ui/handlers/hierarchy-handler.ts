@@ -72,7 +72,6 @@ export class HierarchyHandler implements IObserver {
       this._onSelectEntity(entity);
       this.highlightEntityLine(entity.id);
     }
-      
 
     private highlightEntityLine(selectedId: string) {
       const allLines = this._entitiesContainer.querySelectorAll(".entity");

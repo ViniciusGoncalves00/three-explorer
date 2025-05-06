@@ -45,15 +45,9 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!inspectorContainer) return;
 
   const entityHandler = new EntityHandler(engine, threeEngine, binder);
-//   const hierarchyHandler = new HierarchyHandler(engine, entitiesContainer!, (entity) => {
-//   inspectorContainer!.innerHTML = `
-//     <h2>${entity.name ?? entity.id}</h2>
-//     <p>Components: ${entity.getComponents().length}</p>
-//     <p>ID: ${entity.id}</p>
-//   `;
-// });
-  const inspectorManager = new InspectorManager(inspectorContainer);
-  const hierarchyHandler = new HierarchyHandler(engine, entitiesContainer!, entity => inspectorManager.setEntity(entity));
+  const inspectorManager = new InspectorManager(inspectorContainer, entityHandler);
+  entityHandler.attach(inspectorManager);
+  const hierarchyHandler = new HierarchyHandler(engine, entitiesContainer!, entity => entityHandler.selectedEntity = entity);
   engine.entityManager.attach(hierarchyHandler);
 
   (window as any).addEntity = (isRuntime: boolean) => {

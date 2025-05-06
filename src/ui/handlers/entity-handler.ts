@@ -20,8 +20,12 @@ export class EntityHandler implements IObserver, ISubject {
 
     private _selectedEntity: Entity | null = null;
     public get selectedEntity() : Entity | null { return this._selectedEntity; }
-    public set selectedEntity(entity: Entity | null) { this._selectedEntity = entity; }
-    
+    public set selectedEntity(entity: Entity | null) {
+        if (this._selectedEntity)
+            this._selectedEntity.getComponents().forEach(component => component.dettach(this))
+        this._selectedEntity = entity;
+        this.notify(["changed entity"]);
+    console.log(this._selectedEntity) }
 
     public constructor(engine: Engine, graphicEngine: ThreeEngine, binder: ObjectBinder) {
         this._engine = engine;

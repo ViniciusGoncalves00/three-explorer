@@ -12,13 +12,13 @@ export abstract class Component implements ISubject {
         this.observers.push(observer);
       }
     
-      public dettach(observer: IObserver): void {
-        const index = this.observers.indexOf(observer);
-        if (index === -1) return;
-        this.observers.splice(index, 1);
-      }
+    public dettach(observer: IObserver): void {
+      const index = this.observers.indexOf(observer);
+      if (index === -1) return;
+      this.observers.splice(index, 1);
+    }
     
-      public notify(args?: string[]): void {
-        this.observers.forEach(observer => observer.onNotify(this, args));
-      }
+    public notify(args?: string[]): void {
+      this.observers.forEach(observer => observer.onNotify(this, args));
+    }
 }
