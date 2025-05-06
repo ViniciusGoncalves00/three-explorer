@@ -1,5 +1,6 @@
 import { Component } from "../../core/api/components/component";
 import { Vector3 } from "../../core/api/components/vector3";
+import { Entity } from "../../core/api/entity";
 import { IObserver } from "../../core/patterns/observer/observer";
 import { ISubject } from "../../core/patterns/observer/subject";
 import { EntityHandler } from "./entity-handler";
@@ -45,21 +46,31 @@ export class InspectorManager implements IObserver {
 
     if (!this._entityHandler.selectedEntity) return;
 
-    // const entityWrapper = document.createElement('div');
-    // entityWrapper.className = 'w-full flex flex-col';
-    // this._container.appendChild(entityWrapper);
+    const entityWrapper = this.buildEntity(this._entityHandler.selectedEntity)
+    this._container.appendChild(entityWrapper)
 
-    // const entityName = document.createElement('div');
-    // entityName.textContent = this._entityHandler.selectedEntity.name;
-    // entityName.className = 'w-full font-bold';
-    // entityWrapper.appendChild(entityName);
+    this._entityHandler.selectedEntity.getComponents().forEach(component => {
+      component.attach(this);
+      const componentWrapper = this.buildComponent(component);
+      this._container.appendChild(componentWrapper);
+    });
 
-    const componentWrapper = document.createElement('div');
-    componentWrapper.className = 'w-full flex flex-col';
-    this._container.appendChild(componentWrapper)
-  
+    const row = document.createElement('div');
+    row.className = 'w-full flex items-center justify-center';
+    this._container.appendChild(row);
+
+    const addComponentButton = document.createElement('button');
+    addComponentButton.className = 'bg-zinc-500';
+    addComponentButton.textContent = "Add Component";
+    row.appendChild(addComponentButton);
+  }
+
+  private buildEntity(entity: Entity): HTMLElement {
+    const entityWrapper = document.createElement('div');
+    entityWrapper.className = 'w-full flex flex-col';
+
     const titleRow = document.createElement('div');
-    componentWrapper.appendChild(titleRow);
+    entityWrapper.appendChild(titleRow);
     titleRow.className = "w-full h-6 flex items-center border-y border-zinc-600"
 
     const collapseToggle = document.createElement('button');
@@ -79,7 +90,7 @@ export class InspectorManager implements IObserver {
 
     const title = document.createElement('p');
     titleRow.appendChild(title)
-    title.textContent = this._entityHandler.selectedEntity.name;
+    title.textContent = entity.name;
     title.className = 'w-full font-bold';
 
     const options = document.createElement('i');
@@ -87,7 +98,7 @@ export class InspectorManager implements IObserver {
     options.className = "w-6 flex-none text-center fa fa-ellipsis-vertical"
 
     const body = document.createElement('div');
-    componentWrapper.appendChild(body);
+    entityWrapper.appendChild(body);
     body.className = 'w-full flex flex-col p-2 space-y-1';
 
     const row_id = document.createElement('div');
@@ -101,7 +112,7 @@ export class InspectorManager implements IObserver {
     
     const inputColumn = document.createElement('div');
     inputColumn.className = 'w-3/4 flex';
-    inputColumn.textContent = this._entityHandler.selectedEntity.id;
+    inputColumn.textContent = entity.id;
     row_id.appendChild(inputColumn);
 
     const readonlyFields = ["isEnabled", "isAwaked", "isStarted", "isRuntime"]
@@ -124,32 +135,27 @@ export class InspectorManager implements IObserver {
       row.appendChild(inputColumn);
     });
 
-    this._entityHandler.selectedEntity.getComponents().forEach(component => {
-      component.attach(this);
-      const componentUI = this.buildComponentUI(component);
-      this._container.appendChild(componentUI);
-    });
-
-    const row = document.createElement('div');
-    row.className = 'w-full flex items-center justify-center';
-    this._container.appendChild(row);
-
-    const addComponent = document.createElement('button');
-    addComponent.className = 'bg-zinc-500';
-    addComponent.textContent = "Add Component";
-    row.appendChild(addComponent);
+    return entityWrapper;
   }
 
-  private buildComponentUI(component: Component): HTMLElement {
+  private buildComponent(component: Component): HTMLElement {
     const componentWrapper = document.createElement('div');
     componentWrapper.className = 'w-full flex flex-col';
-  
-    const titleRow = document.createElement('div');
-    componentWrapper.appendChild(titleRow);
-    titleRow.className = "w-full h-6 flex items-center border-y border-zinc-600"
+
+    const componentBody = this.buildComponentBody(component);
+    const componentHeader = this.buildComponentHeader(component, componentBody);
+    componentWrapper.appendChild(componentHeader);
+    componentWrapper.appendChild(componentBody);
+
+    return componentWrapper;
+  }
+
+  private buildComponentHeader(component: Component, body: HTMLElement): HTMLElement {
+    const componentHeader = document.createElement('div');
+    componentHeader.className = "w-full h-6 flex items-center border-y border-zinc-600"
 
     const collapseToggle = document.createElement('button');
-    titleRow.appendChild(collapseToggle);
+    componentHeader.appendChild(collapseToggle);
     collapseToggle.className = "w-6 flex-none text-center";
 
     const visibilityToggleIcon = document.createElement('i');
@@ -164,17 +170,20 @@ export class InspectorManager implements IObserver {
     });
 
     const title = document.createElement('p');
-    titleRow.appendChild(title)
+    componentHeader.appendChild(title)
     title.textContent = component.constructor.name;
     title.className = 'w-full font-bold';
 
     const options = document.createElement('i');
-    titleRow.appendChild(options)
+    componentHeader.appendChild(options)
     options.className = "w-6 flex-none text-center fa fa-ellipsis-vertical"
 
-    const body = document.createElement('div');
-    componentWrapper.appendChild(body);
-    body.className = 'w-full flex-none flex flex-col p-2 space-y-1';
+    return componentHeader;
+  }
+
+  private buildComponentBody(component: Component): HTMLElement {
+    const componentBody = document.createElement('div');
+    componentBody.className = 'w-full flex-none flex flex-col p-2 space-y-1';
   
     const fieldsMap = new Map<string, HTMLInputElement[]>();
     this.bindings.set(component, fieldsMap);
@@ -235,7 +244,7 @@ export class InspectorManager implements IObserver {
   
         fieldsMap.set(property, inputs);
         row.appendChild(inputColumn);
-        body.appendChild(row);
+        componentBody.appendChild(row);
       }
       else if (typeof field === 'number') {
         const input = document.createElement('input');
@@ -254,41 +263,11 @@ export class InspectorManager implements IObserver {
         inputColumn.appendChild(input);
         fieldsMap.set(property, [input]);
         row.appendChild(inputColumn);
-        body.appendChild(row);
+        componentBody.appendChild(row);
       }
       
     }
-  
-    return componentWrapper;
-  }
 
-  private input_number(value: any): string {
-    return ``
+    return componentBody;
   }
-
-  private vector3ToInput(component: any, key: string, vector: Vector3, fieldMap: Map<string, HTMLInputElement[]>): HTMLElement {
-    const container = document.createElement('div');
-    container.className = 'flex gap-2 mb-1';
-  
-    const inputs: HTMLInputElement[] = [];
-  
-    (['x', 'y', 'z'] as const).forEach(axis => {
-      const input = document.createElement('input');
-      input.type = 'number';
-      input.value = vector[axis].toString();
-      input.className = 'w-1/3 p-1 border rounded';
-  
-      input.addEventListener('input', () => {
-        const newVector = vector.clone();
-        vector.setAxis(axis, parseFloat(input.value));
-        component[key] = newVector;
-      });
-  
-      container.appendChild(input);
-      inputs.push(input);
-    });
-  
-    fieldMap.set(key, inputs);
-    return container;
-  }  
 }
