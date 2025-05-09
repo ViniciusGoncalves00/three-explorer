@@ -242,7 +242,7 @@ export class InspectorManager implements IObserver {
           const input = document.createElement('input');
           axisWrapper.appendChild(input);
           input.type = 'number';
-          input.step = '0.01';
+          input.step = '0.1';
           input.className = 'w-full text-xs px-1 py-0.5 border border-gray-300 rounded';
           input.value = field[axis].toString();
   
@@ -264,7 +264,7 @@ export class InspectorManager implements IObserver {
       else if (typeof field === 'number') {
         const input = document.createElement('input');
         input.type = 'number';
-        input.step = '0.01';
+        input.step = '0.1';
         input.className = 'w-full text-xs px-1 py-0.5 border border-gray-300 rounded';
         input.value = field.toString();
       
