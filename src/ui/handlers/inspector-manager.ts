@@ -65,13 +65,15 @@ export class InspectorManager implements IObserver {
 
     const dropdown = new Dropdown({
       items: [
-        { label: "Transform", value: this._entityHandler.selectedEntity.addComponent(new Transform()) },
-        { label: "Rotate", value: this._entityHandler.selectedEntity.addComponent(new Rotate()) },
-        { label: "Orbit", value: this._entityHandler.selectedEntity.addComponent(new Orbit()) },
+        { label: "Transform", value: Transform },
+        { label: "Rotate", value: Rotate },
+        { label: "Orbit", value: Orbit },
       ],
       defaultLabel: "Add Component",
       onSelect: (item) => {
-        console.log("Item selecionado:", item);
+        const ComponentClass = item.value;
+        this._entityHandler.selectedEntity?.addComponent(new ComponentClass());
+        this.updateInspector();
       },
     });
     

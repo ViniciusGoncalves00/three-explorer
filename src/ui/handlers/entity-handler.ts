@@ -58,8 +58,6 @@ export class EntityHandler implements IObserver, ISubject {
         const cubeEntity = new Entity(crypto.randomUUID());
         cubeEntity.isRuntime = isRuntime;
         cubeEntity.addComponent(new Transform());
-        cubeEntity.addComponent(new Rotate());
-        cubeEntity.addComponent(new Orbit(Vector3.zero(), 5));
           
         this._binder.bind(cubeEntity, mesh);
         this._engine.entityManager.addEntity(cubeEntity);
