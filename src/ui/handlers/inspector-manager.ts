@@ -1,8 +1,12 @@
 import { Component } from "../../core/api/components/component";
+import { Orbit } from "../../core/api/components/orbit";
+import { Rotate } from "../../core/api/components/rotate";
+import { Transform } from "../../core/api/components/transform";
 import { Vector3 } from "../../core/api/components/vector3";
 import { Entity } from "../../core/api/entity";
 import { IObserver } from "../../core/patterns/observer/observer";
 import { ISubject } from "../../core/patterns/observer/subject";
+import { Dropdown } from "../components/dropdown";
 import { EntityHandler } from "./entity-handler";
 
 export class InspectorManager implements IObserver {
@@ -59,10 +63,19 @@ export class InspectorManager implements IObserver {
     row.className = 'w-full flex items-center justify-center';
     this._container.appendChild(row);
 
-    const addComponentButton = document.createElement('button');
-    addComponentButton.className = 'bg-zinc-500';
-    addComponentButton.textContent = "Add Component";
-    row.appendChild(addComponentButton);
+    const dropdown = new Dropdown({
+      items: [
+        { label: "Transform", value: this._entityHandler.selectedEntity.addComponent(new Transform()) },
+        { label: "Rotate", value: this._entityHandler.selectedEntity.addComponent(new Rotate()) },
+        { label: "Orbit", value: this._entityHandler.selectedEntity.addComponent(new Orbit()) },
+      ],
+      defaultLabel: "Add Component",
+      onSelect: (item) => {
+        console.log("Item selecionado:", item);
+      },
+    });
+    
+    row.appendChild(dropdown.getElement());
   }
 
   private buildEntity(entity: Entity): HTMLElement {
