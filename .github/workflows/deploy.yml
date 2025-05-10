@@ -26,6 +26,9 @@ jobs:
       - name: Dependencies install
         run: npm install
 
+      - name: Copy index.html to dist
+        run: cp index.html dist/
+
       - name: Project build
         run: npm run build
 
