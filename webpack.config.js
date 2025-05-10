@@ -32,7 +32,7 @@ export default {
   },
   devServer: {
     static: {
-      directory: path.join(__dirname, 'dist')
+      directory: path.resolve(__dirname, 'dist')
     },
     compress: true,
     port: 3000,
