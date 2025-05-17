@@ -6,18 +6,18 @@ import { Dropdown } from "../components/dropdown";
 import { ComponentUI } from "../components/component-ui";
 import { EntityHandler } from "./entity-handler";
 
-export class InspectorManager {
+export class Inspector {
   private static _container: HTMLElement;
 
   public constructor(container: HTMLElement) {
-    InspectorManager._container = container;
+    Inspector._container = container;
 
     EntityHandler.selectedEntity.subscribe(() => {
       const entity = EntityHandler.selectedEntity?.value;
       if (entity) {
-        entity.components.subscribe(() => InspectorManager.update());
+        entity.components.subscribe(() => Inspector.update());
       }
-      InspectorManager.update();
+      Inspector.update();
   });
   }
 

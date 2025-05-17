@@ -10,8 +10,8 @@ import { RotateSystem } from './core/api/systems/rotateSystem';
 import { OrbitSystem } from './core/api/systems/orbitSystem';
 import { ObjectBinder } from './core/graphics/three/object-binder';
 import { EntityHandler } from './ui/handlers/entity-handler';
-import { HierarchyHandler } from './ui/handlers/hierarchy-handler';
-import { InspectorManager } from './ui/handlers/inspector-manager';
+import { Hierarchy } from './ui/handlers/hierarchy';
+import { Inspector } from './ui/handlers/inspector';
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -45,9 +45,9 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!inspectorContainer) return;
 
   const entityHandler = new EntityHandler(engine, threeEngine, binder);
-  const inspectorManager = new InspectorManager(inspectorContainer);
-  const hierarchyHandler = new HierarchyHandler(engine, entitiesContainer!, entity => EntityHandler.selectedEntity.value = entity);
-  engine.entityManager.attach(hierarchyHandler);
+  const inspector = new Inspector(inspectorContainer);
+  const hierarchy = new Hierarchy(engine, entitiesContainer!, entity => EntityHandler.selectedEntity.value = entity);
+  engine.entityManager.attach(hierarchy);
 
   (window as any).addEntity = (isRuntime: boolean) => {
     entityHandler.addEntity(isRuntime);

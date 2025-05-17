@@ -3,7 +3,7 @@ import { ISubject } from "../../core/patterns/observer/subject";
 import { Engine } from '../../core/engine/engine';
 import { Entity } from "../../core/api/entity";
 
-export class HierarchyHandler implements IObserver {
+export class Hierarchy implements IObserver {
     private _engine: Engine;
     private _entitiesContainer: HTMLElement;
 
