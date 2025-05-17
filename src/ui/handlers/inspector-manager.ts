@@ -11,8 +11,14 @@ export class InspectorManager {
 
   public constructor(container: HTMLElement) {
     InspectorManager._container = container;
-    
-    EntityHandler.selectedEntity.subscribe(() => InspectorManager.update())
+
+    EntityHandler.selectedEntity.subscribe(() => {
+      const entity = EntityHandler.selectedEntity?.value;
+      if (entity) {
+        entity.components.subscribe(() => InspectorManager.update());
+      }
+      InspectorManager.update();
+  });
   }
 
   public static update() {
@@ -41,7 +47,6 @@ export class InspectorManager {
       onSelect: (item) => {
         const ComponentClass = item.value;
         EntityHandler.selectedEntity?.value.addComponent(new ComponentClass());
-        this.update();
       },
     });
     

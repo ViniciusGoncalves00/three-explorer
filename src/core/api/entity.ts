@@ -1,3 +1,4 @@
+import { ObservableMap } from "../patterns/observer/observable-map";
 import { Component } from "./components/component";
 
 export class Entity {
@@ -24,7 +25,8 @@ export class Entity {
   public get isRuntime(): boolean { return this._isRuntime; }
   public set isRuntime(isRuntime: boolean) { this._isRuntime = isRuntime; }
   
-  private _components = new Map<new (...args: any[]) => Component, Component>();
+  private _components = new ObservableMap<new (...args: any[]) => Component, Component>();
+  public get components(): ObservableMap<new (...args: any[]) => Component, Component> { return this._components; }
   
   public constructor(id: `${string}-${string}-${string}-${string}-${string}`) {
     this._id = id;

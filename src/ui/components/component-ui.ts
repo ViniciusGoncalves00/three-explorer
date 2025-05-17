@@ -1,7 +1,6 @@
 import { Component } from "../../core/api/components/component";
 import { Vector3 } from "../../core/api/vector3";
 import { EntityHandler } from "../handlers/entity-handler";
-import { InspectorManager } from "../handlers/inspector-manager";
 import { FieldBuilder } from "./field-builder";
 
 export class ComponentUI {
@@ -106,11 +105,7 @@ export class ComponentUI {
         const exclude = document.createElement('i');
         head.appendChild(exclude);
         exclude.className = "w-6 flex-none text-center cursor-pointer bi bi-trash";
-        exclude.addEventListener('click', () => {
-            EntityHandler.selectedEntity.value.removeComponent(component.constructor as any)
-            InspectorManager.update()
-            }
-        )
+        exclude.addEventListener('click', () => EntityHandler.selectedEntity.value.removeComponent(component.constructor as any))
 
         const options = document.createElement('i');
         head.appendChild(options);
