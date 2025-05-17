@@ -2,48 +2,23 @@ import * as THREE from 'three';
 import { Transform } from "../../core/api/components/transform";
 import { Entity } from "../../core/api/entity";
 import { ObjectBinder } from "../../core/graphics/three/object-binder";
-import { IObserver } from "../../core/patterns/observer/observer";
-import { ISubject } from "../../core/patterns/observer/subject";
 import { Engine } from '../../core/engine/engine';
 import { ThreeEngine } from '../../core/graphics/three/three-engine';
-import { SubjectManager } from '../../core/patterns/observer/subject-manager';
+import { ObservableField } from '../../core/patterns/observer/observable-field';
 
-export class EntityHandler implements IObserver, ISubject {
-    private _subjectManager = new SubjectManager();
-
+export class EntityHandler {
     private _engine: Engine;
     private _binder: ObjectBinder;
     private _graphicEngine: ThreeEngine;
 
-    private _selectedEntity: Entity | null = null;
-    public get selectedEntity() : Entity | null { return this._selectedEntity; }
-    public set selectedEntity(entity: Entity | null) {
-        if (this._selectedEntity)
-            this._selectedEntity.getComponents().forEach(component => component.dettach(this))
-        this._selectedEntity = entity;
-        this.notify(["changed entity"]);
-    console.log(this._selectedEntity) }
+    private static _selectedEntity: ObservableField<Entity> = new ObservableField(new Entity('0000-0000-0000-0000-0000'));
+    public static get selectedEntity() : ObservableField<Entity> { return this._selectedEntity; }
+    public static set selectedEntity(entity: ObservableField<Entity>) { this._selectedEntity = entity; }
 
     public constructor(engine: Engine, graphicEngine: ThreeEngine, binder: ObjectBinder) {
         this._engine = engine;
         this._graphicEngine = graphicEngine;
         this._binder = binder;
-    }
-
-    public attach(observer: IObserver): void {
-        this._subjectManager.attach(this, observer);
-    }
-
-    public dettach(observer: IObserver): void {
-        this._subjectManager.dettach(this, observer);
-    }
-
-    public notify(args?: string[]): void {
-        this._subjectManager.notify(this, args);
-    }
-
-    public onNotify(subject: ISubject, args?: string[]) {
-        throw new Error('Method not implemented.');
     }
     
     public addEntity(isRuntime: boolean): void {

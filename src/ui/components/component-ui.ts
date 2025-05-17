@@ -1,7 +1,8 @@
 import { Component } from "../../core/api/components/component";
 import { Vector3 } from "../../core/api/vector3";
-import { ObservableField } from "../../core/patterns/observer/observable-field";
-import { NumberField } from "./number-field";
+import { EntityHandler } from "../handlers/entity-handler";
+import { InspectorManager } from "../handlers/inspector-manager";
+import { FieldBuilder } from "./field-builder";
 
 export class ComponentUI {
     private _container: HTMLElement;
@@ -20,27 +21,10 @@ export class ComponentUI {
         this._container = document.createElement("div");
 
         const body = this.body(component);
-        const head = this.head(body, component.constructor.name);
+        const head = this.head(body, component);
         
         this._container.appendChild(head);
         this._container.appendChild(body);
-    }
-
-    public update(): void {
-        const bindings = this.bindings.get(this._component);
-        if (!bindings) return;
-
-        for (const [property, inputs] of bindings.entries()) {
-            const value = (this._component as any)[property];
-
-            if (value instanceof Vector3) {
-                inputs[0].value = value.x.toString();
-                inputs[1].value = value.y.toString();
-                inputs[2].value = value.z.toString();
-            } else if (typeof value === 'number') {
-                inputs[0].value = value.toString();
-            }
-        }
     }
 
     private body(component: Component): HTMLElement {
@@ -71,8 +55,6 @@ export class ComponentUI {
             if (field instanceof Vector3) {
                 inputColumn.classList.add('gap-1');
 
-                // const inputs: HTMLInputElement[] = [];
-
                 for (const axis of ['x', 'y', 'z'] as const) {
                     const axisWrapper = document.createElement('div');
                     axisWrapper.className = "w-1/3 flex";
@@ -82,71 +64,29 @@ export class ComponentUI {
                     axisName.textContent = axis;
                     axisName.className = 'w-6 flex-none text-center';
 
-                    // const input = document.createElement('input');
-                    // axisWrapper.appendChild(input);
-                    // input.type = 'number';
-                    // input.step = '0.1';
-                    // input.className = 'w-full text-xs px-1 py-0.5 border border-gray-300 rounded';
-                    // input.value = field[axis].toString();
-
-                    const input = new NumberField(field[axis]);
-                    inputColumn.appendChild(input.getElement());
-
-                    // inputs.push(input);
-                    // inputColumn.appendChild(axisWrapper);
+                    const input = FieldBuilder.numberField(field[axis])
+                    inputColumn.appendChild(input);
                 }
-
-                // // Adiciona eventos após os elementos estarem prontos
-                // inputs.forEach((input, index) => {
-                //     input.addEventListener('input', () => {
-                //         const x = parseFloat(inputs[0].value);
-                //         const y = parseFloat(inputs[1].value);
-                //         const z = parseFloat(inputs[2].value);
-                //         (component as any)[property] = new Vector3(x, y, z);
-                //     });
-                // });
-
-                // fieldsMap.set(property, inputs);
-                row.appendChild(inputColumn);
-                componentBody.appendChild(row);
             }
             else if (typeof field.value === 'number') {
-                const input = new NumberField((field as ObservableField<number>));
-
-                inputColumn.appendChild(input.getElement());
-                row.appendChild(inputColumn);
-                componentBody.appendChild(row);
-
-                // const input = document.createElement('input');
-                // input.type = 'number';
-                // input.step = '0.1';
-                // input.className = 'w-full text-xs px-1 py-0.5 border border-gray-300 rounded';
-                // input.value = field.toString();
-
-                // input.addEventListener('input', () => {
-                //     const newValue = parseFloat(input.value);
-                //     if (!isNaN(newValue)) {
-                //         (component as any)[property] = newValue;
-                //     }
-                // });
-
-                // inputColumn.appendChild(input);
-                // fieldsMap.set(property, [input]);
-                // row.appendChild(inputColumn);
-                // componentBody.appendChild(row);
+                const input = FieldBuilder.numberField(field)
+                inputColumn.appendChild(input);
             }
+
+            row.appendChild(inputColumn);
+            componentBody.appendChild(row);
         }
 
         return componentBody;
     }
 
-    private head(body: HTMLElement, name: string): HTMLElement {
+    private head(body: HTMLElement, component: Component): HTMLElement {
         const head = document.createElement("div");
         head.classList = "w-full h-6 flex items-center border-y border-zinc-600";
 
         const toggle = document.createElement('button');
         head.appendChild(toggle);
-        toggle.className = "w-6 flex-none text-center";
+        toggle.className = "w-6 flex-none text-center cursor-pointer ";
 
         const toggleIcon = document.createElement('i');
         toggleIcon.className = "bi bi-caret-up-fill transition-transform duration-200";
@@ -160,12 +100,21 @@ export class ComponentUI {
 
         const title = document.createElement('p');
         head.appendChild(title);
-        title.textContent = name;
+        title.textContent = component.constructor.name;
         title.className = 'w-full font-bold';
+
+        const exclude = document.createElement('i');
+        head.appendChild(exclude);
+        exclude.className = "w-6 flex-none text-center cursor-pointer bi bi-trash";
+        exclude.addEventListener('click', () => {
+            EntityHandler.selectedEntity.value.removeComponent(component.constructor as any)
+            InspectorManager.update()
+            }
+        )
 
         const options = document.createElement('i');
         head.appendChild(options);
-        options.className = "w-6 flex-none text-center fa fa-ellipsis-vertical";
+        options.className = "w-6 flex-none text-center cursor-pointer bi bi-three-dots-vertical";
 
         return head;
     }

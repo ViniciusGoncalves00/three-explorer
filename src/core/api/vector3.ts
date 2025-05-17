@@ -3,26 +3,12 @@ import { ObservableField } from "../patterns/observer/observable-field";
 export class Vector3 {
   private readonly _x: ObservableField<number>;
   public get x(): ObservableField<number> { return this._x; }
-  // public set x(value: ObservableField<number>) {
-  //   this._x = value;
-  //   this._onChange?.();
-  // }
 
   private readonly _y: ObservableField<number>;
   public get y(): ObservableField<number> { return this._y; }
-  // public set y(value: ObservableField<number>) {
-  //   this._y = value;
-  //   this._onChange?.();
-  // }
 
   private readonly _z: ObservableField<number>;
   public get z(): ObservableField<number> { return this._z; }
-  // public set z(value: ObservableField<number>) {
-  //   this._z = value;
-  //   this._onChange?.();
-  // }
-
-  private _onChange?: () => void;
 
   public constructor(x: number, y: number, z: number) {
     this._x =  new ObservableField<number>(x);
@@ -42,15 +28,10 @@ export class Vector3 {
     this._x.value = x;
     this._y.value = y;
     this._z.value = z;
-    this._onChange?.();
   }
 
   public setAxis(axis: 'x' | 'y' | 'z', value: number): void {
     this[axis].value = value;
-  }
-
-  public onChange(onChange: () => void): void {
-    this._onChange = onChange;
   }
 
   public add(vector: Vector3): Vector3 {

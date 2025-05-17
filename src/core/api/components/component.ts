@@ -1,7 +1,6 @@
 import { IObserver } from "../../patterns/observer/observer";
-import { ISubject } from "../../patterns/observer/subject";
 
-export abstract class Component implements ISubject {
+export abstract class Component {
     public enabled: boolean = true;
     public abstract clone(): Component;
     public abstract copyFrom(component: Component): void;
@@ -16,9 +15,5 @@ export abstract class Component implements ISubject {
       const index = this.observers.indexOf(observer);
       if (index === -1) return;
       this.observers.splice(index, 1);
-    }
-    
-    public notify(args?: string[]): void {
-      this.observers.forEach(observer => observer.onNotify(this, args));
     }
 }
