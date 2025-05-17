@@ -1,48 +1,47 @@
 import { ObservableField } from "../patterns/observer/observable-field";
 
 export class Vector3 {
-  private _x: ObservableField<number>;
+  private readonly _x: ObservableField<number>;
   public get x(): ObservableField<number> { return this._x; }
-  public set x(value: ObservableField<number>) {
-    this._x = value;
-    this._onChange?.();
-  }
+  // public set x(value: ObservableField<number>) {
+  //   this._x = value;
+  //   this._onChange?.();
+  // }
 
-  private _y: ObservableField<number>;
+  private readonly _y: ObservableField<number>;
   public get y(): ObservableField<number> { return this._y; }
-  public set y(value: ObservableField<number>) {
-    this._y = value;
-    this._onChange?.();
-  }
+  // public set y(value: ObservableField<number>) {
+  //   this._y = value;
+  //   this._onChange?.();
+  // }
 
-  private _z: ObservableField<number>;
+  private readonly _z: ObservableField<number>;
   public get z(): ObservableField<number> { return this._z; }
-  public set z(value: ObservableField<number>) {
-    this._z = value;
-    this._onChange?.();
-  }
+  // public set z(value: ObservableField<number>) {
+  //   this._z = value;
+  //   this._onChange?.();
+  // }
 
   private _onChange?: () => void;
 
-  public constructor(x: ObservableField<number>, y: ObservableField<number>, z: ObservableField<number>, onChange?: () => void) {
-    this._x = x;
-    this._y = y;
-    this._z = z;
-    this._onChange = onChange;
+  public constructor(x: number, y: number, z: number) {
+    this._x =  new ObservableField<number>(x);
+    this._y =  new ObservableField<number>(y);
+    this._z =  new ObservableField<number>(z);
   }
 
   public static zero(): Vector3 {
-    return new Vector3(new ObservableField<number>(0), new ObservableField<number>(0), new ObservableField<number>(0));
+    return new Vector3(0, 0, 0);
   }
 
   public static one(): Vector3 {
-    return new Vector3(new ObservableField<number>(1), new ObservableField<number>(1), new ObservableField<number>(1));
+    return new Vector3(1, 1, 1);
   }
 
-  public set(x: ObservableField<number>, y: ObservableField<number>, z: ObservableField<number>): void {
-    this._x = x;
-    this._y = y;
-    this._z = z;
+  public set(x: number, y: number, z: number): void {
+    this._x.value = x;
+    this._y.value = y;
+    this._z.value = z;
     this._onChange?.();
   }
 
@@ -56,23 +55,23 @@ export class Vector3 {
 
   public add(vector: Vector3): Vector3 {
     return new Vector3(
-      new ObservableField(this._x.value + vector.x.value),
-      new ObservableField(this._y.value + vector.y.value),
-      new ObservableField(this._z.value + vector.z.value));
+      this._x.value + vector.x.value,
+      this._y.value + vector.y.value,
+      this._z.value + vector.z.value);
   }
 
   public subtract(vector: Vector3): Vector3 {
     return new Vector3(
-      new ObservableField(this._x.value - vector.x.value),
-      new ObservableField(this._y.value - vector.y.value),
-      new ObservableField(this._z.value - vector.z.value));
+      this._x.value - vector.x.value,
+      this._y.value - vector.y.value,
+      this._z.value - vector.z.value);
   }
 
   public multiplyScalar(scalar: number): Vector3 {
     return new Vector3(
-      new ObservableField(this._x.value * scalar),
-      new ObservableField(this._y.value * scalar),
-      new ObservableField(this._z.value * scalar));
+      this._x.value * scalar,
+      this._y.value * scalar,
+      this._z.value * scalar);
   }
 
   public dot(vector: Vector3): number {
@@ -81,9 +80,9 @@ export class Vector3 {
 
   public cross(v: Vector3): Vector3 {
     return new Vector3(
-      new ObservableField(this._y.value * v.z.value - this._z.value * v.y.value),
-      new ObservableField(this._z.value * v.x.value - this._x.value * v.z.value),
-      new ObservableField(this._x.value * v.y.value - this._y.value * v.x.value));
+      this._y.value * v.z.value - this._z.value * v.y.value,
+      this._z.value * v.x.value - this._x.value * v.z.value,
+      this._x.value * v.y.value - this._y.value * v.x.value);
   }
 
   public length(): number {
@@ -92,11 +91,11 @@ export class Vector3 {
 
   public normalize(): Vector3 {
     const len = this.length();
-    return len === 0 ? new Vector3(new ObservableField<number>(0), new ObservableField<number>(0), new ObservableField<number>(0)) : this.multiplyScalar(1 / len);
+    return len === 0 ? new Vector3(0, 0, 0) : this.multiplyScalar(1 / len);
   }
 
   public clone(): Vector3 {
-    return new Vector3(this._x, this._y, this._z, this._onChange);
+    return new Vector3(this._x.value, this._y.value, this._z.value);
   }
 
   public rotateAround(axis: Vector3, angle: number): Vector3 {

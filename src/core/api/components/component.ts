@@ -4,6 +4,7 @@ import { ISubject } from "../../patterns/observer/subject";
 export abstract class Component implements ISubject {
     public enabled: boolean = true;
     public abstract clone(): Component;
+    public abstract copyFrom(component: Component): void;
 
     private observers: IObserver[] = [];
 

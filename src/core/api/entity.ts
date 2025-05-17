@@ -68,14 +68,23 @@ export class Entity {
   public restoreFrom(other: Entity): void {
     this._name = other.name;
     this._isEnabled = other.isEnabled;
-    this._isEnabled = other.isEnabled;
     this._isAwaked = other.isAwaked;
     this._isStarted = other.isStarted;
     this._isRuntime = other.isRuntime;
-  
-    this._components.clear();
-    for (const [type, component] of other._components.entries()) {
-      this._components.set(type, component.clone());
+
+    for (const type of this._components.keys()) {
+      if (!other._components.has(type)) {
+        this._components.delete(type);
+      }
+    }
+
+    for (const [type, otherComponent] of other._components.entries()) {
+      if (!this._components.has(type)) {
+        this._components.set(type, otherComponent.clone());
+      } else {
+        const thisComponent = this._components.get(type)!;
+        thisComponent.copyFrom(otherComponent as any);
+      }
     }
   }
 }

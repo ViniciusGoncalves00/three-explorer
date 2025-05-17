@@ -22,10 +22,10 @@ export class Orbit extends Component {
   public angle: ObservableField<number> = new ObservableField<number>(0);
 
   constructor(
-    center: Vector3 = new Vector3(new ObservableField<number>(0), new ObservableField<number>(0), new ObservableField<number>(0)),
+    center: Vector3 = new Vector3(0, 0, 0),
     distance: ObservableField<number> = new ObservableField<number>(1),
     speed: ObservableField<number> = new ObservableField<number>(1),
-    axis: Vector3 = new Vector3(new ObservableField<number>(0), new ObservableField<number>(1), new ObservableField<number>(0))
+    axis: Vector3 = new Vector3(0, 1, 0)
   ) {
     super();
     this._center = center;
@@ -44,5 +44,12 @@ export class Orbit extends Component {
     clone.angle = this.angle;
     clone.enabled = this.enabled;
     return clone;
+  }
+
+  public copyFrom(orbit: Orbit): void {
+      this._center.set(orbit.center.x.value, orbit.center.y.value, orbit.center.z.value);
+      this._axis.set(orbit.axis.x.value, orbit.axis.y.value, orbit.axis.z.value);
+      this._distance.value = orbit.distance.value;
+      this._speed.value = orbit.speed.value;
   }
 }

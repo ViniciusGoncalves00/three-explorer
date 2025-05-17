@@ -11,16 +11,21 @@ export class Rotate extends Component {
   public get speed(): ObservableField<number> { return this._speed; }
   public set speed(speed: ObservableField<number>) { this._speed = speed; this.notify(["speed"]); }
 
-  constructor(axis: Vector3 = new Vector3(new ObservableField<number>(0), new ObservableField<number>(0), new ObservableField<number>(0)), speed: ObservableField<number> = new ObservableField<number>(1)) {
+  constructor(axis: Vector3 = new Vector3(0, 0, 0), speed: ObservableField<number> = new ObservableField<number>(1)) {
     super();
     this._axis = axis;
     this._speed = speed;
   }
 
   public clone(): Component {
-    const clonedAxis = new Vector3(this._axis.x, this._axis.y, this._axis.z);
+    const clonedAxis = new Vector3(this._axis.x.value, this._axis.y.value, this._axis.z.value);
     const clone = new Rotate(clonedAxis, this._speed);
     clone.enabled = this.enabled;
     return clone;
+  }
+
+  public copyFrom(rotate: Rotate): void {
+      this._axis.set(rotate.axis.x.value, rotate.axis.y.value, rotate.axis.z.value);
+      this._speed.value = rotate.speed.value;
   }
 }

@@ -27,11 +27,17 @@ export class Transform extends Component {
   }
 
   public clone(): Component {
-    const clonedPosition = new Vector3(this._position.x, this._position.y, this._position.z);
-    const clonedRotation = new Vector3(this._rotation.x, this._rotation.y, this._rotation.z);
-    const clonedScale = new Vector3(this._scale.x, this._scale.y, this._scale.z);
+    const clonedPosition = new Vector3(this._position.x.value, this._position.y.value, this._position.z.value);
+    const clonedRotation = new Vector3(this._rotation.x.value, this._rotation.y.value, this._rotation.z.value);
+    const clonedScale = new Vector3(this._scale.x.value, this._scale.y.value, this._scale.z.value);
     const clone = new Transform(clonedPosition, clonedRotation, clonedScale);
     clone.enabled = this.enabled;
     return clone;
+  }
+
+  public copyFrom(transform: Transform): void {
+      this._position.set(transform.position.x.value, transform.position.y.value, transform.position.z.value);
+      this._rotation.set(transform.rotation.x.value, transform.rotation.y.value, transform.rotation.z.value);
+      this._scale.set(transform.scale.x.value, transform.scale.y.value, transform.scale.z.value);
   }
 }

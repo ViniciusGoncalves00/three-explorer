@@ -20,7 +20,7 @@ export class OrbitSystem implements ISystem, IUpdate {
           orbit.angle.value += orbit.speed.value * deltaTime;
           orbit.angle.value %= Math.PI * 2;
   
-          const initial = new Vector3(new ObservableField<number>(orbit.distance.value), new ObservableField<number>(0), new ObservableField<number>(0));
+          const initial = new Vector3(orbit.distance.value, 0, 0);
   
           const rotated = initial.rotateAround(orbit.axis.normalize(), orbit.angle.value);
           const position = orbit.center.add(rotated);
