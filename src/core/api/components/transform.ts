@@ -1,5 +1,5 @@
 import { Component } from "./component";
-import { Vector3 } from "./vector3";
+import { Vector3 } from "../vector3";
 
 export class Transform extends Component {
   private _position: Vector3;

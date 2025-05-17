@@ -1,16 +1,17 @@
+import { ObservableField } from "../../patterns/observer/observable-field";
 import { Component } from "./component";
-import { Vector3 } from "./vector3";
+import { Vector3 } from "../vector3";
 
 export class Rotate extends Component {
   private _axis: Vector3;
   public get axis(): Vector3 { return this._axis; }
   public set axis(axis: Vector3) { this._axis = axis; this.notify(["axis"]); }
 
-  private _speed: number;
-  public get speed(): number { return this._speed; }
-  public set speed(speed: number) { this._speed = speed; this.notify(["speed"]); }
+  private _speed: ObservableField<number>;
+  public get speed(): ObservableField<number> { return this._speed; }
+  public set speed(speed: ObservableField<number>) { this._speed = speed; this.notify(["speed"]); }
 
-  constructor(axis: Vector3 = new Vector3(0, 1, 0), speed: number = 1) {
+  constructor(axis: Vector3 = new Vector3(new ObservableField<number>(0), new ObservableField<number>(0), new ObservableField<number>(0)), speed: ObservableField<number> = new ObservableField<number>(1)) {
     super();
     this._axis = axis;
     this._speed = speed;

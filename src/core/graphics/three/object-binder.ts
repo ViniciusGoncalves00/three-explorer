@@ -17,10 +17,12 @@ export class ObjectBinder {
     this.map.forEach((object3D, entity) => {
       const transform = entity.getComponent(Transform);
       if (transform) {
-        object3D.position.copy(transform.position);
-        object3D.rotation.x = transform.rotation.x;
-        object3D.rotation.y = transform.rotation.y;
-        object3D.rotation.z = transform.rotation.z;
+        object3D.position.x = transform.position.x.value;
+        object3D.position.y = transform.position.y.value;
+        object3D.position.z = transform.position.z.value;
+        object3D.rotation.x = transform.rotation.x.value;
+        object3D.rotation.y = transform.rotation.y.value;
+        object3D.rotation.z = transform.rotation.z.value;
       }
     });
   }

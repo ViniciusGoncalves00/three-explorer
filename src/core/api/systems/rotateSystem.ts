@@ -15,9 +15,9 @@ export class RotateSystem implements ISystem, IUpdate {
             const rotate = entity.getComponent(Rotate);
 
             if(transform && rotate) {
-                transform.rotation.x += rotate.speed * rotate.axis.x * deltaTime;
-                transform.rotation.y += rotate.speed * rotate.axis.y * deltaTime;
-                transform.rotation.z += rotate.speed * rotate.axis.z * deltaTime;
+                transform.rotation.x.value += rotate.speed.value * rotate.axis.x.value * deltaTime;
+                transform.rotation.y.value += rotate.speed.value * rotate.axis.y.value * deltaTime;
+                transform.rotation.z.value += rotate.speed.value * rotate.axis.z.value * deltaTime;
             }
         }
     }

@@ -1,8 +1,5 @@
 import * as THREE from 'three';
-import { Orbit } from "../../core/api/components/orbit";
-import { Rotate } from "../../core/api/components/rotate";
 import { Transform } from "../../core/api/components/transform";
-import { Vector3 } from "../../core/api/components/vector3";
 import { Entity } from "../../core/api/entity";
 import { ObjectBinder } from "../../core/graphics/three/object-binder";
 import { IObserver } from "../../core/patterns/observer/observer";

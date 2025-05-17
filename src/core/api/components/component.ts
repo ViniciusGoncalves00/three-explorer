@@ -1,6 +1,5 @@
 import { IObserver } from "../../patterns/observer/observer";
 import { ISubject } from "../../patterns/observer/subject";
-import { SubjectManager } from "../../patterns/observer/subject-manager";
 
 export abstract class Component implements ISubject {
     public enabled: boolean = true;

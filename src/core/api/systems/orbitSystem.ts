@@ -2,8 +2,9 @@ import { ISystem } from "./interfaces/system";
 import { Transform } from "../components/transform";
 import { IUpdate } from "./interfaces/update";
 import { Entity } from "../entity";
-import { Vector3 } from "../components/vector3";
+import { Vector3 } from "../vector3";
 import { Orbit } from "../components/orbit";
+import { ObservableField } from "../../patterns/observer/observable-field";
 
 export class OrbitSystem implements ISystem, IUpdate {
     public update(entities: Entity[], deltaTime: number): void {
@@ -16,14 +17,17 @@ export class OrbitSystem implements ISystem, IUpdate {
         const orbit = entity.getComponent(Orbit);
   
         if (transform && orbit && orbit.enabled) {
-          orbit.angle += orbit.speed * deltaTime;
-          orbit.angle %= Math.PI * 2;
+          orbit.angle.value += orbit.speed.value * deltaTime;
+          orbit.angle.value %= Math.PI * 2;
   
-          const initial = new Vector3(orbit.distance, 0, 0);
+          const initial = new Vector3(new ObservableField<number>(orbit.distance.value), new ObservableField<number>(0), new ObservableField<number>(0));
   
-          const rotated = initial.rotateAround(orbit.axis.normalize(), orbit.angle);
+          const rotated = initial.rotateAround(orbit.axis.normalize(), orbit.angle.value);
+          const position = orbit.center.add(rotated);
   
-          transform.position = orbit.center.add(rotated);
+          transform.position.x.value = position.x.value;
+          transform.position.y.value = position.y.value;
+          transform.position.z.value = position.z.value;
         }
       }
     }
