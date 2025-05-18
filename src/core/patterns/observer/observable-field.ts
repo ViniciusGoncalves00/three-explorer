@@ -1,17 +1,17 @@
 export class ObservableField<T> {
   private _value: T;
-  private _listeners: Set<(val: T) => void> = new Set();
+  private _listeners: Set<(value: T) => void> = new Set();
 
-  constructor(initialValue: T) {
+  public constructor(initialValue: T) {
     this._value = initialValue;
   }
 
-  get value(): T {
+  public get value(): T {
     return this._value;
   }
 
-  set value(newValue: T) {
-    if (newValue === this._value) return;
+  public set value(newValue: T) {
+    if (this._value === newValue) return;
 
     this._value = newValue;
     this._listeners.forEach(listener => listener(newValue));

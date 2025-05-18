@@ -23,6 +23,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const entitiesContainer = document.getElementById('entities-container');
   const inspectorContainer = document.getElementById("inspector-container");
   const fpsContainer = document.getElementById("fps-container");
+  const averageFpsContainer = document.getElementById("average-fps-container");
 
   if (!containerEditor || !canvasEditor || !containerSimulator || !canvasSimulator) return;
 
@@ -35,7 +36,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   new TimeControllerHandler(document, engine.timeController);
 
-  if (fpsContainer) engine.time.averageFramesPerSecond.subscribe(() => fpsContainer.innerHTML = `${engine.time.averageFramesPerSecond.value.toString()} FPS`);
+  if (fpsContainer) engine.time.framesPerSecond.subscribe(() => fpsContainer.innerHTML = `${engine.time.framesPerSecond.value.toString()} FPS`);
+  if (averageFpsContainer) engine.time.averageFramesPerSecond.subscribe(() => averageFpsContainer.innerHTML = `${engine.time.averageFramesPerSecond.value.toString()} aFPS`);
   
   if (!consoleContainer) return;
   
