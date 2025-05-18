@@ -22,6 +22,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const consoleContainer = document.getElementById('console-content');
   const entitiesContainer = document.getElementById('entities-container');
   const inspectorContainer = document.getElementById("inspector-container");
+  const fpsContainer = document.getElementById("fps-container");
 
   if (!containerEditor || !canvasEditor || !containerSimulator || !canvasSimulator) return;
 
@@ -33,6 +34,8 @@ window.addEventListener('DOMContentLoaded', () => {
   engine.registerSystem(new OrbitSystem());
 
   new TimeControllerHandler(document, engine.timeController);
+
+  if (fpsContainer) engine.time.averageFramesPerSecond.subscribe(() => fpsContainer.innerHTML = `${engine.time.averageFramesPerSecond.value.toString()} FPS`);
   
   if (!consoleContainer) return;
   
@@ -43,6 +46,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (!entitiesContainer) return;
   if (!inspectorContainer) return;
+
 
   const entityHandler = new EntityHandler(engine, threeEngine, binder);
   const inspector = new Inspector(inspectorContainer);

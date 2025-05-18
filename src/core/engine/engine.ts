@@ -16,6 +16,8 @@ import { isIAwake, isIFixedUpdate, isILateUpdate, isIStart, isIUpdate } from "./
 
 export class Engine implements IObserver {
   private _time: Time;
+  public get time(): Time { return this._time };
+
   private _timeController: TimeController;
   public get timeController(): TimeController { return this._timeController };
 
