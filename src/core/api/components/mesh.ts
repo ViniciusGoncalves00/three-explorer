@@ -1,0 +1,26 @@
+import { ObservableField } from "../../patterns/observer/observable-field";
+import { Vector3 } from "../vector3";
+import { Component } from "./component";
+
+export class Mesh extends Component {
+    private readonly _vertices: Vector3[];
+    public get vertices(): Vector3[] { return this._vertices; }
+
+    private readonly _indices: ObservableField<number>[];
+    public get indices(): ObservableField<number>[] { return this._indices; }
+
+    constructor(vertices: Vector3[] = [new Vector3(0, 0, 0), new Vector3(0, 0, 1), new Vector3(1, 0, 0)], indices: ObservableField<number>[] = [new ObservableField<number>(0), new ObservableField<number>(1), new ObservableField<number>(2)]) {
+      super();
+      
+      this._vertices = vertices;
+      this._indices = indices;
+    }
+
+    public clone(): Component {
+        throw new Error("Method not implemented.");
+    }
+    public copyFrom(component: Component): void {
+        throw new Error("Method not implemented.");
+    }
+
+}

@@ -39,10 +39,10 @@ export class ComponentUI {
             if (!descriptor?.get || typeof descriptor.get !== 'function') continue;
 
             const row = document.createElement('div');
-            row.className = 'w-full flex items-center';
+            row.className = 'w-full flex items-start';
 
             const labelCol = document.createElement('div');
-            labelCol.className = 'w-1/4 font-medium text-sm';
+            labelCol.className = 'w-1/4 h-full font-medium text-sm';
             labelCol.textContent = property;
             row.appendChild(labelCol);
 
@@ -66,6 +66,65 @@ export class ComponentUI {
                     const input = FieldBuilder.numberField(field[axis])
                     inputColumn.appendChild(input);
                 }
+            }
+            else if (Array.isArray(field) && field[0] instanceof Vector3) {
+                inputColumn.classList.add("flex-col")
+                const empty = document.createElement('div');
+                empty.className = "h-5"
+                inputColumn.appendChild(empty);
+
+                field.forEach((vector: Vector3, index: number) => {
+                    const vectorWrapper = document.createElement('div');
+                    vectorWrapper.className = 'w-full flex gap-1';
+                
+                    const title = document.createElement('div');
+                    title.textContent = `${index}`;
+                    title.className = 'w-1/10 text-sm text-center';
+                    vectorWrapper.appendChild(title);
+                
+                    const vectorRow = document.createElement('div');
+                    vectorRow.className = 'w-full flex gap-1';
+                
+                    for (const axis of ['x', 'y', 'z'] as const) {
+                        const axisWrapper = document.createElement('div');
+                        axisWrapper.className = "w-9/10 flex items-center gap-1";
+                    
+                        const axisName = document.createElement('div');
+                        axisName.textContent = axis;
+                        axisName.className = 'w-6 text-xs text-center';
+                        axisWrapper.appendChild(axisName);
+                    
+                        const input = FieldBuilder.numberField(vector[axis]);
+                        axisWrapper.appendChild(input);
+                    
+                        vectorRow.appendChild(axisWrapper);
+                    }
+                
+                    vectorWrapper.appendChild(vectorRow);
+                    inputColumn.appendChild(vectorWrapper);
+                });
+            }
+            else if (Array.isArray(field) && typeof field[0].value === 'number') {
+                inputColumn.classList.add("flex-col", "gap-1");
+                 const empty = document.createElement('div');
+                empty.className = "h-5"
+                inputColumn.appendChild(empty);
+            
+                field.forEach((observable, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'w-full flex items-center gap-2';
+                
+                    const label = document.createElement('div');
+                    label.textContent = `${index}`;
+                    label.className = 'w-1/10 text-sm text-center';
+                    row.appendChild(label);
+                
+                    const input = FieldBuilder.numberField(observable);
+                    input.classList.add('w-9/10');
+                    row.appendChild(input);
+                
+                    inputColumn.appendChild(row);
+                });
             }
             else if (typeof field.value === 'number') {
                 const input = FieldBuilder.numberField(field)

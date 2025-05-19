@@ -4,7 +4,6 @@ import { IUpdate } from "./interfaces/update";
 import { Entity } from "../entity";
 import { Vector3 } from "../vector3";
 import { Orbit } from "../components/orbit";
-import { ObservableField } from "../../patterns/observer/observable-field";
 
 export class OrbitSystem implements ISystem, IUpdate {
     public update(entities: Entity[], deltaTime: number): void {
