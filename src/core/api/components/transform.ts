@@ -2,17 +2,14 @@ import { Component } from "./component";
 import { Vector3 } from "../vector3";
 
 export class Transform extends Component {
-  private _position: Vector3;
+  private readonly _position: Vector3;
   public get position(): Vector3 { return this._position};
-  public set position(position: Vector3) { this._position = position; };
 
-  private _rotation: Vector3;
+  private readonly _rotation: Vector3;
   public get rotation(): Vector3 { return this._rotation};
-  public set rotation(rotation: Vector3) { this._rotation = rotation; };
 
-  private _scale: Vector3;
+  private readonly _scale: Vector3;
   public get scale(): Vector3 { return this._scale};
-  public set scale(scale: Vector3) { this._scale = scale; };
 
   constructor(position?: Vector3, rotation?: Vector3, scale?: Vector3) {
     super();

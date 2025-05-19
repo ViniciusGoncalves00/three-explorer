@@ -3,23 +3,20 @@ import { Vector3 } from "../vector3";
 import { Component } from "./component";
 
 export class Orbit extends Component {
-  private _center: Vector3;
+  private readonly _center: Vector3;
   public get center(): Vector3 { return this._center; }
-  public set center(value: Vector3) { this._center = value; }
 
-  private _distance: ObservableField<number>;
+  private readonly _distance: ObservableField<number>;
   public get distance(): ObservableField<number> { return this._distance; }
-  public set distance(value: ObservableField<number>) { this._distance = value; }
 
-  private _speed: ObservableField<number>;
+  private readonly _speed: ObservableField<number>;
   public get speed(): ObservableField<number> { return this._speed; }
-  public set speed(value: ObservableField<number>) { this._speed = value; }
 
-  private _axis: Vector3;
+  private readonly _axis: Vector3;
   public get axis(): Vector3 { return this._axis; }
-  public set axis(value: Vector3) { this._axis = value; }
 
-  public angle: ObservableField<number> = new ObservableField<number>(0);
+  public readonly _angle: ObservableField<number> = new ObservableField<number>(0);
+  public get angle(): ObservableField<number> { return this._angle; }
 
   constructor(
     center: Vector3 = new Vector3(0, 0, 0),
@@ -41,7 +38,7 @@ export class Orbit extends Component {
       this._speed,
       this._axis.clone()
     );
-    clone.angle = this.angle;
+    clone.angle.value = this.angle.value;
     clone.enabled = this.enabled;
     return clone;
   }
