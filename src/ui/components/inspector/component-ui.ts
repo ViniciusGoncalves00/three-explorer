@@ -1,0 +1,116 @@
+import { Component } from "../../../core/api/components/component";
+import { Mesh } from "../../../core/api/components/mesh";
+import { Vector3 } from "../../../core/api/vector3";
+import { ObservableField } from "../../../core/patterns/observer/observable-field";
+import { EntityHandler } from "../../handlers/entity-handler";
+import { PropertyBuilder } from "./component-builder";
+
+export class ComponentUI {
+    private _container: HTMLElement;
+    public get container(): HTMLElement { return this._container; };
+
+    private _open: boolean;
+    public get open(): boolean { return this._open; }
+
+    public constructor(component: Component, open: boolean = true) {
+        this._open = open;
+
+        this._container = document.createElement("div");
+
+        const bodyElement = this.buildBodyElement(component);
+        const headElement = this.buildHeadElement(bodyElement, component);
+        
+        this._container.appendChild(headElement);
+        this._container.appendChild(bodyElement);
+    }
+
+    private buildHeadElement(body: HTMLElement, component: Component): HTMLElement {
+        const head = document.createElement("div");
+        head.classList = "w-full h-6 flex items-center border-y border-zinc-600";
+
+        const toggle = document.createElement('button');
+        head.appendChild(toggle);
+        toggle.className = "w-6 flex-none text-center cursor-pointer ";
+
+        const toggleIcon = document.createElement('i');
+        toggleIcon.className = "bi bi-caret-up-fill transition-transform duration-200";
+        toggle.appendChild(toggleIcon);
+
+        toggle.addEventListener('click', () => {
+            const isHidden = body.classList.toggle('hidden');
+            toggleIcon.classList.toggle('bi-caret-up-fill', !isHidden);
+            toggleIcon.classList.toggle('bi-caret-down-fill', isHidden);
+        });
+
+        const title = document.createElement('p');
+        head.appendChild(title);
+        title.textContent = component.constructor.name;
+        title.className = 'w-full font-bold';
+
+        const exclude = document.createElement('i');
+        head.appendChild(exclude);
+        exclude.className = "w-6 flex-none text-center cursor-pointer bi bi-trash";
+        exclude.addEventListener('click', () => EntityHandler.selectedEntity.value.removeComponent(component.constructor as any))
+
+        const options = document.createElement('i');
+        head.appendChild(options);
+        options.className = "w-6 flex-none text-center cursor-pointer bi bi-three-dots-vertical";
+
+        return head;
+    }
+
+    private buildBodyElement(component: Component): HTMLElement {
+        const componentBody = document.createElement('div');
+        componentBody.className = 'w-full flex-none flex flex-col p-2 space-y-1';
+
+        const propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(component));
+        for (const propertyName of propertyNames) {
+            const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(component), propertyName);
+            if (!descriptor?.get || typeof descriptor.get !== 'function') continue;
+
+            const row = document.createElement('div');
+            row.className = 'w-full flex items-start';
+            componentBody.appendChild(row);
+
+            const fieldNameColumn = document.createElement('div');
+            fieldNameColumn.className = 'w-1/4 h-full font-medium text-sm';
+            fieldNameColumn.textContent = propertyName;
+            row.appendChild(fieldNameColumn);
+
+            const fieldContentColumn = document.createElement('div');
+            fieldContentColumn.className = 'w-3/4 flex';
+            row.appendChild(fieldContentColumn);
+
+            const property = (component as any)[propertyName];
+
+            if(Array.isArray(property)) {
+                if(property[0] instanceof Vector3) {
+                    PropertyBuilder.buildArrayVector3Property(property, fieldContentColumn)
+                }
+                else if (typeof property[0].value === 'number') {
+                    PropertyBuilder.buildArrayNumberProperty(property, fieldContentColumn);
+                }
+            }
+            else {
+                if(property instanceof Vector3) {
+                    PropertyBuilder.buildVector3Property(property, fieldContentColumn);
+                }
+                else if (property instanceof ObservableField) {
+                    const value = property.value;
+                
+                    if (typeof value === 'number') {
+                        PropertyBuilder.buildNumberProperty(property, fieldContentColumn);
+                    }
+                    else if (typeof value === 'string') {
+                        PropertyBuilder.buildStringProperty(property, fieldContentColumn);
+                    }
+                    else if (value instanceof Mesh) {
+                        PropertyBuilder.buildMeshProperty(property, fieldContentColumn);
+                    }
+                }
+            }
+        }
+
+        return componentBody;
+    }
+}

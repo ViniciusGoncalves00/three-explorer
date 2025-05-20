@@ -3,7 +3,7 @@ import { Rotate } from "../../core/api/components/rotate";
 import { Transform } from "../../core/api/components/transform";
 import { Entity } from "../../core/api/entity";
 import { Dropdown } from "../components/dropdown";
-import { ComponentUI } from "../components/component-ui";
+import { ComponentUI } from "../components/inspector/component-ui";
 import { EntityHandler } from "./entity-handler";
 import { Mesh } from "../../core/api/components/mesh";
 
