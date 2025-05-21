@@ -1,7 +1,7 @@
-import { SubjectManager } from "../patterns/observer/subject-manager";
-import { ISubject } from "../patterns/observer/subject";
+import { IObserver } from "../../common/patterns/observer/observer";
+import { ISubject } from "../../common/patterns/observer/subject";
+import { SubjectManager } from "../../common/patterns/observer/subject-manager";
 import { Entity } from "./entity";
-import { IObserver } from "../patterns/observer/observer";
 
 export class EntityManager implements ISubject {
     private _subjectManager = new SubjectManager();

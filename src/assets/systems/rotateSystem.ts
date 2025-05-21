@@ -2,7 +2,7 @@ import { ISystem } from "./interfaces/system";
 import { Transform } from "../components/transform";
 import { Rotate } from "../components/rotate";
 import { IUpdate } from "./interfaces/update";
-import { Entity } from "../entity";
+import { Entity } from "../../core/api/entity";
 
 export class RotateSystem implements ISystem, IUpdate {
     public update(entities: Entity[], deltaTime: number): void {

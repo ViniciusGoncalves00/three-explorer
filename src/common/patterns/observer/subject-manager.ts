@@ -1,5 +1,5 @@
+import { ConsoleLogger } from '../../../core/api/console-logger';
 import { IObserver } from './observer';
-import { ConsoleLogger } from '../../api/console-logger';
 import { ISubject } from './subject';
 
 export class SubjectManager {

@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import { Transform } from "../../core/api/components/transform";
+import { Transform } from "../../assets/components/transform";
 import { Entity } from "../../core/api/entity";
-import { ObjectBinder } from "../../core/graphics/three/object-binder";
 import { Engine } from '../../core/engine/engine';
-import { ThreeEngine } from '../../core/graphics/three/three-engine';
-import { ObservableField } from '../../core/patterns/observer/observable-field';
+import { ThreeEngine } from '../../graphics/threejs/three-engine';
+import { ObjectBinder } from '../../graphics/threejs/object-binder';
+import { ObservableField } from '../../common/patterns/observer/observable-field';
 
 export class EntityHandler {
     private _engine: Engine;

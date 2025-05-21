@@ -1,5 +1,5 @@
-import { IObserver } from "../../core/patterns/observer/observer";
-import { ISubject } from "../../core/patterns/observer/subject";
+import { IObserver } from "../../common/patterns/observer/observer";
+import { ISubject } from "../../common/patterns/observer/subject";
 
 export class Console implements IObserver {
     private _container: HTMLElement;
@@ -14,7 +14,6 @@ export class Console implements IObserver {
         const [type, message] = args;
         this.log(message, type);
     }
-    
 
     public log(message: string, type: string = "LOG"): void {
         const logLine = document.createElement("p");

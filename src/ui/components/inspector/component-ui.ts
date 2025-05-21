@@ -1,7 +1,7 @@
-import { Component } from "../../../core/api/components/component";
-import { Mesh } from "../../../core/api/components/mesh";
+import { Component } from "../../../assets/components/component";
+import { Mesh } from "../../../assets/components/mesh";
 import { Vector3 } from "../../../core/api/vector3";
-import { ObservableField } from "../../../core/patterns/observer/observable-field";
+import { ObservableField } from "../../../common/patterns/observer/observable-field";
 import { EntityHandler } from "../../handlers/entity-handler";
 import { PropertyBuilder } from "./component-builder";
 

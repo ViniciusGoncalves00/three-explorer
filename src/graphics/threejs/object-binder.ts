@@ -1,6 +1,6 @@
-import { Transform } from '../../api/components/transform';
-import { Entity } from '../../api/entity';
 import * as THREE from 'three';
+import { Entity } from '../../core/api/entity';
+import { Transform } from '../../assets/components/transform';
 
 export class ObjectBinder {
   private map = new Map<Entity, THREE.Object3D>();

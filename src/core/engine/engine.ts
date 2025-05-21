@@ -1,15 +1,14 @@
+import { IAwake } from "../../assets/systems/interfaces/awake";
+import { IFixedUpdate } from "../../assets/systems/interfaces/fixedUpdate";
+import { ILateUpdate } from "../../assets/systems/interfaces/lateUpdate";
+import { IStart } from "../../assets/systems/interfaces/start";
+import { ISystem } from "../../assets/systems/interfaces/system";
+import { IUpdate } from "../../assets/systems/interfaces/update";
+import { IObserver } from "../../common/patterns/observer/observer";
+import { ISubject } from "../../common/patterns/observer/subject";
 import { Entity } from "../api/entity";
 import { EntityManager } from "../api/entity-manager";
 
-import { IAwake } from "../api/systems/interfaces/awake";
-import { IFixedUpdate } from "../api/systems/interfaces/fixedUpdate";
-import { ILateUpdate } from "../api/systems/interfaces/lateUpdate";
-import { IStart } from "../api/systems/interfaces/start";
-import { ISystem } from "../api/systems/interfaces/system";
-import { IUpdate } from "../api/systems/interfaces/update";
-
-import { IObserver } from "../patterns/observer/observer";
-import { ISubject } from "../patterns/observer/subject";
 import { Time } from "./time";
 import { TimeController } from "./time-controller";
 import { isIAwake, isIFixedUpdate, isILateUpdate, isIStart, isIUpdate } from "./typeguard";

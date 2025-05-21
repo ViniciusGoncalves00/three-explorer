@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { IObserver } from '../../patterns/observer/observer';
-import { ISubject } from '../../patterns/observer/subject';
+import { IObserver } from '../../common/patterns/observer/observer';
+import { ISubject } from '../../common/patterns/observer/subject';
 
 export class RendererManager implements IObserver {
   private renderer: THREE.WebGLRenderer;

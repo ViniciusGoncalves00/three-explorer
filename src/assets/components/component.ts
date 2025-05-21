@@ -1,4 +1,4 @@
-import { IObserver } from "../../patterns/observer/observer";
+import { IObserver } from "../../common/patterns/observer/observer";
 
 export abstract class Component {
     public enabled: boolean = true;

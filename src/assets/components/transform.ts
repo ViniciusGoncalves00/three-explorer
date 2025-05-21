@@ -1,5 +1,5 @@
 import { Component } from "./component";
-import { Vector3 } from "../vector3";
+import { Vector3 } from "../../core/api/vector3";
 
 export class Transform extends Component {
   private readonly _position: Vector3;

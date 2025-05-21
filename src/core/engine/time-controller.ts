@@ -1,6 +1,6 @@
-import { SubjectManager } from "../patterns/observer/subject-manager";
-import { ISubject } from "../patterns/observer/subject";
-import { IObserver } from "../patterns/observer/observer";
+import { IObserver } from "../../common/patterns/observer/observer";
+import { ISubject } from "../../common/patterns/observer/subject";
+import { SubjectManager } from "../../common/patterns/observer/subject-manager";
 
 export class TimeController implements ISubject {
     private _subjectManager = new SubjectManager();

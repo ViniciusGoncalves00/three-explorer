@@ -1,0 +1,14 @@
+{
+  "name": "assets",
+  "type": "folder",
+  "children": [
+    {
+      "name": "meshes",
+      "type": "folder",
+      "children": [
+        { "name": "quad.json", "type": "file" },
+        { "name": "cube.json", "type": "file" }
+      ]
+    }
+  ]
+}

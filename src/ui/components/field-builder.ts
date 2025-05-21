@@ -1,5 +1,5 @@
-import { Mesh } from "../../core/api/components/mesh";
-import { ObservableField } from "../../core/patterns/observer/observable-field";
+import { Mesh } from "../../assets/components/mesh";
+import { ObservableField } from "../../common/patterns/observer/observable-field";
 
 export class FieldBuilder {
     public static buildNumberField(observablefield: ObservableField<number>): HTMLElement {
@@ -27,7 +27,7 @@ export class FieldBuilder {
         field.step = "0.1";
         field.className = "w-full text-xs px-1 py-0.5 border border-gray-300 rounded";
 
-        observablefield.subscribe(value => field.value = value.toString());
+        observablefield.subscribe((value: any) => field.value = value.toString());
 
         // field.oninput = () => {
         //   const value = parseFloat(field.value);
@@ -83,7 +83,7 @@ export class FieldBuilder {
             }
         };
 
-        observablefield.subscribe(mesh => {
+        observablefield.subscribe((mesh: Mesh) => {
             if (!mesh) {
                 select.value = "";
             } else {

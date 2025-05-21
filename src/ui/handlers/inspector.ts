@@ -1,11 +1,12 @@
-import { Orbit } from "../../core/api/components/orbit";
-import { Rotate } from "../../core/api/components/rotate";
-import { Transform } from "../../core/api/components/transform";
+import { Orbit } from "../../assets/components/orbit";
+import { Rotate } from "../../assets/components/rotate";
+import { Transform } from "../../assets/components/transform";
 import { Entity } from "../../core/api/entity";
 import { Dropdown } from "../components/dropdown";
 import { ComponentUI } from "../components/inspector/component-ui";
 import { EntityHandler } from "./entity-handler";
-import { Mesh } from "../../core/api/components/mesh";
+import { Mesh } from "../../assets/components/mesh";
+import { Component } from "../../assets/components/component";
 
 export class Inspector {
   private static _container: HTMLElement;
@@ -29,7 +30,7 @@ export class Inspector {
     const entityWrapper = this.buildEntity(EntityHandler.selectedEntity.value)
     this._container.appendChild(entityWrapper)
 
-    EntityHandler.selectedEntity.value.getComponents().forEach(component => {
+    EntityHandler.selectedEntity.value.getComponents().forEach((component: Component) => {
       const componentUI = new ComponentUI(component).container;
       this._container.appendChild(componentUI);
     });

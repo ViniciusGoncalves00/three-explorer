@@ -1,6 +1,6 @@
-import { Mesh } from "../../../core/api/components/mesh";
+import { Mesh } from "../../../assets/components/mesh";
+import { ObservableField } from "../../../common/patterns/observer/observable-field";
 import { Vector3 } from "../../../core/api/vector3";
-import { ObservableField } from "../../../core/patterns/observer/observable-field";
 import { FieldBuilder } from "../field-builder";
 
 export class PropertyBuilder {

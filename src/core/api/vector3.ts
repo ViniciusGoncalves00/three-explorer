@@ -1,4 +1,4 @@
-import { ObservableField } from "../patterns/observer/observable-field";
+import { ObservableField } from "../../common/patterns/observer/observable-field";
 
 export class Vector3 {
   private readonly _x: ObservableField<number>;

@@ -1,7 +1,7 @@
-import { IObserver } from "../../core/patterns/observer/observer";
-import { ISubject } from "../../core/patterns/observer/subject";
 import { Engine } from '../../core/engine/engine';
 import { Entity } from "../../core/api/entity";
+import { IObserver } from '../../common/patterns/observer/observer';
+import { ISubject } from '../../common/patterns/observer/subject';
 
 export class Hierarchy implements IObserver {
     private _engine: Engine;

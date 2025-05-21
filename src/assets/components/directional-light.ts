@@ -1,4 +1,4 @@
-import { Vector3 } from "../vector3";
+import { Vector3 } from "../../core/api/vector3";
 import { Component } from "./component";
 import { Light } from "./light";
 

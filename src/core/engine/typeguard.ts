@@ -1,10 +1,10 @@
-import { Component } from "../api/components/component";
-import { IAwake } from "../api/systems/interfaces/awake";
-import { IFixedUpdate } from "../api/systems/interfaces/fixedUpdate";
-import { ILateUpdate } from "../api/systems/interfaces/lateUpdate";
-import { IStart } from "../api/systems/interfaces/start";
-import { ISystem } from "../api/systems/interfaces/system";
-import { IUpdate } from "../api/systems/interfaces/update";
+import { Component } from "../../assets/components/component";
+import { IAwake } from "../../assets/systems/interfaces/awake";
+import { IFixedUpdate } from "../../assets/systems/interfaces/fixedUpdate";
+import { ILateUpdate } from "../../assets/systems/interfaces/lateUpdate";
+import { IStart } from "../../assets/systems/interfaces/start";
+import { ISystem } from "../../assets/systems/interfaces/system";
+import { IUpdate } from "../../assets/systems/interfaces/update";
 
 export function isIAwake(system: ISystem): system is IAwake {
     return 'awake' in system;

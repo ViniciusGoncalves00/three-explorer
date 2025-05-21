@@ -1,5 +1,5 @@
-import { ObservableMap } from "../patterns/observer/observable-map";
-import { Component } from "./components/component";
+import { Component } from "../../assets/components/component";
+import { ObservableMap } from "../../common/patterns/observer/observable-map";
 
 export class Entity {
   private _id: `${string}-${string}-${string}-${string}-${string}`;

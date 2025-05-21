@@ -2,11 +2,11 @@ import * as THREE from 'three';
 import { ThreeScene } from './three-scene';
 import { RendererManager } from './three-renderer';
 import { CameraController } from './three-camera';
-import { Engine } from '../../engine/engine';
-import { IObserver } from '../../patterns/observer/observer';
-import { ISubject } from '../../patterns/observer/subject';
-import { TimeController } from '../../engine/time-controller';
 import { ObjectBinder } from './object-binder';
+import { IObserver } from '../../common/patterns/observer/observer';
+import { Engine } from '../../core/engine/engine';
+import { TimeController } from '../../core/engine/time-controller';
+import { ISubject } from '../../common/patterns/observer/subject';
 
 declare global {
   interface Window {
