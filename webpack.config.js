@@ -12,7 +12,7 @@ export default {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '',
-    clean: true
+    clean: false
   },
   resolve: {
     extensions: ['.ts', '.js'],

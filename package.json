@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack --mode development --watch",
-    "build": "npm run assets && webpack",
     "assets": "node src/build/assets.js",
-    "deploy": "gh-pages -d dist"
+    "build": "npm run assets && webpack",
+    "deploy": "npm run build && gh-pages -d dist",
+    "dev": "webpack --mode development --watch & npm run assets"
   },
   "keywords": [],
   "author": "",

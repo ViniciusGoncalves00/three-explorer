@@ -22,7 +22,7 @@ export class Tree {
         }
     }
 
-    private addFolder(child: FolderNode): void {
+    private addFolder(folder: FolderNode): void {
         const row = document.createElement("div");
         row.className = "w-full h-5 flex items-center";
         
@@ -36,29 +36,29 @@ export class Tree {
         
         const title = document.createElement("p");
         title.className = "w-full font-bold";
-        title.textContent = child.name;
+        title.textContent = folder.name;
         row.appendChild(title);
         
-        const childrenContainer = document.createElement("div");
-        childrenContainer.className = "pl-4";
-        childrenContainer.hidden = true;
+        const folderContainer = document.createElement("div");
+        folderContainer.className = "pl-4";
+        folderContainer.hidden = true;
         
-        for (const grandChild of child.children) {
-            if (grandChild.isFolder()) {
-                this.addChildToContainer(grandChild as FolderNode, childrenContainer);
+        for (const child of folder.children) {
+            if (child.isFolder()) {
+                this.addChildToContainer(child as FolderNode, folderContainer);
             } else {
-                this.addChildToContainer(grandChild as FileNode<any>, childrenContainer);
+                this.addChildToContainer(child as FileNode<any>, folderContainer);
             }
         }
     
         toggle.addEventListener('click', () => {
-            childrenContainer.hidden = !childrenContainer.hidden;
-            toggleIcon.classList.toggle('bi-caret-right-fill', childrenContainer.hidden);
-            toggleIcon.classList.toggle('bi-caret-down-fill', !childrenContainer.hidden);
+            folderContainer.hidden = !folderContainer.hidden;
+            toggleIcon.classList.toggle('bi-caret-right-fill', folderContainer.hidden);
+            toggleIcon.classList.toggle('bi-caret-down-fill', !folderContainer.hidden);
         });
     
         this._container.appendChild(row);
-        this._container.appendChild(childrenContainer);
+        this._container.appendChild(folderContainer);
     }
 
     private addChildToContainer(child: TreeNode, container: HTMLElement): void {

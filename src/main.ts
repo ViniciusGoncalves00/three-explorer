@@ -19,139 +19,142 @@ import { ThreeEngine } from './graphics/threejs/three-engine';
 
 
 window.addEventListener('DOMContentLoaded', () => {
-  const containerEditor = document.getElementById('viewport-editor-container');
-  const canvasEditor = document.getElementById('viewport-editor');
-  const containerSimulator = document.getElementById('viewport-simulator-container');
-  const canvasSimulator = document.getElementById('viewport-simulator');
-  const consoleContainer = document.getElementById('console-content');
-  const entitiesContainer = document.getElementById('entities-container');
-  const inspectorContainer = document.getElementById("inspector-container");
-  const assetsContainer = document.getElementById("assets-container");
-  const fpsContainer = document.getElementById("fps-container");
-  const averageFpsContainer = document.getElementById("average-fps-container");
-
-  if (!containerEditor || !canvasEditor || !containerSimulator || !canvasSimulator) return;
-
-  const engine = new Engine()
-  const binder = new ObjectBinder();
-  const threeEngine = new ThreeEngine(engine, binder, containerEditor, canvasEditor, containerSimulator, canvasSimulator);
-
-  engine.registerSystem(new RotateSystem());
-  engine.registerSystem(new OrbitSystem());
-
-  new TimeControllerHandler(document, engine.timeController);
-
-  if (fpsContainer) engine.time.framesPerSecond.subscribe(() => fpsContainer.innerHTML = `${engine.time.framesPerSecond.value.toString()} FPS`);
-  if (averageFpsContainer) engine.time.averageFramesPerSecond.subscribe(() => averageFpsContainer.innerHTML = `${engine.time.averageFramesPerSecond.value.toString()} aFPS`);
-  
-  if (!consoleContainer) return;
-  
-  const consoleClass = new Console(consoleContainer);
-  const consoleLogger = ConsoleLogger.getInstance();
-  consoleLogger.attach(consoleClass);
-  engine.timeController.attach(consoleLogger)
-
-  if (!entitiesContainer) return;
-  if (!inspectorContainer) return;
-  
-  const entityHandler = new EntityHandler(engine, threeEngine, binder);
-  const inspector = new Inspector(inspectorContainer);
-  const hierarchy = new Hierarchy(engine, entitiesContainer!, entity => EntityHandler.selectedEntity.value = entity);
-  engine.entityManager.attach(hierarchy);
-  
-  (window as any).addEntity = (isRuntime: boolean) => {
-    entityHandler.addEntity(isRuntime);
-  };
-
-  if (!assetsContainer) return;
-
-  const tree = new Tree(assetsContainer);
-  fetch("/assets/fileTree.json")
-  .then(res => res.json())
-  .then(tree => {
-    // montar árvore aqui
-  });
-
-  // initTree(assetsContainer)
-  // const folder = new FolderNode("Folder 1");
-  // folder.addChild(new FileNode<string>("File 1", ""))
-  // folder.addChild(new FileNode<string>("File 2", ""))
-  // folder.addChild(new FileNode<string>("File 3", ""))
-  // const folder2 = new FolderNode("Folder 2");
-  // folder2.addChild(new FileNode<string>("File 4", ""))
-  // const folder3 = new FolderNode("Folder 3");
-  // folder3.addChild(new FileNode<string>("File 5", ""))
-  // folder.addChild(folder2)
-  // folder.addChild(folder3)
-  // assetsTree.addChild(folder)
+    new Program();
 });
 
-    function buildFilePath(node: TreeNode): string {
-        const parts: string[] = [];
+export class Program {
+    public readonly devMode: boolean;
+    public readonly engine: Engine;
+    public readonly binder: ObjectBinder;
+    public readonly threeEngine: ThreeEngine;
+    public readonly tree: Tree;
 
-        let current: TreeNode | null = node;
-        while (current) {
-            parts.unshift(current.name);
-            current = current.parent;
-        }
+    //#region [HTMLElements]
+    public readonly consoleContent: HTMLElement;
 
-        return `/assets/${parts.join('/')}`;
+    public readonly viewportEditorContainer: HTMLElement;
+    public readonly canvasEditor: HTMLCanvasElement;
+
+    public readonly viewportSceneContainer: HTMLElement;
+    public readonly canvasScene: HTMLCanvasElement;
+
+    public readonly entitiesContainer: HTMLElement;
+    public readonly inspectorContainer: HTMLElement;
+    public readonly assetsContainer: HTMLElement;
+    public readonly fpsContainer: HTMLElement;
+    public readonly averageFpsContainer: HTMLElement;
+    //#endregion
+
+    private _consoleLogger: ConsoleLogger;
+
+
+    public constructor(devMode: boolean = false) {
+        this.devMode = devMode;
+        this._consoleLogger = ConsoleLogger.getInstance();
+
+        this._consoleLogger.log("creating the best interface...")
+
+        this.consoleContent = this.getElementOrFail<HTMLElement>('consoleContent');
+        const consoleClass = new Console(this.consoleContent);
+        this._consoleLogger.attach(consoleClass);
+
+        this.viewportEditorContainer = this.getElementOrFail<HTMLElement>('viewportEditorContainer');
+        this.canvasEditor = this.getElementOrFail<HTMLCanvasElement>('canvasEditor');
+        this.viewportSceneContainer = this.getElementOrFail<HTMLElement>('viewportSceneContainer');
+        this.canvasScene = this.getElementOrFail<HTMLCanvasElement>('canvasScene');
+        this.entitiesContainer = this.getElementOrFail<HTMLElement>('entitiesContainer');
+        this.inspectorContainer = this.getElementOrFail<HTMLElement>('inspectorContainer');
+        this.assetsContainer = this.getElementOrFail<HTMLElement>('assetsContainer');
+        this.fpsContainer = this.getElementOrFail<HTMLElement>('fpsContainer');
+        this.averageFpsContainer = this.getElementOrFail<HTMLElement>('averageFpsContainer');
+
+        this._consoleLogger.log("loading your best assets...");
+        this.tree = new Tree(this.assetsContainer);
+
+        (async () => {
+            const rootNode = await this.loadAssets();
+            this.tree.addChild(rootNode);
+        })();
+
+        this.engine = new Engine();
+        this.binder = new ObjectBinder();
+        this.threeEngine = new ThreeEngine(this.engine, this.binder, this.viewportEditorContainer, this.canvasEditor, this.viewportSceneContainer, this.canvasScene);
+
+        this.engine.registerSystem(new RotateSystem());
+        this.engine.registerSystem(new OrbitSystem());
+
+        new TimeControllerHandler(document, this.engine.timeController);
+
+        if (this.fpsContainer) this.engine.time.framesPerSecond.subscribe(() => this.fpsContainer.innerHTML = `${this.engine.time.framesPerSecond.value.toString()} FPS`);
+        if (this.averageFpsContainer) this.engine.time.averageFramesPerSecond.subscribe(() => this.averageFpsContainer.innerHTML = `${this.engine.time.averageFramesPerSecond.value.toString()} aFPS`);
+
+        this.engine.timeController.attach(this._consoleLogger)
+
+        const entityHandler = new EntityHandler(this.engine, this.threeEngine, this.binder);
+        const inspector = new Inspector(this.inspectorContainer);
+        const hierarchy = new Hierarchy(this.engine, this.entitiesContainer!, entity => EntityHandler.selectedEntity.value = entity);
+        this.engine.entityManager.attach(hierarchy);
+
+        (window as any).addEntity = (isRuntime: boolean) => {
+          entityHandler.addEntity(isRuntime);
+        };
+
+        this._consoleLogger.log("All right! You can start now!")
     }
 
-    async function initTree(container: HTMLElement) {
-        const response = await fetch('src/common/index.json');
-        const json = await response.json();
-
-        const tree = new Tree(container);
-        const rootFolder = await buildTreeFromJson(json);
-
-        for (const child of rootFolder.children) {
-            tree.addChild(child);
+    private getElementOrFail<T extends HTMLElement>(id: string): T {
+        const element = document.getElementById(id);
+        if (!element) {
+            this._consoleLogger.error(`failed to load container: '${id}' -> ${element}`);
+            throw new Error(`UI element '${id}' not found`);
         }
-
-        setupClickListeners(tree.rootNode);
+        return element as T;
     }
 
-    function setupClickListeners(node: FolderNode) {
-        for (const child of node.children) {
-            if (child.isFolder()) {
-                setupClickListeners(child as FolderNode);
-            } else {
-                const row = findRowElementForNode(child.name);
-                if (row) {
-                    row.classList.add("cursor-pointer", "hover:bg-gray-200");
-                    row.addEventListener('click', async () => {
-                        const fileNode = child as FileNode<any>;
-                        if (!fileNode.content) {
-                            const path = buildFilePath(fileNode);
-                            const res = await fetch(path);
-                            fileNode.content = await res.json();
-                            console.log(`Conteúdo de ${fileNode.name}:`, fileNode.content);
-                        }
-                    });
-                }
+    private async loadAssets(): Promise<FolderNode | FileNode<any>> {
+        const assetsJson = localStorage.getItem("assets");
+
+        if (assetsJson) {
+            this._consoleLogger.log("loading assets from local storage...");
+            try {
+                const root = this.deserializeTree(JSON.parse(assetsJson));
+                this._consoleLogger.log("assets loaded successfully.");
+                return root;
+            } catch (e) {
+                this._consoleLogger.warn("failed to parse local assets. Fetching from remote...");
+                return await this.fetchAndLoadAssetsFromRepo();
             }
+        } else {
+            this._consoleLogger.log("there are no assets in local storage. Loading from remote...");
+            return await this.fetchAndLoadAssetsFromRepo();
         }
     }
 
-    function findRowElementForNode(name: string): HTMLDivElement | null {
-        const rows = document.querySelectorAll<HTMLDivElement>('div.w-full.h-5');
-        return Array.from(rows).find(row => row.textContent === name) ?? null;
+    private async fetchAndLoadAssetsFromRepo(): Promise<FolderNode | FileNode<any>> {
+        try {
+            const response = await fetch("dist/assets.json");
+            const data = await response.json();
+
+            const root = this.deserializeTree(data);
+            localStorage.setItem("assets", JSON.stringify(data));
+            this._consoleLogger.log("assets loaded from remote and saved to localStorage.");
+            return root;
+        } catch (error) {
+            this._consoleLogger.warn("failed to fetch assets from remote.");
+            console.error(error);
+            throw error;
+        }
     }
 
 
-     async function buildTreeFromJson(json: any, parent: FolderNode | null = null): Promise<FolderNode> {
-        const folder = new FolderNode(json.name, parent);
+    private deserializeTree(obj: any): FolderNode | FileNode<any> {
+        if (!obj.children) return new FileNode(obj.name, obj.content);
 
-        for (const child of json.children ?? []) {
-            if (child.type === "folder") {
-                const subfolder = await buildTreeFromJson(child, folder);
-                folder.addChild(subfolder);
-            } else if (child.type === "file") {
-                const fileNode = new FileNode(child.name, null, folder);
-                folder.addChild(fileNode);
-            }
+        const folder = new FolderNode(obj.name);
+        for (const child of obj.children) {
+            const node = this.deserializeTree(child);
+            folder.addChild(node);
         }
-
         return folder;
     }
+}
