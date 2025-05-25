@@ -1,5 +1,5 @@
-import { IObserver } from "../../common/patterns/observer/observer";
-import { ISubject } from "../../common/patterns/observer/subject";
+import { IObserver } from "../../../common/patterns/observer/observer";
+import { ISubject } from "../../../common/patterns/observer/subject";
 
 export class Console implements IObserver {
     private _container: HTMLElement;
