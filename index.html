@@ -21,10 +21,10 @@
           <i class="bi bi-cloud"></i>
         </button>
         <div class="btn btn--time-controller">
-          <p id="average-fps-container"></p>
+          <p id="averageFpsContainer"></p>
         </div>
         <div class="btn btn--time-controller">
-          <p id="fps-container"></p>
+          <p id="fpsContainer"></p>
         </div>
       </div>
 
@@ -73,30 +73,28 @@
            px-2 cursor-pointer truncate">
             Add Entity
           </button>
-          <div id="entities-container" class="content"></div>
+          <div id="entitiesContainer" class="content"></div>
         </div>
         <div id="Assets" class="tab-body">
           <div class="title-bar tab-title cursor-grab">
             <i class="bi bi-box"></i>
             <p>Assets</p>
           </div>
-          <div class="content p-2">
-          </div>
+          <div id="assetsContainer" class="content"></div>
         </div>
       </div>
 
       <!-- CENTER -->
       <div id="center" class="w-full h-full flex flex-col items-start justify-start relative">
         <div class="dropzone">drop</div>
-
         <div id="viewport-container" class="tab-body flex items-start justify-start space-x-[2px]">
           <div class="w-1/2 h-full flex flex-col">
             <div class="title-bar tab-title">
               <i class="bi bi-grid-3x3"></i>
               <p>Editor</p>
             </div>
-            <div id="viewport-editor-container" class="w-full h-full relative">
-              <canvas id="viewport-editor" class="absolute w-full h-full"></canvas>
+            <div id="viewportEditorContainer" class="w-full h-full relative">
+              <canvas id="canvasEditor" class="absolute w-full h-full"></canvas>
             </div>
           </div>
           <div class="w-1/2 h-full flex flex-col">
@@ -104,8 +102,8 @@
               <i class="bi bi-joystick"></i>
               <p>Scene</p>
             </div>
-            <div id="viewport-simulator-container" class="w-full h-full relative">
-              <canvas id="viewport-simulator" class="absolute w-full h-full"></canvas>
+            <div id="viewportSceneContainer" class="w-full h-full relative">
+              <canvas id="canvasScene" class="absolute w-full h-full"></canvas>
             </div>
           </div>
         </div>
@@ -115,7 +113,7 @@
             <i class="bi bi-file-text"></i>
             <p>Console</p>
           </div>
-          <div id="console-content" class="content p-2">
+          <div id="consoleContent" class="content p-2">
           </div>
         </div>
       </div>
@@ -129,7 +127,7 @@
             <i class="bi bi-info-circle"></i>
             <p>Inspector</p>
           </div>
-          <div id="inspector-container" class="w-full flex-none flex flex-col space-y-2"></div>
+          <div id="inspectorContainer" class="w-full flex-none flex flex-col space-y-2"></div>
         </div>
       </div>
     </div>
