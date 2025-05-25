@@ -3,7 +3,7 @@ import './ui/styles/time-controller.css';
 
 import { Engine } from './core/engine/engine';
 import { TimeControllerHandler } from './ui/handlers/time-controller-handler';
-import { Console } from './ui/handlers/console';
+import { Console } from './ui/elements/console/console';
 import { ConsoleLogger } from './core/api/console-logger';
 import { RotateSystem } from './assets/systems/rotateSystem';
 import { OrbitSystem } from './assets/systems/orbitSystem';
@@ -16,6 +16,7 @@ import { FileNode } from './common/tree/file-node';
 import { TreeNode } from './common/tree/tree-node';
 import { ObjectBinder } from './graphics/threejs/object-binder';
 import { ThreeEngine } from './graphics/threejs/three-engine';
+import { TimeController } from './core/engine/time-controller';
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -24,25 +25,41 @@ window.addEventListener('DOMContentLoaded', () => {
 
 export class Program {
     public readonly devMode: boolean;
-    public readonly engine: Engine;
-    public readonly binder: ObjectBinder;
-    public readonly threeEngine: ThreeEngine;
-    public readonly tree: Tree;
+    public engine!: Engine;
+    public binder!: ObjectBinder;
+    public threeEngine!: ThreeEngine;
 
     //#region [HTMLElements]
-    public readonly consoleContent: HTMLElement;
+    public consoleContent!: HTMLElement;
 
-    public readonly viewportEditorContainer: HTMLElement;
-    public readonly canvasEditor: HTMLCanvasElement;
+    public viewportEditorContainer!: HTMLElement;
+    public canvasEditor!: HTMLCanvasElement;
 
-    public readonly viewportSceneContainer: HTMLElement;
-    public readonly canvasScene: HTMLCanvasElement;
+    public viewportSceneContainer!: HTMLElement;
+    public canvasScene!: HTMLCanvasElement;
 
-    public readonly entitiesContainer: HTMLElement;
-    public readonly inspectorContainer: HTMLElement;
-    public readonly assetsContainer: HTMLElement;
-    public readonly fpsContainer: HTMLElement;
-    public readonly averageFpsContainer: HTMLElement;
+    public entitiesContainer!: HTMLElement;
+    public inspectorContainer!: HTMLElement;
+    public assetsContainer!: HTMLElement;
+    public fpsContainer!: HTMLElement;
+    public averageFpsContainer!: HTMLElement;
+    //#endregion
+
+    //#region [HTMLElements]
+    private _console!: Console
+    public get console(): Console { return this._console; }
+
+    private _inspector!: Inspector;
+    public get inspector(): Inspector { return this._console; }
+
+    private _tree!: Tree;
+    public get tree(): Tree { return this._tree; }
+
+    private _hierarchy!: Hierarchy;
+    public get hierarchy(): Hierarchy { return this._hierarchy; }
+
+    private _controls!: TimeControllerHandler;
+    public get controls(): TimeControllerHandler { return this._controls; }
     //#endregion
 
     private _consoleLogger: ConsoleLogger;
@@ -54,36 +71,16 @@ export class Program {
 
         this._consoleLogger.log("creating the best interface...")
 
-        this.consoleContent = this.getElementOrFail<HTMLElement>('consoleContent');
-        const consoleClass = new Console(this.consoleContent);
-        this._consoleLogger.attach(consoleClass);
+        this.initializeConsole();
+        this.initializeInspector();
+        this.initializeScene();
 
-        this.viewportEditorContainer = this.getElementOrFail<HTMLElement>('viewportEditorContainer');
-        this.canvasEditor = this.getElementOrFail<HTMLCanvasElement>('canvasEditor');
-        this.viewportSceneContainer = this.getElementOrFail<HTMLElement>('viewportSceneContainer');
-        this.canvasScene = this.getElementOrFail<HTMLCanvasElement>('canvasScene');
-        this.entitiesContainer = this.getElementOrFail<HTMLElement>('entitiesContainer');
-        this.inspectorContainer = this.getElementOrFail<HTMLElement>('inspectorContainer');
-        this.assetsContainer = this.getElementOrFail<HTMLElement>('assetsContainer');
         this.fpsContainer = this.getElementOrFail<HTMLElement>('fpsContainer');
         this.averageFpsContainer = this.getElementOrFail<HTMLElement>('averageFpsContainer');
 
         this._consoleLogger.log("loading your best assets...");
-        this.tree = new Tree(this.assetsContainer);
-
-        (async () => {
-            const rootNode = await this.loadAssets();
-            this.tree.addChild(rootNode);
-        })();
-
-        this.engine = new Engine();
-        this.binder = new ObjectBinder();
-        this.threeEngine = new ThreeEngine(this.engine, this.binder, this.viewportEditorContainer, this.canvasEditor, this.viewportSceneContainer, this.canvasScene);
-
-        this.engine.registerSystem(new RotateSystem());
-        this.engine.registerSystem(new OrbitSystem());
-
-        new TimeControllerHandler(document, this.engine.timeController);
+        this.initializeAssets();
+        this.initializeControls();
 
         if (this.fpsContainer) this.engine.time.framesPerSecond.subscribe(() => this.fpsContainer.innerHTML = `${this.engine.time.framesPerSecond.value.toString()} FPS`);
         if (this.averageFpsContainer) this.engine.time.averageFramesPerSecond.subscribe(() => this.averageFpsContainer.innerHTML = `${this.engine.time.averageFramesPerSecond.value.toString()} aFPS`);
@@ -91,9 +88,8 @@ export class Program {
         this.engine.timeController.attach(this._consoleLogger)
 
         const entityHandler = new EntityHandler(this.engine, this.threeEngine, this.binder);
-        const inspector = new Inspector(this.inspectorContainer);
-        const hierarchy = new Hierarchy(this.engine, this.entitiesContainer!, entity => EntityHandler.selectedEntity.value = entity);
-        this.engine.entityManager.attach(hierarchy);
+        this.initializeHierarchy();
+        this.engine.entityManager.attach(this.hierarchy);
 
         (window as any).addEntity = (isRuntime: boolean) => {
           entityHandler.addEntity(isRuntime);
@@ -101,6 +97,52 @@ export class Program {
 
         this._consoleLogger.log("All right! You can start now!")
     }
+
+    private initializeConsole(): void {
+        this.consoleContent = this.getElementOrFail<HTMLElement>('consoleContent');
+        this._console = new Console(this.consoleContent);
+        this._consoleLogger.attach(this._console);
+    };
+
+    private initializeHierarchy(): void {
+        this.entitiesContainer = this.getElementOrFail<HTMLElement>('entitiesContainer');
+        this._hierarchy = new Hierarchy(this.engine, this.entitiesContainer, entity => EntityHandler.selectedEntity.value = entity);
+    };
+
+    private initializeAssets(): void {
+        this.assetsContainer = this.getElementOrFail<HTMLElement>('assetsContainer');
+        this._tree = new Tree(this.assetsContainer);
+
+        (async () => {
+            const rootNode = await this.loadAssets();
+            this._tree.addChild(rootNode);
+        })();
+    };
+    private initializeInspector(): void {
+        this.inspectorContainer = this.getElementOrFail<HTMLElement>('inspectorContainer');
+        this._inspector = new Inspector(this.inspectorContainer);
+    };
+
+    private initializeControls(): void {
+        // this.controlsContainer = this.getElementOrFail<HTMLElement>('inspectorContainer');
+        this._controls = new TimeControllerHandler(document, this.engine.timeController);
+    };
+
+    private initializeScene(): void {
+        this.viewportEditorContainer = this.getElementOrFail<HTMLElement>('viewportEditorContainer');
+        this.canvasEditor = this.getElementOrFail<HTMLCanvasElement>('canvasEditor');
+        this.viewportSceneContainer = this.getElementOrFail<HTMLElement>('viewportSceneContainer');
+        this.canvasScene = this.getElementOrFail<HTMLCanvasElement>('canvasScene');
+
+        this.engine = new Engine();
+        this.binder = new ObjectBinder();
+        this.threeEngine = new ThreeEngine(this.engine, this.binder, this.viewportEditorContainer, this.canvasEditor, this.viewportSceneContainer, this.canvasScene);
+
+        this.engine.registerSystem(new RotateSystem());
+        this.engine.registerSystem(new OrbitSystem());
+    };
+
+    private initializeSettings(): void {};
 
     private getElementOrFail<T extends HTMLElement>(id: string): T {
         const element = document.getElementById(id);
