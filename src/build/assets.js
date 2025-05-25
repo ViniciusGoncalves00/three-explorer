@@ -7,6 +7,12 @@ const __dirname = path.dirname(__filename);
 
 const basePath = path.join(__dirname, "../assets");
 
+const distPath = path.join(__dirname, "../../dist");
+
+if (!fs.existsSync(distPath)) {
+  fs.mkdirSync(distPath, { recursive: true });
+}
+
 function walk(dir) {
   const result = {
     name: path.basename(dir),
@@ -31,6 +37,6 @@ function walk(dir) {
 const tree = walk(basePath);
 
 fs.writeFileSync(
-  path.join(__dirname, "../../dist/assets.json"),
+  path.join(distPath, "assets.json"),
   JSON.stringify(tree, null, 2)
 );
