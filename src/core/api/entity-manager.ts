@@ -1,8 +1,9 @@
+import { ObservableMap } from "../../common/patterns/observer/observable-map";
 import { Entity } from "./entity";
 
 export class EntityManager {
-    private entities: Map<string, Entity> = new Map();
-    private backup: Map<string, Entity> = new Map();
+    public readonly entities: ObservableMap<string, Entity> = new ObservableMap(new Map<string, Entity>());
+    public readonly backup: ObservableMap<string, Entity> = new ObservableMap(new Map<string, Entity>());
   
     public addEntity(entity: Entity): void {
       this.entities.set(entity.id, entity);

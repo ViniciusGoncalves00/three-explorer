@@ -81,11 +81,8 @@ export class Program {
         if (this.fpsContainer) this.engine.time.framesPerSecond.subscribe(() => this.fpsContainer.innerHTML = `${this.engine.time.framesPerSecond.value.toString()} FPS`);
         if (this.averageFpsContainer) this.engine.time.averageFramesPerSecond.subscribe(() => this.averageFpsContainer.innerHTML = `${this.engine.time.averageFramesPerSecond.value.toString()} aFPS`);
 
-        // this.engine.timeController.attach(this._console)
-
         const entityHandler = new EntityHandler(this.engine, this.threeEngine, this.binder);
         this.initializeHierarchy();
-        // this.engine.entityManager.attach(this.hierarchy);
 
         (window as any).addEntity = (isRuntime: boolean) => {
           entityHandler.addEntity(isRuntime);
@@ -117,7 +114,8 @@ export class Program {
 
     private initializeHierarchy(): void {
         this.entitiesContainer = this.getElementOrFail<HTMLElement>('entitiesContainer');
-        this._hierarchy = new Hierarchy(this.engine, this.entitiesContainer, entity => EntityHandler.selectedEntity.value = entity);
+        this._hierarchy = new Hierarchy(this.entitiesContainer, entity => EntityHandler.selectedEntity.value = entity);
+        this.engine.entityManager.entities.subscribe(value => this.hierarchy.renderHierarchy(value))
     };
 
     private initializeAssets(): void {

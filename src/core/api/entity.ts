@@ -25,7 +25,7 @@ export class Entity {
   public get isRuntime(): boolean { return this._isRuntime; }
   public set isRuntime(isRuntime: boolean) { this._isRuntime = isRuntime; }
   
-  private _components = new ObservableMap<new (...args: any[]) => Component, Component>();
+  private _components = new ObservableMap<new (...args: any[]) => Component, Component>(new Map());
   public get components(): ObservableMap<new (...args: any[]) => Component, Component> { return this._components; }
   
   public constructor(id: `${string}-${string}-${string}-${string}-${string}`) {
