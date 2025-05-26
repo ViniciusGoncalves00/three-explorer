@@ -1,29 +1,30 @@
-import { IObserver } from "../../../common/patterns/observer/observer";
-import { ISubject } from "../../../common/patterns/observer/subject";
+import { ObservableList } from "../../../common/patterns/observer/observable-list";
+import { LogType } from "../../../core/api/enum/log-type";
+import { Log } from "../../../core/api/log";
 
-export class Console implements IObserver {
-    private _container: HTMLElement;
+export class Console{
+    private readonly _container: HTMLElement;
+    public readonly logs: ObservableList<Log> = new ObservableList();
 
     public constructor(container: HTMLElement) {
         this._container = container;
     }
 
-    public onNotify(subject: ISubject, args?: string[]) {
-        if (!args) return;
-    
-        const [type, message] = args;
-        this.log(message, type);
-    }
+    public log(logType: LogType, message: string) {
+        const log = new Log(Date.now(), logType, message);
+        this.logs.push(log)
 
-    public log(message: string, type: string = "LOG"): void {
         const logLine = document.createElement("p");
-        logLine.textContent = message;
+        logLine.textContent = this.format(log);
     
-        switch (type) {
-            case "WARNING":
+        switch (logType) {
+            case LogType.Success:
+                logLine.classList.add("log-success");
+                break;
+            case LogType.Warning:
                 logLine.classList.add("log-warning");
                 break;
-            case "ERROR":
+            case LogType.Error:
                 logLine.classList.add("log-error");
                 break;
             default:
@@ -35,8 +36,17 @@ export class Console implements IObserver {
         this._container.scrollTop = this._container.scrollHeight;
     }
     
-
     public clear(): void {
         this._container.innerHTML = "";
+    }
+
+    public filter(): void {
+
+    }
+
+    private format(log: Log): string {
+        const time = new Date(log.time).toLocaleTimeString();
+        const type = LogType[log.logType];
+        return `[${time}] [${type}] ${log.message}`;
     }
 }

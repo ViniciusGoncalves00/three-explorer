@@ -4,8 +4,6 @@ import { ILateUpdate } from "../../assets/systems/interfaces/lateUpdate";
 import { IStart } from "../../assets/systems/interfaces/start";
 import { ISystem } from "../../assets/systems/interfaces/system";
 import { IUpdate } from "../../assets/systems/interfaces/update";
-import { IObserver } from "../../common/patterns/observer/observer";
-import { ISubject } from "../../common/patterns/observer/subject";
 import { Entity } from "../api/entity";
 import { EntityManager } from "../api/entity-manager";
 
@@ -13,7 +11,7 @@ import { Time } from "./time";
 import { TimeController } from "./time-controller";
 import { isIAwake, isIFixedUpdate, isILateUpdate, isIStart, isIUpdate } from "./typeguard";
 
-export class Engine implements IObserver {
+export class Engine {
   private _time: Time;
   public get time(): Time { return this._time };
 
@@ -34,41 +32,62 @@ export class Engine implements IObserver {
   public constructor() {
     this._time = new Time();
     this._timeController = new TimeController();
-    this._timeController.attach(this);
+
+    this.timeController.isRunning.subscribe((value => {
+      if(value) {
+        this.entityManager.saveState();
+        this.animationFrameId = requestAnimationFrame(this.loop);
+      }
+      else {
+        this.entityManager.restoreState();
+      }}
+    ))
+    
+    this.timeController.isPaused.subscribe((value => {
+      if(value) {
+        if (this.animationFrameId !== null) {
+          cancelAnimationFrame(this.animationFrameId);
+          this.animationFrameId = null;
+        }
+      }
+      else {
+        this.animationFrameId = requestAnimationFrame(this.loop);
+      }}
+    ))
   }
 
-  public onNotify(subject: ISubject, args?: string[]) {
-    if (args) {
-      switch (args[0]) {
-        case "Start":
-          if (this.animationFrameId === null) {
-            this.entityManager.saveState();
-            this.animationFrameId = requestAnimationFrame(this.loop);
-          }
-          break;
-        case "Pause":
-          if (this.animationFrameId !== null) {
-            cancelAnimationFrame(this.animationFrameId);
-            this.animationFrameId = null;
-          }
-          break;
-        case "Unpause":
-          if (this.animationFrameId === null) {
-              this.animationFrameId = requestAnimationFrame(this.loop);
-          }
-          break;
-        case "Stop":
-          if (this.animationFrameId !== null) {
-            cancelAnimationFrame(this.animationFrameId);
-            this.animationFrameId = null;
-          }
-          this.entityManager.restoreState();
-          break;
-        default:
-          break;
-      }
-    }
-  }
+  // public onNotify(subject: ISubject, args?: string[]) {
+  //   if (args) {
+  //     switch (args[0]) {
+  //       case "Start":
+  //         if (this.animationFrameId === null) {
+  //           this.entityManager.saveState();
+  //           this.animationFrameId = requestAnimationFrame(this.loop);
+  //         }
+  //         break;
+  //       case "Pause":
+  //         if (this.animationFrameId !== null) {
+  //           cancelAnimationFrame(this.animationFrameId);
+  //           this.animationFrameId = null;
+  //         }
+  //         break;
+  //       case "Unpause":
+  //         if (this.animationFrameId === null) {
+  //             this.animationFrameId = requestAnimationFrame(this.loop);
+  //         }
+  //         break;
+  //       case "Stop":
+  //         if (this.animationFrameId !== null) {
+  //           cancelAnimationFrame(this.animationFrameId);
+  //           this.animationFrameId = null;
+  //         }
+  //         this.entityManager.restoreState();
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   }
+  // }
 
   public registerEntity(entity: Entity): void {
     this.entityManager.addEntity(entity);

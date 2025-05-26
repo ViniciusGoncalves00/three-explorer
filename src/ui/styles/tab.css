@@ -20,6 +20,10 @@
     color: white;
 }
 
+.log-success {
+    color: greenyellow;
+}
+
 .log-warning {
     color: orange;
 }
