@@ -26,4 +26,5 @@ export class Mesh extends Component {
     public copyFrom(component: Component): void {
         throw new Error("Method not implemented.");
     }
+    public destroy(): void {}
 }

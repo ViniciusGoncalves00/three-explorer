@@ -49,4 +49,6 @@ export class Orbit extends Component {
       this._distance.value = orbit.distance.value;
       this._speed.value = orbit.speed.value;
   }
+  
+  public destroy(): void {}
 }

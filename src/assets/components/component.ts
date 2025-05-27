@@ -4,6 +4,7 @@ export abstract class Component {
     public enabled: boolean = true;
     public abstract clone(): Component;
     public abstract copyFrom(component: Component): void;
+    public abstract destroy(): void;
 
     private observers: IObserver[] = [];
 

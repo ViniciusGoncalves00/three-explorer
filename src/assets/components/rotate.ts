@@ -26,4 +26,6 @@ export class Rotate extends Component {
       this._axis.set(rotate.axis.x.value, rotate.axis.y.value, rotate.axis.z.value);
       this._speed.value = rotate.speed.value;
   }
+
+  public destroy(): void {}
 }

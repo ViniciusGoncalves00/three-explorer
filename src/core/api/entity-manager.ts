@@ -10,6 +10,9 @@ export class EntityManager {
     }
 
     public removeEntity(entityId: string): void {
+      const entity = this.entities.get(entityId);
+      if(!entity) return;
+
       this.entities.delete(entityId);
     }
 
@@ -17,19 +20,28 @@ export class EntityManager {
       return Array.from(this.entities.values());
     }    
   
-    public saveState(): void {
+    public saveEntities(): void {
       this.backup.clear();
       for (const [id, entity] of this.entities.entries()) {
         this.backup.set(id, entity.clone());
       }
     }
   
-    public restoreState(): void {
-      for (const [id, clone] of this.backup.entries()) {
-        const entity = this.entities.get(id);
-        if (!entity) continue;
-  
-        entity.restoreFrom(clone);
+public restoreEntities(): void {
+  for (const [id, clone] of this.backup.entries()) {
+    const currentEntity = this.entities.get(id);
+
+    if (currentEntity) {
+      currentEntity.restoreFrom(clone);
+    } else {
+      this.addEntity(clone);
+    }
+  }
+
+  for (const id of this.entities.keys()) {
+    if (!this.backup.has(id)) {
+        this.removeEntity(id)
       }
     }
-  }  
+  }
+}

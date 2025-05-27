@@ -84,8 +84,8 @@ export class Program {
         const entityHandler = new EntityHandler(this.engine, this.threeEngine, this.binder);
         this.initializeHierarchy();
 
-        (window as any).addEntity = (isRuntime: boolean) => {
-          entityHandler.addEntity(isRuntime);
+        (window as any).addEntity = () => {
+          entityHandler.addEntity();
         };
 
         this._console.log(LogType.Log, "All right! You can start now!")

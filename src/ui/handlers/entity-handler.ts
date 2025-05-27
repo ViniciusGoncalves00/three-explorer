@@ -21,14 +21,13 @@ export class EntityHandler {
         this._binder = binder;
     }
     
-    public addEntity(isRuntime: boolean): void {
+    public addEntity(): void {
         const mesh = new THREE.Mesh(
             new THREE.BoxGeometry(),
             new THREE.MeshStandardMaterial({ color: 0x00ff00 })
           );
 
         const cubeEntity = new Entity(crypto.randomUUID());
-        cubeEntity.isRuntime = isRuntime;
         cubeEntity.addComponent(new Transform());
           
         this._binder.bind(cubeEntity, mesh);

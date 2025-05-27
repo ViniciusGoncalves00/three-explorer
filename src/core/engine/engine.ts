@@ -33,61 +33,36 @@ export class Engine {
     this._time = new Time();
     this._timeController = new TimeController();
 
-    this.timeController.isRunning.subscribe((value => {
-      if(value) {
-        this.entityManager.saveState();
+    this.timeController.isRunning.subscribe((wasStarted => {
+      if(wasStarted) {
+        if(this.animationFrameId) return;
+
+        this.entityManager.saveEntities();
         this.animationFrameId = requestAnimationFrame(this.loop);
       }
       else {
-        this.entityManager.restoreState();
+        if(!this.animationFrameId) return;
+
+        cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
+        this.entityManager.restoreEntities();
       }}
     ))
     
-    this.timeController.isPaused.subscribe((value => {
-      if(value) {
-        if (this.animationFrameId !== null) {
-          cancelAnimationFrame(this.animationFrameId);
-          this.animationFrameId = null;
-        }
+    this.timeController.isPaused.subscribe((wasPaused => {
+      if(wasPaused) {
+        if(!this.animationFrameId) return;
+
+        cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
       }
       else {
+        if(this.animationFrameId) return;
+
         this.animationFrameId = requestAnimationFrame(this.loop);
       }}
     ))
   }
-
-  // public onNotify(subject: ISubject, args?: string[]) {
-  //   if (args) {
-  //     switch (args[0]) {
-  //       case "Start":
-  //         if (this.animationFrameId === null) {
-  //           this.entityManager.saveState();
-  //           this.animationFrameId = requestAnimationFrame(this.loop);
-  //         }
-  //         break;
-  //       case "Pause":
-  //         if (this.animationFrameId !== null) {
-  //           cancelAnimationFrame(this.animationFrameId);
-  //           this.animationFrameId = null;
-  //         }
-  //         break;
-  //       case "Unpause":
-  //         if (this.animationFrameId === null) {
-  //             this.animationFrameId = requestAnimationFrame(this.loop);
-  //         }
-  //         break;
-  //       case "Stop":
-  //         if (this.animationFrameId !== null) {
-  //           cancelAnimationFrame(this.animationFrameId);
-  //           this.animationFrameId = null;
-  //         }
-  //         this.entityManager.restoreState();
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //   }
-  // }
 
   public registerEntity(entity: Entity): void {
     this.entityManager.addEntity(entity);
@@ -107,7 +82,6 @@ export class Engine {
     this.animationFrameId = requestAnimationFrame(this.loop);
   
     this._time.update();
-    // if (!this._timeController.isRunning || this._timeController.isPaused) return;
   
     const entities = this.entityManager.getEntities();
   

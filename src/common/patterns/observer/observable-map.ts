@@ -44,6 +44,10 @@ export class ObservableMap<K, V> {
     return this._map.keys();
   }
 
+  public forEach(callback: (value: V, key: K, map: Map<K, V>) => void): void {
+    this._map.forEach(callback);
+  }
+
   public subscribe(listener: Listener<K, V>): () => void {
     this._listeners.add(listener);
     return () => this._listeners.delete(listener);

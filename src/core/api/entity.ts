@@ -20,10 +20,6 @@ export class Entity {
   private _isStarted = false;
   public get isStarted(): boolean { return this._isStarted; }
   public set isStarted(isStarted: boolean) { this._isStarted = isStarted; }
-
-  private _isRuntime = false;
-  public get isRuntime(): boolean { return this._isRuntime; }
-  public set isRuntime(isRuntime: boolean) { this._isRuntime = isRuntime; }
   
   private _components = new ObservableMap<new (...args: any[]) => Component, Component>(new Map());
   public get components(): ObservableMap<new (...args: any[]) => Component, Component> { return this._components; }
@@ -52,13 +48,16 @@ export class Entity {
     return this._components.delete(type);
   }
 
+  public destroy(): void {
+    this._components.forEach(component => component.destroy())
+  }
+
   public clone(): Entity {
     const clone = new Entity(this._id);
     clone._name = this._name;
     clone._isEnabled = this._isEnabled;
     clone._isAwaked = this._isAwaked;
     clone._isStarted = this._isStarted;
-    clone._isRuntime = this._isRuntime;
   
     for (const [type, component] of this._components.entries()) {
       clone.addComponent(component.clone());
@@ -67,20 +66,19 @@ export class Entity {
     return clone;
   }
 
-  public restoreFrom(other: Entity): void {
-    this._name = other.name;
-    this._isEnabled = other.isEnabled;
-    this._isAwaked = other.isAwaked;
-    this._isStarted = other.isStarted;
-    this._isRuntime = other.isRuntime;
+  public restoreFrom(clone: Entity): void {
+    this._name = clone.name;
+    this._isEnabled = clone.isEnabled;
+    this._isAwaked = clone.isAwaked;
+    this._isStarted = clone.isStarted;
 
     for (const type of this._components.keys()) {
-      if (!other._components.has(type)) {
+      if (!clone._components.has(type)) {
         this._components.delete(type);
       }
     }
 
-    for (const [type, otherComponent] of other._components.entries()) {
+    for (const [type, otherComponent] of clone._components.entries()) {
       if (!this._components.has(type)) {
         this._components.set(type, otherComponent.clone());
       } else {

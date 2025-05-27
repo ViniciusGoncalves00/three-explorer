@@ -33,4 +33,6 @@ export class Transform extends Component {
       this._rotation.set(transform.rotation.x.value, transform.rotation.y.value, transform.rotation.z.value);
       this._scale.set(transform.scale.x.value, transform.scale.y.value, transform.scale.z.value);
   }
+
+  public destroy(): void {}
 }

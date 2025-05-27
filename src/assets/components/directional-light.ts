@@ -18,4 +18,5 @@ export class DirectionalLight extends Light {
     public copyFrom(component: Component): void {
         throw new Error("Method not implemented.");
     }
+    public destroy(): void {}
 }
