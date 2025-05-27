@@ -12,7 +12,7 @@ export class Console{
 
     public log(logType: LogType, message: string) {
         const log = new Log(Date.now(), logType, message);
-        this.logs.push(log)
+        this.logs.add(log)
 
         const logLine = document.createElement("p");
         logLine.textContent = this.format(log);

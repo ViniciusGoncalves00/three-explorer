@@ -4,6 +4,7 @@ import { Vector3 } from "../../../core/api/vector3";
 import { ObservableField } from "../../../common/patterns/observer/observable-field";
 import { EntityHandler } from "../../handlers/entity-handler";
 import { PropertyBuilder } from "./component-builder";
+import { ObservableList } from "../../../common/patterns/observer/observable-list";
 
 export class ComponentUI {
     private _container: HTMLElement;
@@ -63,13 +64,21 @@ export class ComponentUI {
         const componentBody = document.createElement('div');
         componentBody.className = 'w-full flex-none flex flex-col p-2 space-y-1';
 
+        if(component instanceof Mesh) {
+            const row = document.createElement('div');
+            row.className = 'w-full flex items-start justify-center';
+            componentBody.appendChild(row);
+
+            PropertyBuilder.buildMeshProperty(row);
+        }
+
         const propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(component));
         for (const propertyName of propertyNames) {
             const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(component), propertyName);
             if (!descriptor?.get || typeof descriptor.get !== 'function') continue;
 
             const row = document.createElement('div');
-            row.className = 'w-full flex items-start';
+            row.className = 'w-full flex items-start justify-center';
             componentBody.appendChild(row);
 
             const fieldNameColumn = document.createElement('div');
@@ -82,12 +91,20 @@ export class ComponentUI {
             row.appendChild(fieldContentColumn);
 
             const property = (component as any)[propertyName];
-
-            if(Array.isArray(property)) {
-                if(property[0] instanceof Vector3) {
+            console.log(property)
+            // if(Array.isArray(property)) {
+            //     if(property[0] instanceof Vector3) {
+            //         PropertyBuilder.buildArrayVector3Property(property, fieldContentColumn)
+            //     }
+            //     else if (typeof property[0].value === 'number') {
+            //         PropertyBuilder.buildArrayNumberProperty(property, fieldContentColumn);
+            //     }
+            // }
+            if(property instanceof ObservableList) {
+                if(property.items[0] instanceof Vector3) {
                     PropertyBuilder.buildArrayVector3Property(property, fieldContentColumn)
                 }
-                else if (typeof property[0].value === 'number') {
+                else if (typeof property.items[0].value === 'number') {
                     PropertyBuilder.buildArrayNumberProperty(property, fieldContentColumn);
                 }
             }
@@ -103,9 +120,6 @@ export class ComponentUI {
                     }
                     else if (typeof value === 'string') {
                         PropertyBuilder.buildStringProperty(property, fieldContentColumn);
-                    }
-                    else if (value instanceof Mesh) {
-                        PropertyBuilder.buildMeshProperty(property, fieldContentColumn);
                     }
                 }
             }

@@ -1,5 +1,6 @@
 import { Mesh } from "../../../assets/components/mesh";
 import { ObservableField } from "../../../common/patterns/observer/observable-field";
+import { ObservableList } from "../../../common/patterns/observer/observable-list";
 import { Vector3 } from "../../../core/api/vector3";
 import { FieldBuilder } from "../field-builder";
 
@@ -31,18 +32,22 @@ export class PropertyBuilder {
         }
     }
 
-    public static async buildMeshProperty(property: ObservableField<Mesh>, field: HTMLElement): Promise<void> {
-        const input = await FieldBuilder.buildMeshField(property);
+    public static async buildMeshProperty(field: HTMLElement): Promise<void> {
+        const input = await FieldBuilder.buildMeshField();
         field.appendChild(input);
     }
 
-    public static buildArrayVector3Property(property: Vector3[], field: HTMLElement): void {
-        field.classList.add("flex-col")
+    public static buildArrayVector3Property(list: ObservableList<Vector3>, field: HTMLElement): void {
+    field.classList.add("flex-col");
+
+    const render = () => {
+        field.innerHTML = "";
+
         const empty = document.createElement('div');
-        empty.className = "h-5"
+        empty.className = "h-5";
         field.appendChild(empty);
 
-        property.forEach((vector: Vector3, index: number) => {
+        list.items.forEach((vector: Vector3, index: number) => {
             const vectorWrapper = document.createElement('div');
             vectorWrapper.className = 'w-full flex gap-1';
         
@@ -72,28 +77,40 @@ export class PropertyBuilder {
             vectorWrapper.appendChild(vectorRow);
             field.appendChild(vectorWrapper);
         });
-    }
+    };
 
-    public static buildArrayNumberProperty(property: ObservableField<number>[], field: HTMLElement): void {
-        field.classList.add("flex-col", "gap-1");
-        const empty = document.createElement('div');
-        empty.className = "h-5"
-        field.appendChild(empty);
-    
-        property.forEach((observable, index) => {
-            const row = document.createElement('div');
-            row.className = 'w-full flex items-center gap-2';
-        
-            const label = document.createElement('div');
-            label.textContent = `${index}`;
-            label.className = 'w-1/10 text-sm text-center';
-            row.appendChild(label);
-        
-            const input = FieldBuilder.buildNumberField(observable);
-            input.classList.add('w-9/10');
-            row.appendChild(input);
-        
-            field.appendChild(row);
+    // Primeira renderização
+    render();
+
+    // Reconstrói ao detectar mudanças
+    list.onChange(() => render());
+}
+
+
+    public static buildArrayNumberProperty(list: ObservableList<ObservableField<number>>, field: HTMLElement): void {
+    field.classList.add("flex-col");
+
+    const render = () => {
+        field.innerHTML = "";
+
+        list.items.forEach((obsField, index) => {
+            const wrapper = document.createElement("div");
+            wrapper.className = "w-full flex items-center gap-1";
+
+            const label = document.createElement("div");
+            label.textContent = index.toString();
+            label.className = "w-6 text-sm text-center";
+            wrapper.appendChild(label);
+
+            const input = FieldBuilder.buildNumberField(obsField);
+            wrapper.appendChild(input);
+
+            field.appendChild(wrapper);
         });
-    }
+    };
+
+    render();
+    list.onChange(() => render());
+}
+
 }
