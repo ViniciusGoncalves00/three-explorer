@@ -24,11 +24,25 @@ export class Mesh extends Component {
     this._indices = new ObservableList(indices);
   }
 
-    public clone(): Component {
-        throw new Error("Method not implemented.");
+    public clone(): Mesh {
+      const clone = new Mesh(
+        this._name.value,
+        this._vertices.items,
+        this._indices.items,
+      );
+      
+      clone.enabled = this.enabled;
+      return clone;
     }
-    public copyFrom(component: Component): void {
-        throw new Error("Method not implemented.");
+
+    public copyFrom(mesh: Mesh): void {
+      this._name.value = mesh._name.value;
+      this._vertices.clear();
+      mesh._vertices.items.forEach(item => this._vertices.add(item));
+      this._indices.clear();
+      mesh._indices.items.forEach(item => this._indices.add(item));
+      this.enabled = mesh.enabled;
     }
+
     public destroy(): void {}
 }

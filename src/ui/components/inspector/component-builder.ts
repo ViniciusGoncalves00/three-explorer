@@ -38,14 +38,8 @@ export class PropertyBuilder {
     }
 
     public static buildArrayVector3Property(list: ObservableList<Vector3>, field: HTMLElement): void {
-    field.classList.add("flex-col");
-
     const render = () => {
         field.innerHTML = "";
-
-        const empty = document.createElement('div');
-        empty.className = "h-5";
-        field.appendChild(empty);
 
         list.items.forEach((vector: Vector3, index: number) => {
             const vectorWrapper = document.createElement('div');
@@ -79,38 +73,32 @@ export class PropertyBuilder {
         });
     };
 
-    // Primeira renderização
     render();
 
-    // Reconstrói ao detectar mudanças
     list.onChange(() => render());
 }
-
 
     public static buildArrayNumberProperty(list: ObservableList<ObservableField<number>>, field: HTMLElement): void {
-    field.classList.add("flex-col");
+        const render = () => {
+            field.innerHTML = "";
+            
+            list.items.forEach((obsField, index) => {
+                const wrapper = document.createElement("div");
+                wrapper.className = "w-full flex items-center gap-1";
 
-    const render = () => {
-        field.innerHTML = "";
+                const label = document.createElement("div");
+                label.textContent = index.toString();
+                label.className = "w-6 text-sm text-center";
+                wrapper.appendChild(label);
 
-        list.items.forEach((obsField, index) => {
-            const wrapper = document.createElement("div");
-            wrapper.className = "w-full flex items-center gap-1";
+                const input = FieldBuilder.buildNumberField(obsField);
+                wrapper.appendChild(input);
 
-            const label = document.createElement("div");
-            label.textContent = index.toString();
-            label.className = "w-6 text-sm text-center";
-            wrapper.appendChild(label);
+                field.appendChild(wrapper);
+            });
+        };
 
-            const input = FieldBuilder.buildNumberField(obsField);
-            wrapper.appendChild(input);
-
-            field.appendChild(wrapper);
-        });
-    };
-
-    render();
-    list.onChange(() => render());
-}
-
+        render();
+        list.onChange(() => render());
+    }
 }

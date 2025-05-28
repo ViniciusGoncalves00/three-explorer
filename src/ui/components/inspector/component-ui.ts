@@ -78,7 +78,7 @@ export class ComponentUI {
             if (!descriptor?.get || typeof descriptor.get !== 'function') continue;
 
             const row = document.createElement('div');
-            row.className = 'w-full flex items-start justify-center';
+            row.className = 'w-full flex items-start justify-center max-h-64 overflow-auto';
             componentBody.appendChild(row);
 
             const fieldNameColumn = document.createElement('div');
@@ -91,7 +91,6 @@ export class ComponentUI {
             row.appendChild(fieldContentColumn);
 
             const property = (component as any)[propertyName];
-            console.log(property)
             // if(Array.isArray(property)) {
             //     if(property[0] instanceof Vector3) {
             //         PropertyBuilder.buildArrayVector3Property(property, fieldContentColumn)
@@ -101,6 +100,8 @@ export class ComponentUI {
             //     }
             // }
             if(property instanceof ObservableList) {
+                fieldContentColumn.classList.add("space-y-1", "flex-col")
+                
                 if(property.items[0] instanceof Vector3) {
                     PropertyBuilder.buildArrayVector3Property(property, fieldContentColumn)
                 }

@@ -19,7 +19,7 @@ export class Transform extends Component {
     this._scale = scale ?? Vector3.one();
   }
 
-  public clone(): Component {
+  public clone(): Transform {
     const clonedPosition = new Vector3(this._position.x.value, this._position.y.value, this._position.z.value);
     const clonedRotation = new Vector3(this._rotation.x.value, this._rotation.y.value, this._rotation.z.value);
     const clonedScale = new Vector3(this._scale.x.value, this._scale.y.value, this._scale.z.value);
