@@ -34,13 +34,14 @@ export class ComponentUI {
         toggle.className = "w-6 flex-none text-center cursor-pointer ";
 
         const toggleIcon = document.createElement('i');
-        toggleIcon.className = "bi bi-caret-up-fill transition-transform duration-200";
+        toggleIcon.className = "bi bi-caret-right-fill transition-transform duration-200";
         toggle.appendChild(toggleIcon);
 
+        body.classList.toggle("hidden");
         toggle.addEventListener('click', () => {
             const isHidden = body.classList.toggle('hidden');
-            toggleIcon.classList.toggle('bi-caret-up-fill', !isHidden);
-            toggleIcon.classList.toggle('bi-caret-down-fill', isHidden);
+            toggleIcon.classList.toggle('bi-caret-down-fill', !isHidden);
+            toggleIcon.classList.toggle('bi-caret-right-fill', isHidden);
         });
 
         const title = document.createElement('p');

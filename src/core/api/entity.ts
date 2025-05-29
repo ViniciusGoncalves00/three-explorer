@@ -32,8 +32,8 @@ export class Entity {
     this._components.set(component.constructor as new (...args: any[]) => T, component);
   }
 
-  public getComponent<T extends Component>(type: new (...args: any[]) => T): T | undefined {
-    return this._components.get(type) as T | undefined;
+  public getComponent<T extends Component>(type: new (...args: any[]) => T): T {
+    return this._components.get(type) as T;
   }
 
   public getComponents(): Component[] {
