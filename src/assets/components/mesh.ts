@@ -1,4 +1,5 @@
 import { ObservableField } from "../../common/patterns/observer/observable-field";
+import { ObservableList } from "../../common/patterns/observer/observable-list";
 import { Vector3 } from "../../core/api/vector3";
 import { Component } from "./component";
 
@@ -6,24 +7,42 @@ export class Mesh extends Component {
     private readonly _name: ObservableField<string>;
     public get name(): ObservableField<string> { return this._name; }
 
-    private readonly _vertices: Vector3[];
-    public get vertices(): Vector3[] { return this._vertices; }
-
-    private readonly _indices: ObservableField<number>[];
-    public get indices(): ObservableField<number>[] { return this._indices; }
-
-    constructor(vertices: Vector3[] = [new Vector3(0, 0, 0), new Vector3(0, 0, 1), new Vector3(1, 0, 0)], indices: ObservableField<number>[] = [new ObservableField<number>(0), new ObservableField<number>(1), new ObservableField<number>(2)]) {
-      super();
+    private readonly _vertices: ObservableList<Vector3>;
+    public get vertices(): ObservableList<Vector3> { return this._vertices; }
     
-      this._name = new ObservableField("TEST MESH NAME");
-      this._vertices = vertices;
-      this._indices = indices;
+    private readonly _indices: ObservableList<ObservableField<number>>;
+    public get indices(): ObservableList<ObservableField<number>> { return this._indices; }
+
+  constructor(
+    name = "name",
+    vertices = [new Vector3(0, 0, 0), new Vector3(0, 0, 1), new Vector3(1, 0, 0)],
+    indices = [new ObservableField(0), new ObservableField(1), new ObservableField(2)]
+  ) {
+    super();
+    this._name = new ObservableField(name);
+    this._vertices = new ObservableList(vertices);
+    this._indices = new ObservableList(indices);
+  }
+
+    public clone(): Mesh {
+      const clone = new Mesh(
+        this._name.value,
+        this._vertices.items,
+        this._indices.items,
+      );
+      
+      clone.enabled = this.enabled;
+      return clone;
     }
 
-    public clone(): Component {
-        throw new Error("Method not implemented.");
+    public copyFrom(mesh: Mesh): void {
+      this._name.value = mesh._name.value;
+      this._vertices.clear();
+      mesh._vertices.items.forEach(item => this._vertices.add(item));
+      this._indices.clear();
+      mesh._indices.items.forEach(item => this._indices.add(item));
+      this.enabled = mesh.enabled;
     }
-    public copyFrom(component: Component): void {
-        throw new Error("Method not implemented.");
-    }
+
+    public destroy(): void {}
 }

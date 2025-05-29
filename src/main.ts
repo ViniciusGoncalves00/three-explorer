@@ -4,7 +4,6 @@ import './ui/styles/time-controller.css';
 import { Engine } from './core/engine/engine';
 import { TimeControllerHandler } from './ui/handlers/time-controller-handler';
 import { Console } from './ui/elements/console/console';
-import { ConsoleLogger } from './core/api/console-logger';
 import { RotateSystem } from './assets/systems/rotateSystem';
 import { OrbitSystem } from './assets/systems/orbitSystem';
 import { EntityHandler } from './ui/handlers/entity-handler';
@@ -13,10 +12,9 @@ import { Inspector } from './ui/handlers/inspector';
 import { Tree } from './ui/components/assets/tree';
 import { FolderNode } from './common/tree/folder-node';
 import { FileNode } from './common/tree/file-node';
-import { TreeNode } from './common/tree/tree-node';
 import { ObjectBinder } from './graphics/threejs/object-binder';
 import { ThreeEngine } from './graphics/threejs/three-engine';
-import { TimeController } from './core/engine/time-controller';
+import { LogType } from './core/api/enum/log-type';
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -62,51 +60,77 @@ export class Program {
     public get controls(): TimeControllerHandler { return this._controls; }
     //#endregion
 
-    private _consoleLogger: ConsoleLogger;
-
-
     public constructor(devMode: boolean = false) {
         this.devMode = devMode;
-        this._consoleLogger = ConsoleLogger.getInstance();
 
-        this._consoleLogger.log("creating the best interface...")
-
+        this.initialize();
         this.initializeConsole();
+
+        this._console.log(LogType.Log, "creating the best interface...")
+
         this.initializeInspector();
         this.initializeScene();
 
         this.fpsContainer = this.getElementOrFail<HTMLElement>('fpsContainer');
         this.averageFpsContainer = this.getElementOrFail<HTMLElement>('averageFpsContainer');
 
-        this._consoleLogger.log("loading your best assets...");
+        this._console.log(LogType.Log, "loading your best assets...");
         this.initializeAssets();
         this.initializeControls();
 
         if (this.fpsContainer) this.engine.time.framesPerSecond.subscribe(() => this.fpsContainer.innerHTML = `${this.engine.time.framesPerSecond.value.toString()} FPS`);
         if (this.averageFpsContainer) this.engine.time.averageFramesPerSecond.subscribe(() => this.averageFpsContainer.innerHTML = `${this.engine.time.averageFramesPerSecond.value.toString()} aFPS`);
 
-        this.engine.timeController.attach(this._consoleLogger)
-
         const entityHandler = new EntityHandler(this.engine, this.threeEngine, this.binder);
         this.initializeHierarchy();
-        this.engine.entityManager.attach(this.hierarchy);
 
-        (window as any).addEntity = (isRuntime: boolean) => {
-          entityHandler.addEntity(isRuntime);
+        (window as any).addEntity = () => {
+          entityHandler.addEntity();
         };
 
-        this._consoleLogger.log("All right! You can start now!")
+        this._console.log(LogType.Log, "All right! You can start now!")
+    }
+
+    private initialize(): void {
+        this.engine = new Engine();
+        this.binder = new ObjectBinder();
     }
 
     private initializeConsole(): void {
         this.consoleContent = this.getElementOrFail<HTMLElement>('consoleContent');
         this._console = new Console(this.consoleContent);
-        this._consoleLogger.attach(this._console);
+
+        this.engine.timeController.isRunning.subscribe((value => {
+                const log = LogType.Log; value ? this.console.log(log, "Started.") : this.console.log(log, "Stoped.")
+            }
+        ))
+
+        this.engine.timeController.isPaused.subscribe((value => {
+                const log = LogType.Log;
+                value ? this.console.log(log, "Paused.") : this.console.log(log, "Unpaused.")
+            }
+        ))
+
+        const filterAll = this.getElementOrFail<HTMLElement>('filterAll');
+        filterAll.addEventListener("click", () => this._console.filter(null))
+
+        const filterLog = this.getElementOrFail<HTMLElement>('filterLog');
+        filterLog.addEventListener("click", () => this._console.filter(LogType.Log))
+
+        const filterSuccess = this.getElementOrFail<HTMLElement>('filterSuccess');
+        filterSuccess.addEventListener("click", () => this._console.filter(LogType.Success))
+
+        const filterWarning = this.getElementOrFail<HTMLElement>('filterWarning');
+        filterWarning.addEventListener("click", () => this._console.filter(LogType.Warning))
+
+        const filterError = this.getElementOrFail<HTMLElement>('filterError');
+        filterError.addEventListener("click", () => this._console.filter(LogType.Error))
     };
 
     private initializeHierarchy(): void {
         this.entitiesContainer = this.getElementOrFail<HTMLElement>('entitiesContainer');
-        this._hierarchy = new Hierarchy(this.engine, this.entitiesContainer, entity => EntityHandler.selectedEntity.value = entity);
+        this._hierarchy = new Hierarchy(this.entitiesContainer, entity => EntityHandler.selectedEntity.value = entity);
+        this.engine.entityManager.entities.subscribe(value => this.hierarchy.renderHierarchy(value))
     };
 
     private initializeAssets(): void {
@@ -134,8 +158,6 @@ export class Program {
         this.viewportSceneContainer = this.getElementOrFail<HTMLElement>('viewportSceneContainer');
         this.canvasScene = this.getElementOrFail<HTMLCanvasElement>('canvasScene');
 
-        this.engine = new Engine();
-        this.binder = new ObjectBinder();
         this.threeEngine = new ThreeEngine(this.engine, this.binder, this.viewportEditorContainer, this.canvasEditor, this.viewportSceneContainer, this.canvasScene);
 
         this.engine.registerSystem(new RotateSystem());
@@ -147,7 +169,7 @@ export class Program {
     private getElementOrFail<T extends HTMLElement>(id: string): T {
         const element = document.getElementById(id);
         if (!element) {
-            this._consoleLogger.error(`failed to load container: '${id}' -> ${element}`);
+            this._console.log(LogType.Error, `failed to load container: '${id}' -> ${element}`);
             throw new Error(`UI element '${id}' not found`);
         }
         return element as T;
@@ -157,17 +179,17 @@ export class Program {
         const assetsJson = localStorage.getItem("assets");
 
         if (assetsJson) {
-            this._consoleLogger.log("loading assets from local storage...");
+            this._console.log(LogType.Log, "loading assets from local storage...");
             try {
                 const root = this.deserializeTree(JSON.parse(assetsJson));
-                this._consoleLogger.log("assets loaded successfully.");
+                this._console.log(LogType.Success, "assets loaded successfully.");
                 return root;
             } catch (e) {
-                this._consoleLogger.warn("failed to parse local assets. Fetching from remote...");
+                this._console.log(LogType.Warning, "failed to parse local assets. Fetching from remote...");
                 return await this.fetchAndLoadAssetsFromRepo();
             }
         } else {
-            this._consoleLogger.log("there are no assets in local storage. Loading from remote...");
+            this._console.log(LogType.Log, "there are no assets in local storage. Loading from remote...");
             return await this.fetchAndLoadAssetsFromRepo();
         }
     }
@@ -179,10 +201,10 @@ export class Program {
 
             const root = this.deserializeTree(data);
             localStorage.setItem("assets", JSON.stringify(data));
-            this._consoleLogger.log("assets loaded from remote and saved to localStorage.");
+            this._console.log(LogType.Success, "assets loaded from remote and saved to localStorage.");
             return root;
         } catch (error) {
-            this._consoleLogger.warn("failed to fetch assets from remote.");
+            this._console.log(LogType.Warning, "failed to fetch assets from remote.");
             console.error(error);
             throw error;
         }

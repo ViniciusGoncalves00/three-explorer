@@ -15,7 +15,7 @@ export class Rotate extends Component {
     this._speed = speed;
   }
 
-  public clone(): Component {
+  public clone(): Rotate {
     const clonedAxis = new Vector3(this._axis.x.value, this._axis.y.value, this._axis.z.value);
     const clone = new Rotate(clonedAxis, this._speed);
     clone.enabled = this.enabled;
@@ -26,4 +26,6 @@ export class Rotate extends Component {
       this._axis.set(rotate.axis.x.value, rotate.axis.y.value, rotate.axis.z.value);
       this._speed.value = rotate.speed.value;
   }
+
+  public destroy(): void {}
 }

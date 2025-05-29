@@ -12,10 +12,11 @@ export class DirectionalLight extends Light {
         this._direction = direction;
     }
 
-    public clone(): Component {
+    public clone(): DirectionalLight {
         throw new Error("Method not implemented.");
     }
-    public copyFrom(component: Component): void {
+    public copyFrom(component: DirectionalLight): void {
         throw new Error("Method not implemented.");
     }
+    public destroy(): void {}
 }

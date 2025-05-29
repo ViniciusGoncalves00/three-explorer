@@ -31,7 +31,7 @@ export class Orbit extends Component {
     this._axis = axis;
   }
 
-  public clone(): Component {
+  public clone(): Orbit {
     const clone = new Orbit(
       this._center.clone(),
       this._distance,
@@ -49,4 +49,6 @@ export class Orbit extends Component {
       this._distance.value = orbit.distance.value;
       this._speed.value = orbit.speed.value;
   }
+  
+  public destroy(): void {}
 }

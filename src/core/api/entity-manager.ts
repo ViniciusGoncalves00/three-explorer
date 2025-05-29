@@ -1,53 +1,52 @@
-import { IObserver } from "../../common/patterns/observer/observer";
-import { ISubject } from "../../common/patterns/observer/subject";
-import { SubjectManager } from "../../common/patterns/observer/subject-manager";
+import { ObservableMap } from "../../common/patterns/observer/observable-map";
 import { Entity } from "./entity";
 
-export class EntityManager implements ISubject {
-    private _subjectManager = new SubjectManager();
+/**
+* Class responsible for managing entities.
+*/
+export class EntityManager {
+  public readonly entities: ObservableMap<string, Entity> = new ObservableMap(new Map<string, Entity>());
+  public readonly backup: ObservableMap<string, Entity> = new ObservableMap(new Map<string, Entity>());
 
-    private entities: Map<string, Entity> = new Map();
-    private backup: Map<string, Entity> = new Map();
+  public addEntity(entity: Entity): void {
+    this.entities.set(entity.id, entity);
+  }
+
+  public removeEntity(entityId: string): void {
+    const entity = this.entities.get(entityId);
+    if(!entity) return;
+    
+    entity.destroy();
+    this.entities.delete(entityId);
+  }
+
+  public getEntities(): Entity[] {
+    return Array.from(this.entities.values());
+  }    
   
-    public addEntity(entity: Entity): void {
-      this.entities.set(entity.id, entity);
-      this.notify(["added"]);
+  public saveEntities(): void {
+    this.backup.clear();
+    for (const [id, entity] of this.entities.entries()) {
+      this.backup.set(id, entity.clone());
     }
-
-    public removeEntity(entityId: string): void {
-      this.entities.delete(entityId);
-      this.notify(["removed"]);
-    }
-
-    public getEntities(): Entity[] {
-      return Array.from(this.entities.values());
-    }    
+  }
   
-    public saveState(): void {
-      this.backup.clear();
-      for (const [id, entity] of this.entities.entries()) {
-        this.backup.set(id, entity.clone());
+  public restoreEntities(): void {
+    for (const [id, clone] of this.backup.entries()) {
+      const currentEntity = this.entities.get(id);
+
+      if (currentEntity) {
+        currentEntity.restoreFrom(clone);
+      }
+      else {
+        this.addEntity(clone);
       }
     }
-  
-    public restoreState(): void {
-      for (const [id, clone] of this.backup.entries()) {
-        const entity = this.entities.get(id);
-        if (!entity) continue;
-  
-        entity.restoreFrom(clone);
+
+    for (const id of this.entities.keys()) {
+      if (!this.backup.has(id)) {
+        this.removeEntity(id)
       }
     }
-
-    public attach(observer: IObserver): void {
-        this._subjectManager.attach(this, observer);
-    }
-
-    public dettach(observer: IObserver): void {
-        this._subjectManager.dettach(this, observer);
-    }
-
-    public notify(args?: string[]): void {
-        this._subjectManager.notify(this, args);
-    }
-  }  
+  }
+}

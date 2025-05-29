@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-  <div id="explorer-window" class="bg-zinc-900 max-w-full h-full flex flex-col">
+  <div id="explorer-window" class="bg-zinc-900 w-screen h-screen flex flex-col overflow-hidden">
     <!-- TOP -->
     <div id="top" class="w-full h-8 flex items-center justify-between px-2">
       <div class="w-full h-8 flex items-center justify-start space-x-[2px]">
@@ -113,7 +113,14 @@
             <i class="bi bi-file-text"></i>
             <p>Console</p>
           </div>
-          <div id="consoleContent" class="content p-2">
+          <div id="consoleFilters" class="flex items-center justify-start bg-zinc-600">
+            <button id="filterAll" class="px-4 py-[2px] hover:bg-zinc-500 cursor-pointer">all</button>
+            <button id="filterLog" class="px-4 py-[2px] hover:bg-zinc-500 cursor-pointer">log</button>
+            <button id="filterSuccess" class="px-4 py-[2px] hover:bg-zinc-500 cursor-pointer">success</button>
+            <button id="filterWarning" class="px-4 py-[2px] hover:bg-zinc-500 cursor-pointer">warning</button>
+            <button id="filterError" class="px-4 py-[2px] hover:bg-zinc-500 cursor-pointer">error</button>
+          </div>
+          <div id="consoleContent" class="content p-2 overflow-auto">
           </div>
         </div>
       </div>
@@ -127,7 +134,7 @@
             <i class="bi bi-info-circle"></i>
             <p>Inspector</p>
           </div>
-          <div id="inspectorContainer" class="w-full flex-none flex flex-col space-y-2"></div>
+          <div id="inspectorContainer" class="w-full h-full flex-none flex flex-col space-y-2 overflow-auto"></div>
         </div>
       </div>
     </div>

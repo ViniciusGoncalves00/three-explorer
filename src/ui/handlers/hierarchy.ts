@@ -1,36 +1,18 @@
-import { Engine } from '../../core/engine/engine';
 import { Entity } from "../../core/api/entity";
-import { IObserver } from '../../common/patterns/observer/observer';
-import { ISubject } from '../../common/patterns/observer/subject';
 
-export class Hierarchy implements IObserver {
-    private _engine: Engine;
+export class Hierarchy {
     private _entitiesContainer: HTMLElement;
 
     private _onSelectEntity: (entity: Entity) => void;
 
-    public constructor(engine: Engine, entitiesContainer: HTMLElement, onSelectEntity: (entity: Entity) => void) {
-        this._engine = engine;
+    public constructor(entitiesContainer: HTMLElement, onSelectEntity: (entity: Entity) => void) {
         this._entitiesContainer = entitiesContainer;
         this._onSelectEntity = onSelectEntity;
     }
 
-    public onNotify(subject: ISubject, args?: string[]) {
-        if(!subject) return;
-        if(!args) return;
-
-        switch (args[0]) {
-            case "added":
-                this.renderHierarchy();
-                break;
-        }
-    }
-
-    public renderHierarchy(): void {
+    public renderHierarchy(entities: Map<string, Entity>): void {
         this._entitiesContainer.innerHTML = "";
-      
-        const entities = this._engine.entityManager.getEntities();
-      
+            
         entities.forEach(entity => {
             const entityName = entity.name ?? entity.id;
           

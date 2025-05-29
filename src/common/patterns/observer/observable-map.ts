@@ -4,6 +4,10 @@ export class ObservableMap<K, V> {
   private _map = new Map<K, V>();
   private _listeners = new Set<Listener<K, V>>();
 
+  public constructor(map: Map<K, V>) {
+    this._map = map;
+  }
+
   public set(key: K, value: V) {
     this._map.set(key, value);
     this.emit();
@@ -38,6 +42,10 @@ export class ObservableMap<K, V> {
 
   public keys(): IterableIterator<K> {
     return this._map.keys();
+  }
+
+  public forEach(callback: (value: V, key: K, map: Map<K, V>) => void): void {
+    this._map.forEach(callback);
   }
 
   public subscribe(listener: Listener<K, V>): () => void {

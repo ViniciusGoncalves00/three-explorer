@@ -49,10 +49,6 @@ export class ThreeEngine implements IObserver {
     this.cameraEditor.setActive(true);
     this.cameraSimulator.setActive(false);
 
-    this._engine.timeController.attach(this);
-    this._engine.timeController.attach(this.rendererEditor);
-    this._engine.timeController.attach(this.rendererSimulator);
-
     this.scene.scene.background = new THREE.Color(0.02, 0.02, 0.02);
     this.scene.scene.fog = new THREE.Fog(new THREE.Color(0.02, 0.02, 0.02), 0, 100);
 
