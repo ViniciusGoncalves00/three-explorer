@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 .tab-body {
-    @apply bg-zinc-800 text-white text-sm min-w-96 w-full h-full overflow-auto;
+    @apply bg-zinc-800 text-white text-sm min-w-96 w-full h-full;
 }
 
 .tab-title {

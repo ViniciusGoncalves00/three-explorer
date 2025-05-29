@@ -110,6 +110,21 @@ export class Program {
                 value ? this.console.log(log, "Paused.") : this.console.log(log, "Unpaused.")
             }
         ))
+
+        const filterAll = this.getElementOrFail<HTMLElement>('filterAll');
+        filterAll.addEventListener("click", () => this._console.filter(null))
+
+        const filterLog = this.getElementOrFail<HTMLElement>('filterLog');
+        filterLog.addEventListener("click", () => this._console.filter(LogType.Log))
+
+        const filterSuccess = this.getElementOrFail<HTMLElement>('filterSuccess');
+        filterSuccess.addEventListener("click", () => this._console.filter(LogType.Success))
+
+        const filterWarning = this.getElementOrFail<HTMLElement>('filterWarning');
+        filterWarning.addEventListener("click", () => this._console.filter(LogType.Warning))
+
+        const filterError = this.getElementOrFail<HTMLElement>('filterError');
+        filterError.addEventListener("click", () => this._console.filter(LogType.Error))
     };
 
     private initializeHierarchy(): void {

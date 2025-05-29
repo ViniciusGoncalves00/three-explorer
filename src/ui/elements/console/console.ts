@@ -3,8 +3,10 @@ import { LogType } from "../../../core/api/enum/log-type";
 import { Log } from "../../../core/api/log";
 
 export class Console{
-    private readonly _container: HTMLElement;
     public readonly logs: ObservableList<Log> = new ObservableList();
+
+    private readonly _container: HTMLElement;
+    private selectedLogsFilter : LogType | null = null;
 
     public constructor(container: HTMLElement) {
         this._container = container;
@@ -31,6 +33,10 @@ export class Console{
                 logLine.classList.add("log-log");
                 break;
         }
+        
+        if (this.selectedLogsFilter !== null && logType !== this.selectedLogsFilter) {
+            logLine.classList.add("hidden");
+        }
     
         this._container.appendChild(logLine);
         this._container.scrollTop = this._container.scrollHeight;
@@ -40,9 +46,24 @@ export class Console{
         this._container.innerHTML = "";
     }
 
-    public filter(): void {
+    public filter(logType: LogType | null): void {
+        this.selectedLogsFilter = logType;
+        const typeText = logType !== null ? `[${LogType[logType]}]` : null;
 
-    }
+        this._container.childNodes.forEach(child => {
+            if (!(child instanceof HTMLElement)) return;
+
+            if (!typeText) {
+                child.classList.remove("hidden");
+            } else {
+                if (child.textContent?.includes(typeText)) {
+                    child.classList.remove("hidden");
+                } else {
+                    child.classList.add("hidden");
+                }
+            }
+        });
+    }   
 
     private format(log: Log): string {
         const time = new Date(log.time).toLocaleTimeString();
