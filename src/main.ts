@@ -42,6 +42,11 @@ export class Program {
     public assetsContainer!: HTMLElement;
     public fpsContainer!: HTMLElement;
     public averageFpsContainer!: HTMLElement;
+
+    public play!: HTMLButtonElement;
+    public stop!: HTMLButtonElement;
+    public pause!: HTMLButtonElement;
+    public unpause!: HTMLButtonElement;
     //#endregion
 
     //#region [HTMLElements]
@@ -153,7 +158,11 @@ export class Program {
 
     private initializeControls(): void {
         // this.controlsContainer = this.getElementOrFail<HTMLElement>('inspectorContainer');
-        this._controls = new TimeControllerHandler(document, this.engine.timeController);
+        this.play = this.getElementOrFail<HTMLButtonElement>('play');
+        this.stop = this.getElementOrFail<HTMLButtonElement>('stop');
+        this.pause = this.getElementOrFail<HTMLButtonElement>('pause');
+
+        this._controls = new TimeControllerHandler(this.engine.timeController, this.play, this.stop, this.pause);
     };
 
     private initializeScene(): void {
