@@ -1,4 +1,4 @@
-import { Entity } from "../../core/api/entity";
+import { Entity } from "../../../core/api/entity";
 
 export class Hierarchy {
     private _entitiesContainer: HTMLElement;

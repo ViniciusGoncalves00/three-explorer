@@ -49,6 +49,16 @@ export class ThreeEngine implements IObserver {
     this.cameraEditor.setActive(true);
     this.cameraSimulator.setActive(false);
 
+    this._engine.timeController.isRunning.subscribe(wasStarted => {
+        this.cameraEditor.orbitControls.enabled = !wasStarted;
+        this.cameraSimulator.orbitControls.enabled = wasStarted;
+    })
+
+    this._engine.timeController.isPaused.subscribe(wasPaused => {
+        this.cameraEditor.orbitControls.enabled = wasPaused;
+        this.cameraSimulator.orbitControls.enabled = !wasPaused;
+    })
+
     this.scene.scene.background = new THREE.Color(0.02, 0.02, 0.02);
     this.scene.scene.fog = new THREE.Fog(new THREE.Color(0.02, 0.02, 0.02), 0, 100);
 
@@ -57,6 +67,7 @@ export class ThreeEngine implements IObserver {
 
     this.editorObserver = new ResizeObserver(() => {this.rendererEditor.resize(), this.cameraEditor.updateProjection()});
     this.editorObserver.observe(containerEditor);
+
 
     this.simulatorObserver = new ResizeObserver(() => {this.rendererSimulator.resize(), this.cameraSimulator.updateProjection()});
     this.simulatorObserver.observe(containerEditor);
