@@ -1,12 +1,12 @@
-import { Orbit } from "../../assets/components/orbit";
-import { Rotate } from "../../assets/components/rotate";
-import { Transform } from "../../assets/components/transform";
-import { Entity } from "../../core/api/entity";
-import { Dropdown } from "../components/dropdown";
-import { ComponentUI } from "../components/inspector/component-ui";
-import { EntityHandler } from "./entity-handler";
-import { Mesh } from "../../assets/components/mesh";
-import { Component } from "../../assets/components/component";
+import { Orbit } from "../../../assets/components/orbit";
+import { Rotate } from "../../../assets/components/rotate";
+import { Transform } from "../../../assets/components/transform";
+import { Entity } from "../../../core/api/entity";
+import { Dropdown } from "../../components/dropdown";
+import { ComponentUI } from "../../components/inspector/component-ui";
+import { EntityHandler } from "../../handlers/entity-handler";
+import { Mesh } from "../../../assets/components/mesh";
+import { Component } from "../../../assets/components/component";
 
 export class Inspector {
   private static _container: HTMLElement;

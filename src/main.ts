@@ -2,19 +2,20 @@ import './styles.css';
 import './ui/styles/time-controller.css';
 
 import { Engine } from './core/engine/engine';
-import { TimeControllerHandler } from './ui/handlers/time-controller-handler';
+import { TimeControllerHandler } from './ui/elements/controls/time-controller-handler';
 import { Console } from './ui/elements/console/console';
 import { RotateSystem } from './assets/systems/rotateSystem';
 import { OrbitSystem } from './assets/systems/orbitSystem';
 import { EntityHandler } from './ui/handlers/entity-handler';
-import { Hierarchy } from './ui/handlers/hierarchy';
-import { Inspector } from './ui/handlers/inspector';
+import { Hierarchy } from './ui/elements/hierarchy/hierarchy';
+import { Inspector } from './ui/elements/inspector/inspector';
 import { Tree } from './ui/components/assets/tree';
 import { FolderNode } from './common/tree/folder-node';
 import { FileNode } from './common/tree/file-node';
 import { ObjectBinder } from './graphics/threejs/object-binder';
 import { ThreeEngine } from './graphics/threejs/three-engine';
 import { LogType } from './core/api/enum/log-type';
+import { Scenes } from './ui/elements/scenes/scenes';
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -58,6 +59,9 @@ export class Program {
 
     private _controls!: TimeControllerHandler;
     public get controls(): TimeControllerHandler { return this._controls; }
+
+    private _scenes!: Scenes;
+    public get scenes(): Scenes { return this._scenes; }
     //#endregion
 
     public constructor(devMode: boolean = false) {
@@ -159,6 +163,8 @@ export class Program {
         this.canvasScene = this.getElementOrFail<HTMLCanvasElement>('canvasScene');
 
         this.threeEngine = new ThreeEngine(this.engine, this.binder, this.viewportEditorContainer, this.canvasEditor, this.viewportSceneContainer, this.canvasScene);
+        this._scenes = new Scenes(this.viewportEditorContainer,  this.viewportSceneContainer);
+        this.engine.timeController.isRunning.subscribe(() => this._scenes.toggleHighlight())
 
         this.engine.registerSystem(new RotateSystem());
         this.engine.registerSystem(new OrbitSystem());

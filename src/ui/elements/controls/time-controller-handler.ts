@@ -1,6 +1,6 @@
-import { IObserver } from "../../common/patterns/observer/observer";
-import { ISubject } from "../../common/patterns/observer/subject";
-import { TimeController } from "../../core/engine/time-controller";
+import { IObserver } from "../../../common/patterns/observer/observer";
+import { ISubject } from "../../../common/patterns/observer/subject";
+import { TimeController } from "../../../core/engine/time-controller";
 
 export class TimeControllerHandler implements IObserver {
   private readonly play: HTMLElement | null;
