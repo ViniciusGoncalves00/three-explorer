@@ -1,41 +1,58 @@
-import { IObserver } from "../../../common/patterns/observer/observer";
-import { ISubject } from "../../../common/patterns/observer/subject";
+import { Time } from "../../../core/engine/time";
 import { TimeController } from "../../../core/engine/time-controller";
 
-export class TimeControllerHandler implements IObserver {
-  private readonly play: HTMLElement | null;
-  private readonly pause: HTMLElement | null;
-  private readonly stop: HTMLElement | null;
+export class TimeControllerHandler {
+  private readonly timeController: TimeController;
+  private readonly time: Time;
 
-  constructor(document: Document, timeController: TimeController) {
-    this.play = document.getElementById('play');
-    this.pause = document.getElementById('pause');
-    this.stop = document.getElementById('stop');
+  private readonly play: HTMLElement;
+  private readonly stop: HTMLElement;
+  private readonly pause: HTMLElement;
+  private readonly speedUp: HTMLElement;
+  private readonly speedNormal: HTMLElement;
+  private readonly speedDown: HTMLElement;
 
-    if (!this.play) console.warn('[UI] Element with ID "play" not found.');
-    if (!this.pause) console.warn('[UI] Element with ID "pause" not found.');
-    if (!this.stop) console.warn('[UI] Element with ID "stop" not found.');
+  public constructor(timeController: TimeController, time: Time, playButton: HTMLButtonElement, stopButton: HTMLButtonElement, pauseButton: HTMLButtonElement, speedUp: HTMLButtonElement, speedNormal: HTMLButtonElement, speedDown: HTMLButtonElement) {
+    this.timeController = timeController;
+    this.time = time;
+    
+    this.play = playButton;
+    this.stop = stopButton;
+    this.pause = pauseButton;
+    
+    this.speedUp = speedUp;
+    this.speedNormal = speedNormal;
+    this.speedDown = speedDown;
 
-    this.play?.addEventListener('click', () => timeController.start());
-    this.pause?.addEventListener('click', () => timeController.pause());
-    this.stop?.addEventListener('click', () => timeController.stop());
-    }
+    this.play.addEventListener('click', () => timeController.start());
+    this.stop.addEventListener('click', () => timeController.stop());
+    this.pause.addEventListener('click', () =>  this.timeController.isPaused.value ? timeController.unpause() : timeController.pause());
+    this.speedUp.addEventListener('click', () => time.globalTimeScale.value = 2);
+    this.speedNormal.addEventListener('click', () => time.globalTimeScale.value = 1);
+    this.speedDown.addEventListener('click', () => time.globalTimeScale.value = 0.5);
 
-    public onNotify(subject: ISubject, args?: string[]) {
-      if (!(subject instanceof TimeController)) return;
-      if (!args) return;
+    this.timeController.isRunning.subscribe(value => {
+      this.play.classList.toggle('border', value);
+      this.play.classList.toggle('border-white', value);
+    });
 
-      if (args.includes('Start')) {
-        this.play?.classList.add('btn--actived');
-      }
-      if (args.includes('Pause')) {
-        this.play?.classList.remove('btn--actived');
-      }
-      if (args.includes('Unpause')) {
-        this.play?.classList.add('btn--actived');
-      }
-      if (args.includes('Stop')) {
-        this.play?.classList.remove('btn--actived');
-      }
+    this.timeController.isPaused.subscribe(value => {
+      this.pause.classList.toggle("border", value)
+      this.pause.classList.toggle("border-white", value)
+    })
+
+    this.speedNormal.classList.toggle('border');
+    this.speedNormal.classList.toggle('border-white');
+
+    this.time.globalTimeScale.subscribe(value => {
+      this.speedDown.classList.toggle('border', value < 1);
+      this.speedDown.classList.toggle('border-white', value < 1);
+
+      this.speedNormal.classList.toggle('border', value === 1);
+      this.speedNormal.classList.toggle('border-white', value === 1);
+
+      this.speedUp.classList.toggle('border', value > 1);
+      this.speedUp.classList.toggle('border-white', value > 1);
+    })
   }
 }
