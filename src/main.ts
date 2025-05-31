@@ -46,7 +46,9 @@ export class Program {
     public play!: HTMLButtonElement;
     public stop!: HTMLButtonElement;
     public pause!: HTMLButtonElement;
-    public unpause!: HTMLButtonElement;
+    public speedUp!: HTMLButtonElement;
+    public speedNormal!: HTMLButtonElement;
+    public speedDown!: HTMLButtonElement;
     //#endregion
 
     //#region [HTMLElements]
@@ -88,7 +90,7 @@ export class Program {
         this.initializeControls();
 
         if (this.fpsContainer) this.engine.time.framesPerSecond.subscribe(() => this.fpsContainer.innerHTML = `${this.engine.time.framesPerSecond.value.toString()} FPS`);
-        if (this.averageFpsContainer) this.engine.time.averageFramesPerSecond.subscribe(() => this.averageFpsContainer.innerHTML = `${this.engine.time.averageFramesPerSecond.value.toString()} aFPS`);
+        if (this.averageFpsContainer) this.engine.time.averageFramesPerSecond.subscribe(() => this.averageFpsContainer.innerHTML = `${this.engine.time.averageFramesPerSecond.value.toString()} avgFPS`);
 
         const entityHandler = new EntityHandler(this.engine, this.threeEngine, this.binder);
         this.initializeHierarchy();
@@ -162,7 +164,11 @@ export class Program {
         this.stop = this.getElementOrFail<HTMLButtonElement>('stop');
         this.pause = this.getElementOrFail<HTMLButtonElement>('pause');
 
-        this._controls = new TimeControllerHandler(this.engine.timeController, this.play, this.stop, this.pause);
+        this.speedUp = this.getElementOrFail<HTMLButtonElement>('speedUp');
+        this.speedNormal = this.getElementOrFail<HTMLButtonElement>('speedNormal');
+        this.speedDown = this.getElementOrFail<HTMLButtonElement>('speedDown');
+
+        this._controls = new TimeControllerHandler(this.engine.timeController, this.engine.time, this.play, this.stop, this.pause, this.speedUp, this.speedNormal, this.speedDown);
     };
 
     private initializeScene(): void {
