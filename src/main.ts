@@ -140,7 +140,7 @@ export class Program {
 
     private initializeHierarchy(): void {
         this.entitiesContainer = this.getElementOrFail<HTMLElement>('entitiesContainer');
-        this._hierarchy = new Hierarchy(this.entitiesContainer, entity => EntityHandler.selectedEntity.value = entity);
+        this._hierarchy = new Hierarchy(this.entitiesContainer, this.engine.entityManager, entity => EntityHandler.selectedEntity.value = entity);
         this.engine.entityManager.entities.subscribe(value => this.hierarchy.renderHierarchy(value))
     };
 
