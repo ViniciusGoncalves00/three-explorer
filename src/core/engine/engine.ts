@@ -4,6 +4,8 @@ import { ILateUpdate } from "../../assets/systems/interfaces/lateUpdate";
 import { IStart } from "../../assets/systems/interfaces/start";
 import { ISystem } from "../../assets/systems/interfaces/system";
 import { IUpdate } from "../../assets/systems/interfaces/update";
+import { IRenderer } from "../../graphics/IRenderer";
+import { IRenderScene } from "../../graphics/IRenderScene";
 import { Entity } from "../api/entity";
 import { EntityManager } from "../api/entity-manager";
 

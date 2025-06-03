@@ -13,9 +13,12 @@ import { Tree } from './ui/components/assets/tree';
 import { FolderNode } from './common/tree/folder-node';
 import { FileNode } from './common/tree/file-node';
 import { ObjectBinder } from './graphics/threejs/object-binder';
-import { ThreeEngine } from './graphics/threejs/three-engine';
 import { LogType } from './core/api/enum/log-type';
 import { Scenes } from './ui/elements/scenes/scenes';
+import { IRenderer } from './graphics/IRenderer';
+import { ThreeRenderer } from './graphics/adapters/threejs/three-renderer';
+import { IRenderScene } from './graphics/IRenderScene';
+import { ThreeScene } from './graphics/adapters/threejs/three-scene';
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -26,16 +29,19 @@ export class Program {
     public readonly devMode: boolean;
     public engine!: Engine;
     public binder!: ObjectBinder;
-    public threeEngine!: ThreeEngine;
+    // public threeEngine!: ThreeEngine;
+    public rendererA!: IRenderer;
+    public rendererB!: IRenderer;
+    public scene!: IRenderScene;
 
     //#region [HTMLElements]
     public consoleContent!: HTMLElement;
 
     public viewportEditorContainer!: HTMLElement;
-    public canvasEditor!: HTMLCanvasElement;
+    public canvasA!: HTMLCanvasElement;
 
     public viewportSceneContainer!: HTMLElement;
-    public canvasScene!: HTMLCanvasElement;
+    public canvasB!: HTMLCanvasElement;
 
     public entitiesContainer!: HTMLElement;
     public inspectorContainer!: HTMLElement;
@@ -56,7 +62,7 @@ export class Program {
     public get console(): Console { return this._console; }
 
     private _inspector!: Inspector;
-    public get inspector(): Inspector { return this._console; }
+    public get inspector(): Inspector { return this._inspector; }
 
     private _tree!: Tree;
     public get tree(): Tree { return this._tree; }
@@ -74,13 +80,13 @@ export class Program {
     public constructor(devMode: boolean = false) {
         this.devMode = devMode;
 
-        this.initialize();
+        this.initializeEngine();
         this.initializeConsole();
 
         this._console.log(LogType.Log, "creating the best interface...")
 
         this.initializeInspector();
-        this.initializeScene();
+        this.initializeRenderer();
 
         this.fpsContainer = this.getElementOrFail<HTMLElement>('fpsContainer');
         this.averageFpsContainer = this.getElementOrFail<HTMLElement>('averageFpsContainer');
@@ -92,19 +98,20 @@ export class Program {
         if (this.fpsContainer) this.engine.time.framesPerSecond.subscribe(() => this.fpsContainer.innerHTML = `${this.engine.time.framesPerSecond.value.toString()} FPS`);
         if (this.averageFpsContainer) this.engine.time.averageFramesPerSecond.subscribe(() => this.averageFpsContainer.innerHTML = `${this.engine.time.averageFramesPerSecond.value.toString()} avgFPS`);
 
-        const entityHandler = new EntityHandler(this.engine, this.threeEngine, this.binder);
+        const entityHandler = new EntityHandler(this.engine, this.scene);
         this.initializeHierarchy();
 
         (window as any).addEntity = () => {
           entityHandler.addEntity();
         };
 
+        this.initializeScene();
+
         this._console.log(LogType.Log, "All right! You can start now!")
     }
 
-    private initialize(): void {
+    private initializeEngine(): void {
         this.engine = new Engine();
-        this.binder = new ObjectBinder();
     }
 
     private initializeConsole(): void {
@@ -123,18 +130,15 @@ export class Program {
         ))
 
         const filterAll = this.getElementOrFail<HTMLElement>('filterAll');
-        filterAll.addEventListener("click", () => this._console.filter(null))
-
         const filterLog = this.getElementOrFail<HTMLElement>('filterLog');
-        filterLog.addEventListener("click", () => this._console.filter(LogType.Log))
-
         const filterSuccess = this.getElementOrFail<HTMLElement>('filterSuccess');
-        filterSuccess.addEventListener("click", () => this._console.filter(LogType.Success))
-
         const filterWarning = this.getElementOrFail<HTMLElement>('filterWarning');
-        filterWarning.addEventListener("click", () => this._console.filter(LogType.Warning))
-
         const filterError = this.getElementOrFail<HTMLElement>('filterError');
+
+        filterAll.addEventListener("click", () => this._console.filter(null))
+        filterLog.addEventListener("click", () => this._console.filter(LogType.Log))
+        filterSuccess.addEventListener("click", () => this._console.filter(LogType.Success))
+        filterWarning.addEventListener("click", () => this._console.filter(LogType.Warning))
         filterError.addEventListener("click", () => this._console.filter(LogType.Error))
     };
 
@@ -159,7 +163,6 @@ export class Program {
     };
 
     private initializeControls(): void {
-        // this.controlsContainer = this.getElementOrFail<HTMLElement>('inspectorContainer');
         this.play = this.getElementOrFail<HTMLButtonElement>('play');
         this.stop = this.getElementOrFail<HTMLButtonElement>('stop');
         this.pause = this.getElementOrFail<HTMLButtonElement>('pause');
@@ -171,16 +174,34 @@ export class Program {
         this._controls = new TimeControllerHandler(this.engine.timeController, this.engine.time, this.play, this.stop, this.pause, this.speedUp, this.speedNormal, this.speedDown);
     };
 
-    private initializeScene(): void {
+    private initializeRenderer(): void {
         this.viewportEditorContainer = this.getElementOrFail<HTMLElement>('viewportEditorContainer');
-        this.canvasEditor = this.getElementOrFail<HTMLCanvasElement>('canvasEditor');
+        this.canvasA = this.getElementOrFail<HTMLCanvasElement>('canvasA');
         this.viewportSceneContainer = this.getElementOrFail<HTMLElement>('viewportSceneContainer');
-        this.canvasScene = this.getElementOrFail<HTMLCanvasElement>('canvasScene');
+        this.canvasB = this.getElementOrFail<HTMLCanvasElement>('canvasB');
 
-        this.threeEngine = new ThreeEngine(this.engine, this.binder, this.viewportEditorContainer, this.canvasEditor, this.viewportSceneContainer, this.canvasScene);
+        this.scene = new ThreeScene(this.engine, this.canvasA, this.canvasB);
+
+        this.rendererA = new ThreeRenderer(this.canvasA, (this.scene as ThreeScene).cameraA);
+        // this.rendererA.initialize(this.canvasA);
+        const observerA = new ResizeObserver(() => this.rendererA.resize(this.canvasA.clientHeight, this.canvasA.clientWidth));
+        observerA.observe(this.canvasA);        
+
+        this.rendererB = new ThreeRenderer(this.canvasB, (this.scene as ThreeScene).cameraB);
+        // this.rendererB.initialize(this.canvasB);
+        const observerB = new ResizeObserver(() => this.rendererB.resize(this.canvasB.clientHeight, this.canvasB.clientWidth));
+        observerB.observe(this.canvasB); 
+
+        
+
         this._scenes = new Scenes(this.viewportEditorContainer,  this.viewportSceneContainer);
         this.engine.timeController.isRunning.subscribe(() => this._scenes.toggleHighlight())
 
+        this.rendererA.render(this.scene);
+        this.rendererB.render(this.scene);
+    };
+
+    private initializeScene(): void {
         this.engine.registerSystem(new RotateSystem());
         this.engine.registerSystem(new OrbitSystem());
     };
