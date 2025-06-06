@@ -8,8 +8,9 @@ export class ThreeObject implements IRenderObject {
     private readonly _object: THREE.Object3D;
     public get object(): THREE.Object3D { return this._object; }
 
-    public constructor(){
+    public constructor(name: string){
         this._object = new THREE.Object3D();
+        this._object.name = name;
     };
 
     public bind(entity: Entity): void {
@@ -34,7 +35,7 @@ export class ThreeObject implements IRenderObject {
             transform.scale.y.subscribe(value => this._object.scale.y = value);
             transform.scale.z.subscribe(value => this._object.scale.z = value);
         }
-        
+
         if(entity.hasComponent(Mesh)) {
             this._object.add(this.bindMeshComponentToGeometry(entity.getComponent(Mesh)));
         }

@@ -1,16 +1,13 @@
 import { Entity } from "../../../core/api/entity";
-import { EntityManager } from "../../../core/api/entity-manager";
 import { EntityHandler } from "../../handlers/entity-handler";
 
 export class Hierarchy {
     private _entitiesContainer: HTMLElement;
-    private _entityManager: EntityManager;
 
     private _onSelectEntity: (entity: Entity) => void;
 
-    public constructor(entitiesContainer: HTMLElement, entityManager: EntityManager, onSelectEntity: (entity: Entity) => void) {
+    public constructor(entitiesContainer: HTMLElement, onSelectEntity: (entity: Entity) => void) {
         this._entitiesContainer = entitiesContainer;
-        this._entityManager = entityManager;
         this._onSelectEntity = onSelectEntity;
     }
 
@@ -40,15 +37,15 @@ export class Hierarchy {
             leftContainer.appendChild(boxIcon);
             leftContainer.appendChild(nameParagraph);
           
-            const dotsIcon = document.createElement("i");
-            dotsIcon.classList.add("h-full", "flex", "items-center", "justify-center", "bi", "bi-trash");
-            dotsIcon.addEventListener("click", () => {
-              this._entityManager.removeEntity(entity.id);
+            const trashIcon = document.createElement("i");
+            trashIcon.classList.add("h-full", "flex", "items-center", "justify-center", "bi", "bi-trash");
+            trashIcon.addEventListener("click", () => {
+              EntityHandler.removeEntity(entity.id);
               EntityHandler.selectedEntity.value = null;
             })
           
             entityLine.appendChild(leftContainer);
-            entityLine.appendChild(dotsIcon);
+            entityLine.appendChild(trashIcon);
 
             leftContainer.addEventListener("click", () => this.selectEntity(entity));              
           

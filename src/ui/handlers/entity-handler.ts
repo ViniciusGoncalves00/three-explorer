@@ -36,6 +36,9 @@ export class EntityHandler {
     this._engine.entityManager.addEntity(entity);
     this._graphicEngine.addObject(entity);
   }
+
+  public static removeEntity(id: string): void {
+    // this._graphicEngine(entity);
 }
 
 //   public addEntity(): void {
