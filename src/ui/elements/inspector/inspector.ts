@@ -15,17 +15,15 @@ export class Inspector {
     Inspector._container = container;
 
     EntityHandler.selectedEntity.subscribe(() => {
-      const entity = EntityHandler.selectedEntity?.value;
-      if (entity) {
-        entity.components.subscribe(() => Inspector.update());
-      }
+      const entity = EntityHandler.selectedEntity.value;
+      entity?.components.subscribe(() => Inspector.update());
       Inspector.update();
   });
   }
 
   public static update() {
     this._container.replaceChildren();
-    if (!EntityHandler.selectedEntity) return;
+    if (!EntityHandler.selectedEntity.value) return;
 
     const entityWrapper = this.buildEntity(EntityHandler.selectedEntity.value)
     this._container.appendChild(entityWrapper)
@@ -49,7 +47,7 @@ export class Inspector {
       defaultLabel: "Add Component",
       onSelect: (item) => {
         const ComponentClass = item.value;
-        EntityHandler.selectedEntity?.value.addComponent(new ComponentClass());
+        EntityHandler.selectedEntity.value?.addComponent(new ComponentClass());
       },
     });
     

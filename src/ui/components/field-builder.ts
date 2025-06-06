@@ -145,7 +145,7 @@ export class FieldBuilder {
               ],
             defaultLabel: "Select Mesh",
             onSelect: (item) => {
-                const mesh = EntityHandler.selectedEntity.value.getComponent(Mesh);
+                const mesh = EntityHandler.selectedEntity.value?.getComponent(Mesh);
                 if (!mesh) return;
 
                 mesh.name.value = item.label;

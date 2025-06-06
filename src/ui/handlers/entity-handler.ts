@@ -7,15 +7,16 @@ import { ObjectBinder } from '../../graphics/threejs/object-binder';
 import { ObservableField } from '../../common/patterns/observer/observable-field';
 import { Vector3 } from '../../core/api/vector3';
 import { Mesh } from '../../assets/components/mesh';
+import { ObservableNullableField } from '../../common/patterns/observer/observable-nullable-field';
 
 export class EntityHandler {
     private _engine: Engine;
     private _binder: ObjectBinder;
     private _graphicEngine: ThreeEngine;
 
-    private static _selectedEntity: ObservableField<Entity> = new ObservableField(new Entity('0000-0000-0000-0000-0000'));
-    public static get selectedEntity() : ObservableField<Entity> { return this._selectedEntity; }
-    public static set selectedEntity(entity: ObservableField<Entity>) { this._selectedEntity = entity; }
+    private static _selectedEntity: ObservableNullableField<Entity> = new ObservableNullableField<Entity>(null);
+    public static get selectedEntity() : ObservableNullableField<Entity> { return this._selectedEntity; }
+    public static set selectedEntity(entity: ObservableNullableField<Entity>) { this._selectedEntity = entity; }
 
     public constructor(engine: Engine, graphicEngine: ThreeEngine, binder: ObjectBinder) {
         this._engine = engine;
