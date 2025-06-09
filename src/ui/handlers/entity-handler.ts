@@ -1,23 +1,21 @@
-import * as THREE from 'three';
 import { Transform } from "../../assets/components/transform";
 import { Entity } from "../../core/api/entity";
 import { Engine } from '../../core/engine/engine';
-import { ObjectBinder } from '../../graphics/threejs/object-binder';
 import { ObservableField } from '../../common/patterns/observer/observable-field';
 import { Vector3 } from '../../core/api/vector3';
 import { Mesh } from '../../assets/components/mesh';
 import { ObservableNullableField } from '../../common/patterns/observer/observable-nullable-field';
-import { IRenderScene } from '../../graphics/IRenderScene';
+import { IGraphicEngine } from '../../graphics/IGraphicEngine';
 
-export class EntityHandler {
+export class EntityHandler<T> {
     private _engine: Engine;
-    private _graphicEngine: IRenderScene;
+    private _graphicEngine: IGraphicEngine<T>;
 
     private static _selectedEntity: ObservableNullableField<Entity> = new ObservableNullableField<Entity>(null);
     public static get selectedEntity() : ObservableNullableField<Entity> { return this._selectedEntity; }
     public static set selectedEntity(entity: ObservableNullableField<Entity>) { this._selectedEntity = entity; }
 
-    public constructor(engine: Engine, graphicEngine: IRenderScene) {
+    public constructor(engine: Engine, graphicEngine: IGraphicEngine<T>) {
         this._engine = engine;
         this._graphicEngine = graphicEngine;
     }
@@ -34,40 +32,13 @@ export class EntityHandler {
     entity.addComponent(meshComponent);
 
     this._engine.entityManager.addEntity(entity);
-    this._graphicEngine.addObject(entity);
+    this._graphicEngine.addEntity(entity);
   }
 
   public static removeEntity(id: string): void {
     // this._graphicEngine(entity);
+  }
 }
-
-//   public addEntity(): void {
-//     const geometry = new THREE.BufferGeometry();
-//     const sphereVertices = generateSphereVertices(1, 4, 4);
-
-//     const vertices = float32ArrayToVector3List(sphereVertices);
-//     const indices = createSequentialIndices(vertices.length);
-
-//     const meshComponent = new Mesh("Sphere", vertices, indices);
-
-//     bindMeshComponentToGeometry(meshComponent, geometry);
-
-//     const mesh = new THREE.Mesh(
-//       geometry,
-//       new THREE.MeshStandardMaterial({ color: 0xeeeeee })
-//     );
-
-//     const entity = new Entity(crypto.randomUUID());
-//     entity.addComponent(new Transform());
-//     entity.addComponent(meshComponent);
-
-//     this._binder.bind(entity, mesh);
-//     this._engine.entityManager.addEntity(entity);
-//     this._graphicEngine.scene.scene.add(mesh);
-
-//     this._graphicEngine.scene.scene.add(new THREE.DirectionalLight())
-//   }
-// }
 
 function generateSphereVertices(radius = 1, widthSegments = 16, heightSegments = 12) {
   const vertices = [];

@@ -12,14 +12,11 @@ import { Inspector } from './ui/elements/inspector/inspector';
 import { Tree } from './ui/components/assets/tree';
 import { FolderNode } from './common/tree/folder-node';
 import { FileNode } from './common/tree/file-node';
-import { ObjectBinder } from './graphics/threejs/object-binder';
 import { LogType } from './core/api/enum/log-type';
 import { Scenes } from './ui/elements/scenes/scenes';
-import { IRenderer } from './graphics/IRenderer';
-import { ThreeRenderer } from './graphics/adapters/threejs/three-renderer';
-import { IRenderScene } from './graphics/IRenderScene';
-import { ThreeScene } from './graphics/adapters/threejs/three-scene';
-
+import { IGraphicEngine } from './graphics/IGraphicEngine';
+import * as THREE from "three";
+import { ThreeGEAdapter } from './graphics/threeGEAdapter';
 
 window.addEventListener('DOMContentLoaded', () => {
     new Program();
@@ -28,11 +25,7 @@ window.addEventListener('DOMContentLoaded', () => {
 export class Program {
     public readonly devMode: boolean;
     public engine!: Engine;
-    public binder!: ObjectBinder;
-    // public threeEngine!: ThreeEngine;
-    public rendererA!: IRenderer;
-    public rendererB!: IRenderer;
-    public scene!: IRenderScene;
+    public graphicEngine!: IGraphicEngine<THREE.Object3D>;
 
     //#region [HTMLElements]
     public consoleContent!: HTMLElement;
@@ -86,7 +79,8 @@ export class Program {
         this._console.log(LogType.Log, "creating the best interface...")
 
         this.initializeInspector();
-        this.initializeRenderer();
+        this.initializeCanvas();
+        this.initializeGraphicEngine();
 
         this.fpsContainer = this.getElementOrFail<HTMLElement>('fpsContainer');
         this.averageFpsContainer = this.getElementOrFail<HTMLElement>('averageFpsContainer');
@@ -98,14 +92,14 @@ export class Program {
         if (this.fpsContainer) this.engine.time.framesPerSecond.subscribe(() => this.fpsContainer.innerHTML = `${this.engine.time.framesPerSecond.value.toString()} FPS`);
         if (this.averageFpsContainer) this.engine.time.averageFramesPerSecond.subscribe(() => this.averageFpsContainer.innerHTML = `${this.engine.time.averageFramesPerSecond.value.toString()} avgFPS`);
 
-        const entityHandler = new EntityHandler(this.engine, this.scene);
+        const entityHandler = new EntityHandler(this.engine, this.graphicEngine);
         this.initializeHierarchy();
 
         (window as any).addEntity = () => {
           entityHandler.addEntity();
         };
 
-        this.initializeScene();
+        this.initializeTEMP();
 
         this._console.log(LogType.Log, "All right! You can start now!")
     }
@@ -113,6 +107,32 @@ export class Program {
     private initializeEngine(): void {
         this.engine = new Engine();
     }
+
+    private initializeGraphicEngine(): void {
+        this.graphicEngine = new ThreeGEAdapter();
+
+        this.graphicEngine.init(this.canvasA, this.canvasB);
+
+        this.graphicEngine.setEditorCamera(this.canvasA, {x: 10, y: 10, z: 10});
+        this.graphicEngine.setPreviewCamera(this.canvasB, {x: 0, y: 1, z: -10});
+
+        this.engine.timeController.isRunning.subscribe(() => this.graphicEngine.toggleActiveCamera());
+        this.engine.timeController.isPaused.subscribe(() => this.graphicEngine.toggleActiveCamera());
+
+        const observerA = new ResizeObserver(() => this.graphicEngine.resize(this.canvasA.clientHeight, this.canvasA.clientWidth));
+        observerA.observe(this.canvasA);  
+
+        this.graphicEngine.setFog({r: 0.02, g: 0.02, b: 0.02}, 0, 100);
+        this.graphicEngine.setBackground({r: 0.02, g: 0.02, b: 0.02});
+        this.graphicEngine.setGridHelper({r: 0.1, g: 0.1, b: 0.1});
+
+        this.graphicEngine.startRender();
+    }
+
+    private initializeTEMP(): void {
+        this.engine.registerSystem(new RotateSystem());
+        this.engine.registerSystem(new OrbitSystem());
+    };
 
     private initializeConsole(): void {
         this.consoleContent = this.getElementOrFail<HTMLElement>('consoleContent');
@@ -157,6 +177,7 @@ export class Program {
             this._tree.addChild(rootNode);
         })();
     };
+
     private initializeInspector(): void {
         this.inspectorContainer = this.getElementOrFail<HTMLElement>('inspectorContainer');
         this._inspector = new Inspector(this.inspectorContainer);
@@ -174,36 +195,14 @@ export class Program {
         this._controls = new TimeControllerHandler(this.engine.timeController, this.engine.time, this.play, this.stop, this.pause, this.speedUp, this.speedNormal, this.speedDown);
     };
 
-    private initializeRenderer(): void {
+    private initializeCanvas(): void {
         this.viewportEditorContainer = this.getElementOrFail<HTMLElement>('viewportEditorContainer');
         this.canvasA = this.getElementOrFail<HTMLCanvasElement>('canvasA');
         this.viewportSceneContainer = this.getElementOrFail<HTMLElement>('viewportSceneContainer');
         this.canvasB = this.getElementOrFail<HTMLCanvasElement>('canvasB');
 
-        this.scene = new ThreeScene(this.engine, this.canvasA, this.canvasB);
-
-        this.rendererA = new ThreeRenderer(this.canvasA, (this.scene as ThreeScene).cameraA);
-        // this.rendererA.initialize(this.canvasA);
-        const observerA = new ResizeObserver(() => this.rendererA.resize(this.canvasA.clientHeight, this.canvasA.clientWidth));
-        observerA.observe(this.canvasA);        
-
-        this.rendererB = new ThreeRenderer(this.canvasB, (this.scene as ThreeScene).cameraB);
-        // this.rendererB.initialize(this.canvasB);
-        const observerB = new ResizeObserver(() => this.rendererB.resize(this.canvasB.clientHeight, this.canvasB.clientWidth));
-        observerB.observe(this.canvasB); 
-
-        
-
         this._scenes = new Scenes(this.viewportEditorContainer,  this.viewportSceneContainer);
         this.engine.timeController.isRunning.subscribe(() => this._scenes.toggleHighlight())
-
-        this.rendererA.render(this.scene);
-        this.rendererB.render(this.scene);
-    };
-
-    private initializeScene(): void {
-        this.engine.registerSystem(new RotateSystem());
-        this.engine.registerSystem(new OrbitSystem());
     };
 
     private initializeSettings(): void {};
