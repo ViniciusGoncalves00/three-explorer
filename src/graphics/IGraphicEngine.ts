@@ -2,13 +2,12 @@ import { Entity } from "../core/api/entity";
 
 export interface IGraphicEngine<T> {
   init(canvasA: HTMLCanvasElement, canvasB: HTMLCanvasElement): void;
-  dispose(): void;
   startRender(): void;
   resize(width: number, height: number): void;
   bind(entity: Entity, object: T): void;
 
   addEntity(entity: Entity): void;
-//   removeObject(object: Renderable): void;
+  removeEntity(entity: Entity): void;
 //   updateObject(object: Renderable): void;
 
 //   addLight(light: Light): void;

@@ -13,16 +13,14 @@ export class ThreeGEAdapter implements IGraphicEngine<THREE.Object3D> {
     private _cameraB!: THREE.Camera;
     private _orbitControlsA!: OrbitControls;
     private _orbitControlsB!: OrbitControls;
+
+    private _entities: Map<string, THREE.Object3D> = new Map<string, THREE.Object3D>();
     
     public init(canvasA: HTMLCanvasElement, canvasB: HTMLCanvasElement): void {
         this._scene = new THREE.Scene();
 
         this._rendererA = new THREE.WebGLRenderer({ antialias: true, canvas: canvasA });
         this._rendererB = new THREE.WebGLRenderer({ antialias: true, canvas: canvasB });
-    }
-
-    dispose(): void {
-        throw new Error("Method not implemented.");
     }
 
     public startRender(): void {
@@ -43,7 +41,16 @@ export class ThreeGEAdapter implements IGraphicEngine<THREE.Object3D> {
         const object = new THREE.Mesh();
         this.bind(entity, object);
         
+        this._entities.set(entity.id, object);
         this._scene.add(object);
+    }
+
+    public removeEntity(entity: Entity): void {
+        const object = this._entities.get(entity.id);
+        if(!object) return;
+
+        this._entities.delete(entity.id);
+        this._scene.remove(object);
     }
 
     public bind(entity: Entity, object: THREE.Object3D): void {
