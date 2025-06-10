@@ -1,8 +1,6 @@
-type Listener<K, V> = (map: Map<K, V>) => void;
-
 export class ObservableMap<K, V> {
   private _map = new Map<K, V>();
-  private _listeners = new Set<Listener<K, V>>();
+  private _listeners: Set<{onAdd: (value: V) => void, onRemove: (value: V) => void}> = new Set();
 
   public constructor(map: Map<K, V>) {
     this._map = map;
@@ -10,7 +8,8 @@ export class ObservableMap<K, V> {
 
   public set(key: K, value: V) {
     this._map.set(key, value);
-    this.emit();
+    
+    this._listeners.forEach(listener => listener.onAdd(value));
   }
 
   public get(key: K): V | undefined {
@@ -22,14 +21,14 @@ export class ObservableMap<K, V> {
   }
 
   public delete(key: K): boolean {
-    const result = this._map.delete(key);
-    if (result) this.emit();
-    return result;
+    const value = this._map.get(key);
+    const deleted = this._map.delete(key);
+    if (value && deleted) this._listeners.forEach(listener => listener.onRemove(value));
+    return deleted;
   }
 
   public clear() {
-    this._map.clear();
-    this.emit();
+    this._map.forEach((value, key, map) => this.delete(key))
   }
 
   public entries(): IterableIterator<[K, V]> {
@@ -48,14 +47,11 @@ export class ObservableMap<K, V> {
     this._map.forEach(callback);
   }
 
-  public subscribe(listener: Listener<K, V>): () => void {
+  public subscribe(listener: {onAdd: (value: V) => void, onRemove: (value: V) => void}): void {
     this._listeners.add(listener);
-    return () => this._listeners.delete(listener);
   }
 
-  private emit() {
-    for (const listener of this._listeners) {
-      listener(this._map);
-    }
+  public unsubscribe(listener: {onAdd: (value: V) => void, onRemove: (value: V) => void}): void {
+    this._listeners.delete(listener);
   }
 }

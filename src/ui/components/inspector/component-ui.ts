@@ -7,13 +7,16 @@ import { PropertyBuilder } from "./component-builder";
 import { ObservableList } from "../../../common/patterns/observer/observable-list";
 
 export class ComponentUI {
+    private _entityHandler: EntityHandler;
+
     private _container: HTMLElement;
     public get container(): HTMLElement { return this._container; };
 
     private _open: boolean;
     public get open(): boolean { return this._open; }
 
-    public constructor(component: Component, open: boolean = true) {
+    public constructor(entityHandler: EntityHandler, component: Component, open: boolean = true) {
+        this._entityHandler = entityHandler;
         this._open = open;
 
         this._container = document.createElement("div");
@@ -52,7 +55,7 @@ export class ComponentUI {
         const exclude = document.createElement('i');
         head.appendChild(exclude);
         exclude.className = "w-6 flex-none text-center cursor-pointer bi bi-trash";
-        exclude.addEventListener('click', () => EntityHandler.selectedEntity.value?.removeComponent(component.constructor as any))
+        exclude.addEventListener('click', () => this._entityHandler.selectedEntity.value?.removeComponent(component.constructor as any))
 
         const options = document.createElement('i');
         head.appendChild(options);

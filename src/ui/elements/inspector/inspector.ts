@@ -9,27 +9,32 @@ import { Mesh } from "../../../assets/components/mesh";
 import { Component } from "../../../assets/components/component";
 
 export class Inspector {
-  private static _container: HTMLElement;
+  private _container: HTMLElement;
+  private _entityHandler: EntityHandler;
 
-  public constructor(container: HTMLElement) {
-    Inspector._container = container;
+  public constructor(container: HTMLElement, entityHandler: EntityHandler) {
+    this._container = container;
+    this._entityHandler = entityHandler;
 
-    EntityHandler.selectedEntity.subscribe(() => {
-      const entity = EntityHandler.selectedEntity.value;
-      entity?.components.subscribe(() => Inspector.update());
-      Inspector.update();
+    this._entityHandler.selectedEntity?.subscribe(() => {
+      const entity = this._entityHandler.selectedEntity.value;
+      entity?.components.subscribe({
+          onAdd: (component) => this.update(),
+          onRemove: (component) => this.update(),
+        });
+      this.update();
   });
   }
 
-  public static update() {
+  public update() {
     this._container.replaceChildren();
-    if (!EntityHandler.selectedEntity.value) return;
+    if (!this._entityHandler.selectedEntity.value) return;
 
-    const entityWrapper = this.buildEntity(EntityHandler.selectedEntity.value)
+    const entityWrapper = this.buildEntity(this._entityHandler.selectedEntity.value)
     this._container.appendChild(entityWrapper)
 
-    EntityHandler.selectedEntity.value.getComponents().forEach((component: Component) => {
-      const componentUI = new ComponentUI(component).container;
+    this._entityHandler.selectedEntity.value.getComponents().forEach((component: Component) => {
+      const componentUI = new ComponentUI(this._entityHandler, component).container;
       this._container.appendChild(componentUI);
     });
 
@@ -47,14 +52,14 @@ export class Inspector {
       defaultLabel: "Add Component",
       onSelect: (item) => {
         const ComponentClass = item.value;
-        EntityHandler.selectedEntity.value?.addComponent(new ComponentClass());
+        this._entityHandler.selectedEntity.value?.addComponent(new ComponentClass());
       },
     });
     
     row.appendChild(dropdown.getElement());
   }
 
-  private static buildEntity(entity: Entity): HTMLElement {
+  private buildEntity(entity: Entity): HTMLElement {
     const entityWrapper = document.createElement('div');
     entityWrapper.className = 'w-full flex flex-col';
 
@@ -120,7 +125,7 @@ export class Inspector {
       inputColumn.className = 'w-3/4 flex';
       inputColumn.type = "checkbox"
       inputColumn.disabled = true;
-      inputColumn.checked = (EntityHandler.selectedEntity as any)[field];
+      inputColumn.checked = (this._entityHandler.selectedEntity as any)[field];
       row.appendChild(inputColumn);
     });
 

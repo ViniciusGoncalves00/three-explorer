@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', () => {
 export class Program {
     public readonly devMode: boolean;
     public engine!: Engine;
-    public graphicEngine!: IGraphicEngine<THREE.Object3D>;
+    public graphicEngine!: IGraphicEngine;
 
     //#region [HTMLElements]
     public consoleContent!: HTMLElement;
@@ -68,6 +68,9 @@ export class Program {
 
     private _scenes!: Scenes;
     public get scenes(): Scenes { return this._scenes; }
+
+    private _entityHandler!: EntityHandler;
+    private get entityHandler(): EntityHandler { return this._entityHandler; }
     //#endregion
 
     public constructor(devMode: boolean = false) {
@@ -75,6 +78,7 @@ export class Program {
 
         this.initializeEngine();
         this.initializeConsole();
+        this._entityHandler = new EntityHandler(this.engine, this.graphicEngine);
 
         this._console.log(LogType.Log, "creating the best interface...")
 
@@ -92,11 +96,10 @@ export class Program {
         if (this.fpsContainer) this.engine.time.framesPerSecond.subscribe(() => this.fpsContainer.innerHTML = `${this.engine.time.framesPerSecond.value.toString()} FPS`);
         if (this.averageFpsContainer) this.engine.time.averageFramesPerSecond.subscribe(() => this.averageFpsContainer.innerHTML = `${this.engine.time.averageFramesPerSecond.value.toString()} avgFPS`);
 
-        const entityHandler = new EntityHandler(this.engine, this.graphicEngine);
         this.initializeHierarchy();
 
         (window as any).addEntity = () => {
-          entityHandler.addEntity();
+          this._entityHandler.addEntity();
         };
 
         this.initializeTEMP();
@@ -111,7 +114,7 @@ export class Program {
     private initializeGraphicEngine(): void {
         this.graphicEngine = new ThreeGEAdapter();
 
-        this.graphicEngine.init(this.canvasA, this.canvasB);
+        this.graphicEngine.init(this.engine, this.canvasA, this.canvasB);
 
         this.graphicEngine.setEditorCamera(this.canvasA, {x: 10, y: 10, z: 10});
         this.graphicEngine.setPreviewCamera(this.canvasB, {x: 0, y: 1, z: -10});
@@ -164,8 +167,11 @@ export class Program {
 
     private initializeHierarchy(): void {
         this.entitiesContainer = this.getElementOrFail<HTMLElement>('entitiesContainer');
-        this._hierarchy = new Hierarchy(this.entitiesContainer, entity => EntityHandler.selectedEntity.value = entity);
-        this.engine.entityManager.entities.subscribe(value => this.hierarchy.renderHierarchy(value))
+        this._hierarchy = new Hierarchy(this.entitiesContainer, entity => this.entityHandler.selectedEntity.value = entity, this._entityHandler);
+        this.engine.entityManager.entities.subscribe({
+            onAdd: (entity) => this._hierarchy.addEntity(entity),
+            onRemove: (entity) => this._hierarchy.removeEntity(entity)
+        })
     };
 
     private initializeAssets(): void {
@@ -180,7 +186,7 @@ export class Program {
 
     private initializeInspector(): void {
         this.inspectorContainer = this.getElementOrFail<HTMLElement>('inspectorContainer');
-        this._inspector = new Inspector(this.inspectorContainer);
+        this._inspector = new Inspector(this.inspectorContainer, this.entityHandler);
     };
 
     private initializeControls(): void {

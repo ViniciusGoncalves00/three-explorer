@@ -1,10 +1,11 @@
 import { Entity } from "../core/api/entity";
+import { Engine } from "../core/engine/engine";
 
-export interface IGraphicEngine<T> {
-  init(canvasA: HTMLCanvasElement, canvasB: HTMLCanvasElement): void;
+export interface IGraphicEngine {
+  init(engine: Engine,canvasA: HTMLCanvasElement, canvasB: HTMLCanvasElement): void;
   startRender(): void;
   resize(width: number, height: number): void;
-  bind(entity: Entity, object: T): void;
+  bind(entity: Entity): void;
 
   addEntity(entity: Entity): void;
   removeEntity(entity: Entity): void;

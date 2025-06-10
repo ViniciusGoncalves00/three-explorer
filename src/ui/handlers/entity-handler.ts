@@ -7,15 +7,15 @@ import { Mesh } from '../../assets/components/mesh';
 import { ObservableNullableField } from '../../common/patterns/observer/observable-nullable-field';
 import { IGraphicEngine } from '../../graphics/IGraphicEngine';
 
-export class EntityHandler<T> {
+export class EntityHandler {
     private _engine: Engine;
-    private _graphicEngine: IGraphicEngine<T>;
+    private _graphicEngine: IGraphicEngine;
 
-    private static _selectedEntity: ObservableNullableField<Entity> = new ObservableNullableField<Entity>(null);
-    public static get selectedEntity() : ObservableNullableField<Entity> { return this._selectedEntity; }
-    public static set selectedEntity(entity: ObservableNullableField<Entity>) { this._selectedEntity = entity; }
+    private _selectedEntity: ObservableNullableField<Entity> = new ObservableNullableField<Entity>(null);
+    public get selectedEntity() : ObservableNullableField<Entity> { return this._selectedEntity; }
+    public set selectedEntity(entity: ObservableNullableField<Entity>) { this._selectedEntity = entity; }
 
-    public constructor(engine: Engine, graphicEngine: IGraphicEngine<T>) {
+    public constructor(engine: Engine, graphicEngine: IGraphicEngine) {
         this._engine = engine;
         this._graphicEngine = graphicEngine;
     }
@@ -35,8 +35,8 @@ export class EntityHandler<T> {
     this._graphicEngine.addEntity(entity);
   }
 
-  public static removeEntity(id: string): void {
-    // this._graphicEngine(entity);
+  public removeEntity(id: string): void {
+    this._engine.entityManager.removeEntity(id);
   }
 }
 

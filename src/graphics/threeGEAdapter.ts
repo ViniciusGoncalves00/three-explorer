@@ -4,8 +4,9 @@ import * as THREE from 'three';
 import { Entity } from '../core/api/entity';
 import { Transform } from '../assets/components/transform';
 import { Mesh } from '../assets/components/mesh';
+import { Engine } from '../core/engine/engine';
 
-export class ThreeGEAdapter implements IGraphicEngine<THREE.Object3D> {
+export class ThreeGEAdapter implements IGraphicEngine {
     private _scene!: THREE.Scene;
     private _rendererA!: THREE.WebGLRenderer;
     private _rendererB!: THREE.WebGLRenderer;
@@ -16,7 +17,12 @@ export class ThreeGEAdapter implements IGraphicEngine<THREE.Object3D> {
 
     private _entities: Map<string, THREE.Object3D> = new Map<string, THREE.Object3D>();
     
-    public init(canvasA: HTMLCanvasElement, canvasB: HTMLCanvasElement): void {
+    public init(engine: Engine, canvasA: HTMLCanvasElement, canvasB: HTMLCanvasElement): void {
+        engine.entityManager.entities.subscribe({
+          onAdd: (entity) => this.addEntity(entity),
+          onRemove: (entity) => this.removeEntity(entity),
+        });
+
         this._scene = new THREE.Scene();
 
         this._rendererA = new THREE.WebGLRenderer({ antialias: true, canvas: canvasA });
@@ -39,7 +45,7 @@ export class ThreeGEAdapter implements IGraphicEngine<THREE.Object3D> {
 
     public addEntity(entity: Entity): void {
         const object = new THREE.Mesh();
-        this.bind(entity, object);
+        this.bindTEMP(entity, object);
         
         this._entities.set(entity.id, object);
         this._scene.add(object);
@@ -53,7 +59,9 @@ export class ThreeGEAdapter implements IGraphicEngine<THREE.Object3D> {
         this._scene.remove(object);
     }
 
-    public bind(entity: Entity, object: THREE.Object3D): void {
+    public bind(entity: Entity): void {}
+
+    private bindTEMP(entity: Entity, object: THREE.Object3D): void {
         if(entity.hasComponent(Transform)) {
             const transform = entity.getComponent(Transform);
 

@@ -2,14 +2,59 @@ import { Entity } from "../../../core/api/entity";
 import { EntityHandler } from "../../handlers/entity-handler";
 
 export class Hierarchy {
-    private _entitiesContainer: HTMLElement;
+  private _entitiesContainer: HTMLElement;
+  private _entityHandler: EntityHandler;
 
-    private _onSelectEntity: (entity: Entity) => void;
+  private _onSelectEntity: (entity: Entity) => void;
 
-    public constructor(entitiesContainer: HTMLElement, onSelectEntity: (entity: Entity) => void) {
-        this._entitiesContainer = entitiesContainer;
-        this._onSelectEntity = onSelectEntity;
-    }
+  public constructor(entitiesContainer: HTMLElement, onSelectEntity: (entity: Entity) => void, entityHandler: EntityHandler) {
+      this._entitiesContainer = entitiesContainer;
+      this._onSelectEntity = onSelectEntity;
+      this._entityHandler = entityHandler;
+  }
+
+  public removeEntity(entity: Entity): void {
+    this._entitiesContainer.querySelector(`#${CSS.escape(entity.id)}`)?.remove();
+  }
+
+  public addEntity(entity: Entity): void {
+    const entityName = entity.name ?? entity.id;
+        
+    const entityLine = document.createElement("div");
+    entityLine.id = entity.id;
+    entityLine.classList.add("entity", "w-full", "h-6", "flex", "items-center", "justify-between", "px-2");
+  
+    const leftContainer = document.createElement("div");
+    leftContainer.classList.add("h-full", "w-full", "flex", "items-center", "space-x-2");
+  
+    const caretIcon = document.createElement("i");
+    caretIcon.classList.add("h-full", "flex", "items-center", "justify-center", "bi", "bi-caret-down-fill");
+  
+    const boxIcon = document.createElement("i");
+    boxIcon.classList.add("h-full", "flex", "items-center", "justify-center", "bi", "bi-box");
+  
+    const nameParagraph = document.createElement("p");
+    nameParagraph.classList.add("w-full", "whitespace-nowrap", "overflow-ellipsis");
+    nameParagraph.textContent = entityName;
+  
+    leftContainer.appendChild(caretIcon);
+    leftContainer.appendChild(boxIcon);
+    leftContainer.appendChild(nameParagraph);
+        
+    const trashIcon = document.createElement("i");
+    trashIcon.classList.add("h-full", "flex", "items-center", "justify-center", "bi", "bi-trash");
+    trashIcon.addEventListener("click", () => {
+      this._entityHandler.removeEntity(entity.id);
+      this._entityHandler.selectedEntity.value = null;
+    })
+  
+    entityLine.appendChild(leftContainer);
+    entityLine.appendChild(trashIcon);
+
+    leftContainer.addEventListener("click", () => this.selectEntity(entity));              
+        
+    this._entitiesContainer.appendChild(entityLine);
+  }
 
     public renderHierarchy(entities: Map<string, Entity>): void {
         this._entitiesContainer.innerHTML = "";
@@ -40,8 +85,8 @@ export class Hierarchy {
             const trashIcon = document.createElement("i");
             trashIcon.classList.add("h-full", "flex", "items-center", "justify-center", "bi", "bi-trash");
             trashIcon.addEventListener("click", () => {
-              EntityHandler.removeEntity(entity.id);
-              EntityHandler.selectedEntity.value = null;
+              this._entityHandler.removeEntity(entity.id);
+              this._entityHandler.selectedEntity.value = null;
             })
           
             entityLine.appendChild(leftContainer);
