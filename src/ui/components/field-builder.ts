@@ -145,24 +145,24 @@ export class FieldBuilder {
               ],
             defaultLabel: "Select Mesh",
             onSelect: (item) => {
-                const mesh = EntityHandler.selectedEntity.value?.getComponent(Mesh);
-                if (!mesh) return;
+                // const mesh = EntityHandler.selectedEntity.value?.getComponent(Mesh);
+                // if (!mesh) return;
 
-                mesh.name.value = item.label;
+                // mesh.name.value = item.label;
 
-                mesh.vertices.clear();
-                for (let i = 0; i < item.value.vertices.length; i += 3) {
-                    mesh.vertices.add(new Vector3(
-                        item.value.vertices[i],
-                        item.value.vertices[i + 1],
-                        item.value.vertices[i + 2]
-                    ));
-                }
+                // mesh.vertices.clear();
+                // for (let i = 0; i < item.value.vertices.length; i += 3) {
+                //     mesh.vertices.add(new Vector3(
+                //         item.value.vertices[i],
+                //         item.value.vertices[i + 1],
+                //         item.value.vertices[i + 2]
+                //     ));
+                // }
             
-                mesh.indices.clear();
-                for (let i = 0; i < item.value.indices.length; i++) {
-                    mesh.indices.add(new ObservableField(item.value.indices[i]));
-                }
+                // mesh.indices.clear();
+                // for (let i = 0; i < item.value.indices.length; i++) {
+                //     mesh.indices.add(new ObservableField(item.value.indices[i]));
+                // }
             }
         });
 
