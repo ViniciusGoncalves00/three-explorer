@@ -2,7 +2,7 @@ import './styles.css';
 import './ui/styles/time-controller.css';
 
 import { Engine } from './core/engine/engine';
-import { TimeControllerHandler } from './ui/elements/controls/time-controller-handler';
+import { Timescale } from './ui/elements/controls/timescale';
 import { Console } from './ui/elements/console/console';
 import { RotateSystem } from './assets/systems/rotateSystem';
 import { OrbitSystem } from './assets/systems/orbitSystem';
@@ -17,6 +17,8 @@ import { Scenes } from './ui/elements/scenes/scenes';
 import { IGraphicEngine } from './graphics/IGraphicEngine';
 import * as THREE from "three";
 import { ThreeGEAdapter } from './graphics/threeGEAdapter';
+import { Player } from './ui/elements/controls/player';
+import { Screen } from './ui/elements/controls/screen';
 
 window.addEventListener('DOMContentLoaded', () => {
     new Program();
@@ -48,6 +50,8 @@ export class Program {
     public speedUp!: HTMLButtonElement;
     public speedNormal!: HTMLButtonElement;
     public speedDown!: HTMLButtonElement;
+    public fullScreen!: HTMLButtonElement;
+    public emptyScreen!: HTMLButtonElement;
     //#endregion
 
     //#region [HTMLElements]
@@ -63,8 +67,14 @@ export class Program {
     private _hierarchy!: Hierarchy;
     public get hierarchy(): Hierarchy { return this._hierarchy; }
 
-    private _controls!: TimeControllerHandler;
-    public get controls(): TimeControllerHandler { return this._controls; }
+    private _timescale!: Timescale;
+    public get timescale(): Timescale { return this._timescale; }
+    
+    private _player!: Player;
+    public get player(): Player { return this._player; }
+
+    private _screen!: Screen;
+    public get screen(): Screen { return this._screen; }
 
     private _scenes!: Scenes;
     public get scenes(): Scenes { return this._scenes; }
@@ -91,7 +101,10 @@ export class Program {
 
         this._console.log(LogType.Log, "loading your best assets...");
         this.initializeAssets();
-        this.initializeControls();
+
+        this.initializePlayer();
+        this.initializeTimescale();
+        this.initializeScreen();
 
         if (this.fpsContainer) this.engine.time.framesPerSecond.subscribe(() => this.fpsContainer.innerHTML = `${this.engine.time.framesPerSecond.value.toString()} FPS`);
         if (this.averageFpsContainer) this.engine.time.averageFramesPerSecond.subscribe(() => this.averageFpsContainer.innerHTML = `${this.engine.time.averageFramesPerSecond.value.toString()} avgFPS`);
@@ -189,16 +202,28 @@ export class Program {
         this._inspector = new Inspector(this.inspectorContainer, this.entityHandler);
     };
 
-    private initializeControls(): void {
+    private initializePlayer(): void {
         this.play = this.getElementOrFail<HTMLButtonElement>('play');
         this.stop = this.getElementOrFail<HTMLButtonElement>('stop');
         this.pause = this.getElementOrFail<HTMLButtonElement>('pause');
 
+        this._player = new Player(this.engine.timeController, this.play, this.stop, this.pause);
+    };
+
+
+    private initializeTimescale(): void {
         this.speedUp = this.getElementOrFail<HTMLButtonElement>('speedUp');
         this.speedNormal = this.getElementOrFail<HTMLButtonElement>('speedNormal');
         this.speedDown = this.getElementOrFail<HTMLButtonElement>('speedDown');
 
-        this._controls = new TimeControllerHandler(this.engine.timeController, this.engine.time, this.play, this.stop, this.pause, this.speedUp, this.speedNormal, this.speedDown);
+        this._timescale = new Timescale(this.engine.time, this.speedUp, this.speedNormal, this.speedDown);
+    };
+
+    private initializeScreen(): void {
+        this.fullScreen = this.getElementOrFail<HTMLButtonElement>('fullScreen');
+        this.emptyScreen = this.getElementOrFail<HTMLButtonElement>('emptyScreen');
+
+        this._screen = new Screen(this.fullScreen, this.emptyScreen);
     };
 
     private initializeCanvas(): void {
