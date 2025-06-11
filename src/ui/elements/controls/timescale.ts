@@ -1,39 +1,27 @@
 import { Time } from "../../../core/engine/time";
 
 export class Timescale {
-  private readonly time: Time;
+  private readonly speedDown: number = 0.5; 
+  private readonly speedNormal: number = 1; 
+  private readonly speedUp: number = 2; 
 
-  private readonly speedUp: HTMLElement;
-  private readonly speedNormal: HTMLElement;
-  private readonly speedDown: HTMLElement;
+  public constructor(time: Time, speedUpButton: HTMLButtonElement, speedNormalButton: HTMLButtonElement, speedDownButton: HTMLButtonElement) {
+    speedUpButton.addEventListener('click', () => time.globalTimeScale.value = this.speedUp);
+    speedNormalButton.addEventListener('click', () => time.globalTimeScale.value = this.speedNormal);
+    speedDownButton.addEventListener('click', () => time.globalTimeScale.value = this.speedDown);
 
-  private readonly slowSpeed: number = 0.5; 
-  private readonly normalSpeed: number = 1; 
-  private readonly highSpeed: number = 2; 
+    speedNormalButton.classList.toggle('border');
+    speedNormalButton.classList.toggle('border-white');
 
-  public constructor(time: Time, speedUp: HTMLButtonElement, speedNormal: HTMLButtonElement, speedDown: HTMLButtonElement) {
-    this.time = time;
-    
-    this.speedUp = speedUp;
-    this.speedNormal = speedNormal;
-    this.speedDown = speedDown;
+    time.globalTimeScale.subscribe(value => {
+      speedDownButton.classList.toggle('border', value < 1);
+      speedDownButton.classList.toggle('border-white', value < 1);
 
-    this.speedUp.addEventListener('click', () => time.globalTimeScale.value = this.highSpeed);
-    this.speedNormal.addEventListener('click', () => time.globalTimeScale.value = this.normalSpeed);
-    this.speedDown.addEventListener('click', () => time.globalTimeScale.value = this.slowSpeed);
+      speedNormalButton.classList.toggle('border', value === 1);
+      speedNormalButton.classList.toggle('border-white', value === 1);
 
-    this.speedNormal.classList.toggle('border');
-    this.speedNormal.classList.toggle('border-white');
-
-    this.time.globalTimeScale.subscribe(value => {
-      this.speedDown.classList.toggle('border', value < 1);
-      this.speedDown.classList.toggle('border-white', value < 1);
-
-      this.speedNormal.classList.toggle('border', value === 1);
-      this.speedNormal.classList.toggle('border-white', value === 1);
-
-      this.speedUp.classList.toggle('border', value > 1);
-      this.speedUp.classList.toggle('border-white', value > 1);
+      speedUpButton.classList.toggle('border', value > 1);
+      speedUpButton.classList.toggle('border-white', value > 1);
     })
   }
 }
