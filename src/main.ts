@@ -51,7 +51,6 @@ export class Program {
     public speedNormal!: HTMLButtonElement;
     public speedDown!: HTMLButtonElement;
     public fullScreen!: HTMLButtonElement;
-    public emptyScreen!: HTMLButtonElement;
     //#endregion
 
     //#region [HTMLElements]
@@ -221,9 +220,8 @@ export class Program {
 
     private initializeScreen(): void {
         this.fullScreen = this.getElementOrFail<HTMLButtonElement>('fullScreen');
-        this.emptyScreen = this.getElementOrFail<HTMLButtonElement>('emptyScreen');
 
-        this._screen = new Screen(this.fullScreen, this.emptyScreen);
+        this._screen = new Screen(this.engine.timeController, this.viewportSceneContainer, this.fullScreen);
     };
 
     private initializeCanvas(): void {

@@ -14,14 +14,14 @@ export class Timescale {
     speedNormalButton.classList.toggle('border-white');
 
     time.globalTimeScale.subscribe(value => {
-      speedDownButton.classList.toggle('border', value < 1);
-      speedDownButton.classList.toggle('border-white', value < 1);
+      speedDownButton.classList.toggle('border', value < this.speedNormal);
+      speedDownButton.classList.toggle('border-white', value < this.speedNormal);
 
-      speedNormalButton.classList.toggle('border', value === 1);
-      speedNormalButton.classList.toggle('border-white', value === 1);
+      speedNormalButton.classList.toggle('border', value === this.speedNormal);
+      speedNormalButton.classList.toggle('border-white', value === this.speedNormal);
 
-      speedUpButton.classList.toggle('border', value > 1);
-      speedUpButton.classList.toggle('border-white', value > 1);
+      speedUpButton.classList.toggle('border', value > this.speedNormal);
+      speedUpButton.classList.toggle('border-white', value > this.speedNormal);
     })
   }
 }
