@@ -28,8 +28,9 @@
         </div>
       </div>
 
-      <div id="time-controls" class="w-full h-8 flex items-center justify-center space-x-[16px]">
-        <div id="mode-controls" class="flex space-x-[2px]">
+      <div id="controls" class="w-full h-8 flex items-center justify-center space-x-[16px]">
+
+        <div id="player-controls" class="flex space-x-[2px]">
           <button id="play" class="btn btn--time-controller">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="18" fill="currentColor" class="bi bi-play" viewBox="0 0 16 16">
               <path d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
@@ -46,7 +47,8 @@
             </svg>
           </button>
         </div>
-        <div id="velocity-controls" class="flex space-x-[2px]">
+
+        <div id="timescale-controls" class="flex space-x-[2px]">
           <button id="speedDown" class="btn btn--time-controller">
             <p>0.5x</p>
           </button>
@@ -55,6 +57,12 @@
           </button>
           <button id="speedUp" class="btn btn--time-controller">
             <p>2.0x</p>
+          </button>
+        </div>
+
+        <div id="screen-controls" class="flex space-x-[2px]">
+          <button id="fullScreen" class="btn btn--time-controller">
+            <i class="bi bi-fullscreen"></i>
           </button>
         </div>
       </div>
