@@ -95,15 +95,15 @@ export class Program {
         this.initializeCanvas();
         this.initializeGraphicEngine();
 
-        this.fpsContainer = this.getElementOrFail<HTMLElement>('fpsContainer');
-        this.averageFpsContainer = this.getElementOrFail<HTMLElement>('averageFpsContainer');
-
         this._console.log(LogType.Log, "loading your best assets...");
         this.initializeAssets();
 
         this.initializePlayer();
         this.initializeTimescale();
         this.initializeScreen();
+
+        this.fpsContainer = this.getElementOrFail<HTMLElement>('fpsContainer');
+        this.averageFpsContainer = this.getElementOrFail<HTMLElement>('averageFpsContainer');
 
         if (this.fpsContainer) this.engine.time.framesPerSecond.subscribe(() => this.fpsContainer.innerHTML = `${this.engine.time.framesPerSecond.value.toString()} FPS`);
         if (this.averageFpsContainer) this.engine.time.averageFramesPerSecond.subscribe(() => this.averageFpsContainer.innerHTML = `${this.engine.time.averageFramesPerSecond.value.toString()} avgFPS`);
@@ -136,6 +136,9 @@ export class Program {
 
         const observerA = new ResizeObserver(() => this.graphicEngine.resize(this.canvasA.clientHeight, this.canvasA.clientWidth));
         observerA.observe(this.canvasA);  
+
+        const observerB = new ResizeObserver(() => this.graphicEngine.resize(this.canvasB.clientHeight, this.canvasB.clientWidth));
+        observerB.observe(this.canvasB);  
 
         this.graphicEngine.setFog({r: 0.02, g: 0.02, b: 0.02}, 0, 100);
         this.graphicEngine.setBackground({r: 0.02, g: 0.02, b: 0.02});
