@@ -9,7 +9,7 @@ export class Rotate extends Component {
   private readonly _speed: ObservableField<number>;
   public get speed(): ObservableField<number> { return this._speed; }
 
-  constructor(axis: Vector3 = new Vector3(0, 0, 0), speed: ObservableField<number> = new ObservableField<number>(1)) {
+  constructor(axis: Vector3 = new Vector3(0, 1, 0), speed: ObservableField<number> = new ObservableField<number>(1)) {
     super();
     this._axis = axis;
     this._speed = speed;

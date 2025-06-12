@@ -7,6 +7,7 @@ import { ComponentUI } from "../../components/inspector/component-ui";
 import { EntityHandler } from "../../handlers/entity-handler";
 import { Mesh } from "../../../assets/components/mesh";
 import { Component } from "../../../assets/components/component";
+import { Shake } from "../../../assets/components/shake";
 
 export class Inspector {
   private _container: HTMLElement;
@@ -48,6 +49,7 @@ export class Inspector {
         { label: "Rotate", value: Rotate },
         { label: "Orbit", value: Orbit },
         { label: "Mesh", value: Mesh },
+        { label: "Shake", value: Shake },
       ],
       defaultLabel: "Add Component",
       onSelect: (item) => {

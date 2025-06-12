@@ -32,7 +32,6 @@ export class EntityHandler {
     entity.addComponent(meshComponent);
 
     this._engine.entityManager.addEntity(entity);
-    this._graphicEngine.addEntity(entity);
   }
 
   public removeEntity(id: string): void {

@@ -19,6 +19,7 @@ import * as THREE from "three";
 import { ThreeGEAdapter } from './graphics/threeGEAdapter';
 import { Player } from './ui/elements/controls/player';
 import { Screen } from './ui/elements/controls/screen';
+import { ShakeSystem } from './assets/systems/shakeSystem';
 
 window.addEventListener('DOMContentLoaded', () => {
     new Program();
@@ -147,6 +148,7 @@ export class Program {
     private initializeTEMP(): void {
         this.engine.registerSystem(new RotateSystem());
         this.engine.registerSystem(new OrbitSystem());
+        this.engine.registerSystem(new ShakeSystem());
     };
 
     private initializeConsole(): void {
