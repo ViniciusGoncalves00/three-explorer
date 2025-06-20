@@ -1,15 +1,12 @@
 import { Mesh } from "../../assets/components/mesh";
-import { Transform } from "../../assets/components/transform";
 import { ObservableField } from "../../common/patterns/observer/observable-field";
-import { Vector3 } from "../../core/api/vector3";
-import { EntityHandler } from "../handlers/entity-handler";
 import { Dropdown } from "./dropdown";
 
 export class FieldBuilder {
-    public static buildNumberField(observablefield: ObservableField<number>): HTMLElement {
+    public static buildNumberField(observablefield: ObservableField<number>): HTMLInputElement {
         const field = document.createElement("input");
         field.type = "number";
-        field.step = "0.1";
+        field.step = "1";
         field.className = "w-full text-xs px-1 py-0.5 border border-gray-300 rounded";
 
         observablefield.subscribe(value => field.value = value.toString());

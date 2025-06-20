@@ -5,19 +5,16 @@ import { ObservableField } from '../../common/patterns/observer/observable-field
 import { Vector3 } from '../../core/api/vector3';
 import { Mesh } from '../../assets/components/mesh';
 import { ObservableNullableField } from '../../common/patterns/observer/observable-nullable-field';
-import { IGraphicEngine } from '../../graphics/IGraphicEngine';
 
 export class EntityHandler {
     private _engine: Engine;
-    private _graphicEngine: IGraphicEngine;
 
     private _selectedEntity: ObservableNullableField<Entity> = new ObservableNullableField<Entity>(null);
     public get selectedEntity() : ObservableNullableField<Entity> { return this._selectedEntity; }
     public set selectedEntity(entity: ObservableNullableField<Entity>) { this._selectedEntity = entity; }
 
-    public constructor(engine: Engine, graphicEngine: IGraphicEngine) {
+    public constructor(engine: Engine) {
         this._engine = engine;
-        this._graphicEngine = graphicEngine;
     }
     
   public addEntity(): void {
@@ -32,7 +29,6 @@ export class EntityHandler {
     entity.addComponent(meshComponent);
 
     this._engine.entityManager.addEntity(entity);
-    this._graphicEngine.addEntity(entity);
   }
 
   public removeEntity(id: string): void {

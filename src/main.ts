@@ -87,13 +87,14 @@ export class Program {
 
         this.initializeEngine();
         this.initializeConsole();
-        this._entityHandler = new EntityHandler(this.engine, this.graphicEngine);
 
         this._console.log(LogType.Log, "creating the best interface...")
 
-        this.initializeInspector();
-        this.initializeCanvas();
+        this.initializeCanvas();        
         this.initializeGraphicEngine();
+        this._entityHandler = new EntityHandler(this.engine);
+        this.initializeInspector();
+
 
         this._console.log(LogType.Log, "loading your best assets...");
         this.initializeAssets();
@@ -138,7 +139,7 @@ export class Program {
         observerA.observe(this.canvasA);  
 
         const observerB = new ResizeObserver(() => this.graphicEngine.resize(this.canvasB.clientHeight, this.canvasB.clientWidth));
-        observerB.observe(this.canvasB);  
+        observerB.observe(this.canvasB);
 
         this.graphicEngine.setFog({r: 0.02, g: 0.02, b: 0.02}, 0, 100);
         this.graphicEngine.setBackground({r: 0.02, g: 0.02, b: 0.02});

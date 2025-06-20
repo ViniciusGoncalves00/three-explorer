@@ -7,6 +7,7 @@ import { Mesh } from '../assets/components/mesh';
 import { Engine } from '../core/engine/engine';
 
 export class ThreeGEAdapter implements IGraphicEngine {
+    private _engine: Engine | null = null;
     private _scene!: THREE.Scene;
     private _rendererA!: THREE.WebGLRenderer;
     private _rendererB!: THREE.WebGLRenderer;
@@ -18,6 +19,7 @@ export class ThreeGEAdapter implements IGraphicEngine {
     private _entities: Map<string, THREE.Object3D> = new Map<string, THREE.Object3D>();
     
     public init(engine: Engine, canvasA: HTMLCanvasElement, canvasB: HTMLCanvasElement): void {
+        this._engine = engine;
         engine.entityManager.entities.subscribe({
           onAdd: (entity) => this.addEntity(entity),
           onRemove: (entity) => this.removeEntity(entity),
@@ -35,7 +37,7 @@ export class ThreeGEAdapter implements IGraphicEngine {
     }
 
     private animate(renderer: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera): void {
-        renderer.render( scene, camera );
+        renderer.render(scene, camera);
     }
 
     public resize(width: number, height: number): void {
@@ -45,6 +47,7 @@ export class ThreeGEAdapter implements IGraphicEngine {
 
     public addEntity(entity: Entity): void {
         const object = new THREE.Mesh();
+        object.matrixAutoUpdate = false;
         this.bindTEMP(entity, object);
         
         this._entities.set(entity.id, object);
@@ -62,31 +65,21 @@ export class ThreeGEAdapter implements IGraphicEngine {
     public bind(entity: Entity): void {}
 
     private bindTEMP(entity: Entity, object: THREE.Object3D): void {
-        if(entity.hasComponent(Transform)) {
-            const transform = entity.getComponent(Transform);
-
-            object.position.set( transform.position.x.value, transform.position.y.value, transform.position.z.value);
-
-            transform.position.x.subscribe(value => object.position.x = value);
-            transform.position.y.subscribe(value => object.position.y = value);
-            transform.position.z.subscribe(value => object.position.z = value);
-
-            object.rotation.set(transform.rotation.x.value, transform.rotation.y.value, transform.rotation.z.value);
-
-            transform.rotation.x.subscribe(value => object.rotation.x = value);
-            transform.rotation.y.subscribe(value => object.rotation.y = value);
-            transform.rotation.z.subscribe(value => object.rotation.z = value);
-
-            object.scale.set(transform.scale.x.value, transform.scale.y.value, transform.scale.z.value);
-
-            transform.scale.x.subscribe(value => object.scale.x = value);
-            transform.scale.y.subscribe(value => object.scale.y = value);
-            transform.scale.z.subscribe(value => object.scale.z = value);
-        }
+      if (entity.hasComponent(Transform)) {
+        const transform = entity.getComponent(Transform);
+        object.matrix.fromArray(transform.worldMatrix.value);
         
-        if(entity.hasComponent(Mesh)) {
-            object.add(this.bindMeshComponentToGeometry(entity.getComponent(Mesh)));
-        }
+        transform.localMatrix.subscribe((matrix) => {
+          object.matrix.fromArray(matrix)
+        })
+        transform.worldMatrix.subscribe((matrix) => {
+          object.matrix.fromArray(matrix);
+        });
+      }
+
+      if (entity.hasComponent(Mesh)) {
+        object.add(this.bindMeshComponentToGeometry(entity.getComponent(Mesh)));
+      }
     }
 
     public bindMeshComponentToGeometry(meshComponent: Mesh): THREE.Mesh {

@@ -5,6 +5,7 @@ import { ObservableField } from "../../../common/patterns/observer/observable-fi
 import { EntityHandler } from "../../handlers/entity-handler";
 import { PropertyBuilder } from "./component-builder";
 import { ObservableList } from "../../../common/patterns/observer/observable-list";
+import { Transform } from "../../../assets/components/transform";
 
 export class ComponentUI {
     private _entityHandler: EntityHandler;
@@ -115,7 +116,10 @@ export class ComponentUI {
             }
             else {
                 if(property instanceof Vector3) {
-                    PropertyBuilder.buildVector3Property(property, fieldContentColumn);
+                    const inputs = PropertyBuilder.buildVector3Property(property, fieldContentColumn);
+                    if(component instanceof Transform) {
+                        inputs.forEach(input => input.addEventListener("input", () => {component.children.forEach(child => child.updateWorldMatrix())}))
+                    }
                 }
                 else if (property instanceof ObservableField) {
                     const value = property.value;

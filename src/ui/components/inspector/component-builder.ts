@@ -15,7 +15,8 @@ export class PropertyBuilder {
         field.appendChild(input);
     }
 
-    public static buildVector3Property(property: Vector3, field: HTMLElement): void {
+    public static buildVector3Property(property: Vector3, field: HTMLElement): HTMLInputElement[] {
+        const inputs: HTMLInputElement[] = []
         field.classList.add('gap-1');
 
         for (const axis of ['x', 'y', 'z'] as const) {
@@ -29,7 +30,10 @@ export class PropertyBuilder {
 
             const input = FieldBuilder.buildNumberField(property[axis])
             field.appendChild(input);
+            inputs.push(input)
         }
+
+        return inputs;
     }
 
     public static async buildMeshProperty(field: HTMLElement): Promise<void> {

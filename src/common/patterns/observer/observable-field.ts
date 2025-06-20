@@ -17,6 +17,10 @@ export class ObservableField<T> {
     this._listeners.forEach(listener => listener(newValue));
   }
 
+  public manualNotify(): void {
+    this._listeners.forEach(listener => listener(this._value));
+  }
+
   public subscribe(listener: (val: T) => void): void {
     this._listeners.add(listener);
   }

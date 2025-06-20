@@ -30,6 +30,12 @@ export class Vector3 {
     this._z.value = z;
   }
 
+  public setFromVector(vector: Vector3): void {
+    this._x.value = vector.x.value;
+    this._y.value = vector.y.value;
+    this._z.value = vector.z.value;
+  }
+
   public setAxis(axis: 'x' | 'y' | 'z', value: number): void {
     this[axis].value = value;
   }
