@@ -6,8 +6,11 @@ import { EntityHandler } from "../../handlers/entity-handler";
 import { PropertyBuilder } from "./component-builder";
 import { ObservableList } from "../../../common/patterns/observer/observable-list";
 import { Transform } from "../../../assets/components/transform";
+import { Dropdown } from "../dropdown";
+import { Engine } from "../../../core/engine/engine";
 
 export class ComponentUI {
+    private _engine: Engine;
     private _entityHandler: EntityHandler;
 
     private _container: HTMLElement;
@@ -16,7 +19,8 @@ export class ComponentUI {
     private _open: boolean;
     public get open(): boolean { return this._open; }
 
-    public constructor(entityHandler: EntityHandler, component: Component, open: boolean = true) {
+    public constructor(engine: Engine, entityHandler: EntityHandler, component: Component, open: boolean = true) {
+        this._engine = engine;
         this._entityHandler = entityHandler;
         this._open = open;
 
@@ -95,7 +99,7 @@ export class ComponentUI {
             fieldContentColumn.className = 'w-3/4 flex';
             row.appendChild(fieldContentColumn);
 
-            const property = (component as any)[propertyName];
+            let property = (component as any)[propertyName];
             // if(Array.isArray(property)) {
             //     if(property[0] instanceof Vector3) {
             //         PropertyBuilder.buildArrayVector3Property(property, fieldContentColumn)
@@ -104,6 +108,7 @@ export class ComponentUI {
             //         PropertyBuilder.buildArrayNumberProperty(property, fieldContentColumn);
             //     }
             // }
+                    
             if(property instanceof ObservableList) {
                 fieldContentColumn.classList.add("space-y-1", "flex-col")
                 
@@ -130,6 +135,19 @@ export class ComponentUI {
                     else if (typeof value === 'string') {
                         PropertyBuilder.buildStringProperty(property, fieldContentColumn);
                     }
+                }
+                else if(!(property instanceof Transform)) {
+                    let entitiesRepresentation: {label: string, value: Transform}[] = []
+                    this._engine.entityManager.getEntities().forEach(entity => entitiesRepresentation.push({label: entity.name, value: entity.getComponent(Transform) }))
+                    const dropdown = new Dropdown({
+                          items: entitiesRepresentation,
+                          defaultLabel: "Select parent",
+                          onSelect: (item) => {
+                            if(property == null) property = item.value;
+                            else property.parent = item.value;
+                          },
+                        });
+                    fieldContentColumn.appendChild(dropdown.getElement())
                 }
             }
         }

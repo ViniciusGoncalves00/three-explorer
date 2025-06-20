@@ -7,13 +7,16 @@ import { ComponentUI } from "../../components/inspector/component-ui";
 import { EntityHandler } from "../../handlers/entity-handler";
 import { Mesh } from "../../../assets/components/mesh";
 import { Component } from "../../../assets/components/component";
+import { Engine } from "../../../core/engine/engine";
 
 export class Inspector {
   private _container: HTMLElement;
+  private _engine: Engine;
   private _entityHandler: EntityHandler;
 
-  public constructor(container: HTMLElement, entityHandler: EntityHandler) {
+  public constructor(container: HTMLElement, engine: Engine, entityHandler: EntityHandler) {
     this._container = container;
+    this._engine = engine;
     this._entityHandler = entityHandler;
 
     this._entityHandler.selectedEntity?.subscribe(() => {
@@ -34,7 +37,7 @@ export class Inspector {
     this._container.appendChild(entityWrapper)
 
     this._entityHandler.selectedEntity.value.getComponents().forEach((component: Component) => {
-      const componentUI = new ComponentUI(this._entityHandler, component).container;
+      const componentUI = new ComponentUI(this._engine, this._entityHandler, component).container;
       this._container.appendChild(componentUI);
     });
 

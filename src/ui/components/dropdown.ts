@@ -41,17 +41,18 @@ export class Dropdown {
 
         this.button = document.createElement("button");
         this.button.textContent = this.defaultLabel ? this.defaultLabel : items[0].label;
-        this.button.classList = "w-48 bg-zinc-700 text-white px-4 py-2 rounded truncate hover:bg-zinc-600 cursor-pointer";
+        this.button.classList = "w-full bg-zinc-700 text-white px-2 py-1 rounded truncate hover:bg-zinc-600 cursor-pointer";
         this.button.onclick = () => this.toggle();
 
         this.menu = document.createElement("ul");
-        this.menu.classList = "absolute left-0 top-full mt-1 w-full bg-zinc-700 text-white text-sm rounded";
+        this.menu.classList = "absolute left-0 top-full mt-1 bg-zinc-700 text-white text-sm rounded z-50";
         this.menu.style.display = "none";
 
         this.renderItems();
 
         this.container.appendChild(this.button);
-        this.container.appendChild(this.menu);
+        // this.container.appendChild(this.menu);
+        document.body.appendChild(this.menu);
     }
 
     public getElement(): HTMLElement {
@@ -106,6 +107,16 @@ export class Dropdown {
 
     private toggle(state?: boolean) {
         this.isOpen = typeof state === "boolean" ? state : !this.isOpen;
-        this.menu.style.display = this.isOpen ? "block" : "none";
+        if (this.isOpen) {
+            const rect = this.button.getBoundingClientRect();
+            this.menu.style.position = "absolute";
+            this.menu.style.left = `${rect.left}px`;
+            this.menu.style.top = `${rect.bottom + window.scrollY}px`;
+            this.menu.style.width = `${rect.width}px`;
+            this.menu.style.zIndex = "9999";
+            this.menu.style.display = "block";
+        } else {
+            this.menu.style.display = "none";
+        }
     }
 }
